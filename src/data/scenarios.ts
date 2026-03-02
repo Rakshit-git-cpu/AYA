@@ -86,6 +86,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_taylor_swift.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Tim McGraw hits the Billboard Hot 100. You are on your way to becoming the biggest star in the world.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -94,6 +96,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_taylor_swift.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: AUTHENTICITY. Taylor Swift didn't have the best voice or the most money. She had her own stories and a relentless work ethic. Bet on your unique voice.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -250,6 +254,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_taylor_swift.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "You win 2 Grammys for the album. You proved that your voice is yours alone.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -258,6 +264,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_taylor_swift.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: AUTONOMY. Sometimes the only way to kill impostor syndrome is to do the hard thing completely on your own.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -325,6 +333,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_kobe.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "You win 5 Championships. The world calls it talent. You know it was the 4 AMs.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -333,6 +343,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_kobe.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: DISCIPLINE. Talent is common. What separates the greats is the willingness to do the boring, hard work when no one is watching.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -548,6 +560,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_frida.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Your work shocks and amazes the world. You become an icon of strength.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -556,6 +570,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_frida.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: RESILIENCE. You can't control what happens to you (the accident), but you can control what you create from it. Turn your pain into power.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -636,6 +652,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_bill_gates.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "IBM PCs ship with MS-DOS. You own the standard for all computing software.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -644,6 +662,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_bill_gates.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: LEVERAGE. Bill Gates didn't invent the OS. He acquired it and positioned himself as the gatekeeper. Speed and positioning beat invention.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -724,6 +744,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_steve_jobs.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Apple goes public. You are worth $200 million at age 25.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -732,6 +754,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_steve_jobs.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: PERFECTIONISM. Jobs didn't settle for 'good enough'. He insisted on end-to-end control and beauty, creating a brand that people loved, not just used.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -791,6 +815,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_walt_disney.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Steamboat Willie premieres. It's the first cartoon with sound.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -799,6 +825,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_walt_disney.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: RESILIENCE. Bankruptcy wasn't the end; it was just the prologue. When one door closes (Oswald), draw a door of your own (Mickey).",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -858,6 +886,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_oprah.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "The morning show beats Donahue in the ratings. Chicago comes calling.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -866,6 +896,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_oprah.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: ALIGNMENT. Sometimes a 'failure' (getting fired from news) pushes you into your destiny (talk show). Your 'weakness' (emotion) was actually your greatest strength.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -925,6 +957,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_elon_musk.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Compaq buys Zip2 for $300 Million. You buy a McLaren.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -933,6 +967,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_elon_musk.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: INTENSITY. Extreme success usually requires a period of extreme imbalance. Elon didn't work 9-5; he worked every waking hour.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -992,6 +1028,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_jk_rowling.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "You reach King's Cross. You start writing 'Philosopher's Stone'. It will take 7 years to finish.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -1000,6 +1038,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_jk_rowling.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: PATIENCE. The biggest ideas often come in moments of stillness. And great work takes time—years of it.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -1061,6 +1101,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'escape_win',
                 bg: '/assets/avatar_arnold.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "'Punish me,' you told the officers. 'But look at this trophy.' They put it on the mess hall wall.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING_ARNOLD', score: 0, feedbackTitle: "", feedback: "" }
@@ -1069,6 +1111,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING_ARNOLD',
                 bg: '/assets/avatar_arnold.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: VISION. Rules are there to be broken if the vision is strong enough. 'I didn't want to be a soldier, I wanted to be a Star.'",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -1129,6 +1173,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'purpose_win',
                 bg: '/assets/avatar_hawking.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "You didn't die in 2 years. You lived for 55 more, decoding black holes.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING_HAWKING', score: 0, feedbackTitle: "", feedback: "" }
@@ -1137,6 +1183,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING_HAWKING',
                 bg: '/assets/avatar_hawking.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: TIME. 'However difficult life may seem, there is always something you can do and succeed at.'",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -1197,6 +1245,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_tina_dabi.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Your friends have memories. You have a vision. The foundation is set.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING_TINA_1', score: 0, feedbackTitle: "", feedback: "" }
@@ -1205,6 +1255,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING_TINA_1',
                 bg: '/assets/avatar_tina_dabi.png',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: SACRIFICE. Success requires saying 'No' to good things (fun/friends) to say 'Yes' to great things (The Goal).",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -1275,6 +1327,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_mary_shelley.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Frankenstein becomes a sensation. You are the mother of Science Fiction.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -1283,6 +1337,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_mary_shelley.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: IMAGINATION. Mary Shelley took a simple prompt and looked into the darkest corners of science and humanity. Don't be afraid of your own dark ideas.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
@@ -1350,6 +1406,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'success',
                 bg: '/assets/avatar_spielberg_young.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "Sid Sheinberg sees your short film 'Amblin' and offers you a 7-year contract. You are a director.",
                 choices: [
                     { text: "Next Chapter", next: 'LEARNING', score: 0, feedbackTitle: "", feedback: "" }
@@ -1358,6 +1416,8 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING',
                 bg: '/assets/avatar_spielberg_young.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
                 text: "LESSON: AUDACITY. Spielberg didn't wait for a degree. He claimed his spot. Sometimes you have to authorize yourself.",
                 choices: [
                     { text: "Collect Reward", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
