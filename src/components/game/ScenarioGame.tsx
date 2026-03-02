@@ -82,6 +82,19 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     const frame = scenario.frames.find((f: any) => f.id === currentFrameId) || scenario.frames[0];
     const isLearningScreen = currentFrameId.startsWith('LEARNING');
 
+    // Preload all images for this scenario
+    useEffect(() => {
+        if (!scenario || !scenario.frames) return;
+        const imagesToPreload = scenario.frames.map((f: any) => f.bg).filter(Boolean);
+        if (level.avatarUrl) imagesToPreload.push(level.avatarUrl);
+
+        // Use a Set to avoid preloading duplicates
+        [...new Set(imagesToPreload)].forEach(url => {
+            const img = new window.Image();
+            img.src = url as string;
+        });
+    }, [scenario, level.avatarUrl]);
+
     // Randomize Choices (Memoized so they don't reshuffle on every render)
     // We shuffle a COPY of the array to avoid mutating the original data
     const displayedChoices = useMemo(() => {
@@ -318,7 +331,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 {/* Dialogue Box */}
                 <div
                     className={clsx(
-                        "w-full backdrop-blur-xl rounded-3xl p-8 transform transition-all duration-300",
+                        "w-full max-h-[80vh] overflow-y-auto custom-scrollbar backdrop-blur-xl rounded-3xl p-6 md:p-8 transform transition-all duration-300",
                         isCandyTheme
                             ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
                             : isLearningScreen
