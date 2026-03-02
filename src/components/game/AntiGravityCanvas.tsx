@@ -1,0 +1,154 @@
+import { useEffect, useRef, useState } from 'react';
+import { MotionValue } from 'framer-motion';
+
+const TOTAL_FRAMES = 40;
+
+interface AntiGravityCanvasProps {
+    progress: MotionValue<number>;
+    onReady: () => void;
+}
+
+export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const imagesRef = useRef<HTMLImageElement[]>([]);
+    const [imagesLoaded, setImagesLoaded] = useState(0);
+    const [isReady, setIsReady] = useState(false);
+
+    // References for the vanilla animation loop to avoid React renders
+    const loopRef = useRef<number>(0);
+    const lastProgressRef = useRef<number>(-1);
+
+    // Preload Images
+    useEffect(() => {
+        let loadedCount = 0;
+        const loadedImages: HTMLImageElement[] = new Array(TOTAL_FRAMES);
+        let mounted = true;
+
+        for (let i = 1; i <= TOTAL_FRAMES; i++) {
+            const img = new Image();
+            img.src = `/assets/map_frames/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`;
+            img.onload = () => {
+                if (!mounted) return;
+                loadedCount++;
+                setImagesLoaded(loadedCount);
+                if (loadedCount === TOTAL_FRAMES) {
+                    imagesRef.current = loadedImages;
+                    setIsReady(true);
+                    onReady();
+                }
+            };
+            loadedImages[i - 1] = img;
+        }
+
+        return () => {
+            mounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [onReady]);
+
+    // High Performance Engine Loop
+    useEffect(() => {
+        if (!isReady || !canvasRef.current || !imagesRef.current.length) return;
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for max perf
+        if (!ctx) return;
+
+        let canvasWidth = window.innerWidth;
+        let canvasHeight = window.innerHeight;
+        let dpr = window.devicePixelRatio || 1;
+
+        // Configuration setup
+        const setupCanvasContext = () => {
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
+            dpr = window.devicePixelRatio || 1;
+
+            canvas.width = canvasWidth * dpr;
+            canvas.height = canvasHeight * dpr;
+            canvas.style.width = `${canvasWidth}px`;
+            canvas.style.height = `${canvasHeight}px`;
+
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+        };
+
+        setupCanvasContext();
+
+        // Optimized native draw function (no React lifecycle tied)
+        const renderNativeFrame = (val: number) => {
+            const index = Math.floor(val * (TOTAL_FRAMES - 1));
+            const safeIndex = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+            const img = imagesRef.current[safeIndex];
+
+            if (!img) return;
+
+            // Direct calculate avoiding state
+            const canvasRatio = (canvasWidth * dpr) / (canvasHeight * dpr);
+            const imgRatio = img.width / img.height;
+
+            let drawWidth = canvasWidth * dpr;
+            let drawHeight = canvasHeight * dpr;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            if (canvasRatio > imgRatio) {
+                drawHeight = (canvasWidth * dpr) / imgRatio;
+                offsetY = ((canvasHeight * dpr) - drawHeight) / 2;
+            } else {
+                drawWidth = (canvasHeight * dpr) * imgRatio;
+                offsetX = ((canvasWidth * dpr) - drawWidth) / 2;
+            }
+
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        };
+
+        // Window Resize
+        const handleResize = () => {
+            setupCanvasContext();
+            lastProgressRef.current = -1; // Force a redraw
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Vanilla JS Render Loop - Runs continuously, independent of React
+        const tick = () => {
+            const currentProgress = progress.get();
+
+            // Only draw if scroll progress actually changed
+            if (currentProgress !== lastProgressRef.current) {
+                renderNativeFrame(currentProgress);
+                lastProgressRef.current = currentProgress;
+            }
+
+            loopRef.current = requestAnimationFrame(tick);
+        };
+
+        // Start Loop
+        tick();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(loopRef.current);
+        };
+    }, [isReady, progress]); // Only rebinds if completely Unready/Ready again
+
+    return (
+        <>
+            {!isReady && (
+                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-pink-500 font-mono tracking-widest font-bold">
+                    <div className="text-xl mb-4 animate-pulse">SYSTEM INITIALIZING</div>
+                    <div className="w-64 h-2 bg-slate-800 rounded-full overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                        <div
+                            className="h-full bg-pink-500 transition-all duration-200"
+                            style={{ width: `${(imagesLoaded / TOTAL_FRAMES) * 100}%` }}
+                        />
+                    </div>
+                </div>
+            )}
+            <canvas
+                ref={canvasRef}
+                className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+            />
+        </>
+    );
+}

@@ -1,0 +1,219 @@
+import type { Level } from '../types/gameTypes';
+
+
+
+export function generateLevels(age: number): Level[] {
+    // Clamp age to available content range (18-25)
+    // const targetAge = Math.max(18, Math.min(25, age)); // Not using age-based skipping anymore if linear
+
+    // Master List of ALL Levels
+    const levels: Omit<Level, 'status' | 'isLocked' | 'stars'>[] = [
+        {
+            id: 'lvl_18', title: 'The Beginning (Country)', description: 'At 18, Taylor faced a choice: Security or Authenticity.',
+            requiredStars: 0, year: 2008, age: 18, theme: 'Music', archetype: 'The Artist', personality: 'Taylor Swift',
+            bio: 'A country singer on the verge of crossover fame. She faces pressure to stay in her lane.',
+            fame: 'The biggest pop star in the world.',
+            achievements: ['14 Grammy Awards', 'Only artist to win Album of the Year 4 times', 'Billionaire from music alone'],
+            lesson: 'COURAGE to pivot when everyone tells you to stay safe.',
+            avatarUrl: '/assets/avatar_taylor_swift.png', scenarioId: 'lvl_age_18',
+            idolTraits: { discipline: 80, resilience: 85, risk: 70, leadership: 60, creativity: 90, empathy: 95, vision: 80 }
+        },
+        {
+            id: 'lvl_19', title: 'The Visionary', description: 'At 19, Mark had to choose between Harvard and his side project.',
+            requiredStars: 3, year: 2004, age: 19, theme: 'Tech', archetype: 'The Founder', personality: 'Mark Zuckerberg',
+            bio: 'A Harvard sophomore with a little website called "The Facebook".',
+            fame: 'Connects 3 billion people daily.',
+            achievements: ['Founder of Facebook', 'Youngest self-made billionaire', 'Revolutionized social media'],
+            lesson: 'RISK taking when the "safe path" (Harvard) looks perfect.',
+            avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_19', // Placeholder avatar
+            idolTraits: { discipline: 90, resilience: 80, risk: 95, leadership: 85, creativity: 75, empathy: 40, vision: 99 }
+        },
+        // Age 20: Kobe
+        {
+            id: 'lvl_20_kobe',
+            title: 'The Mamba',
+            description: 'At 20, Kobe chose the gym over the party.',
+            requiredStars: 6, year: 1998, age: 20, theme: 'Sports', archetype: 'The Mamba', personality: 'Kobe Bryant',
+            bio: 'A young NBA prodigy who realizes talent isnt enough.',
+            fame: 'One of the greatest basketball players ever.',
+            achievements: ['5-time NBA Champion', '18-time All-Star', 'Oscar Winner (Dear Basketball)'],
+            lesson: 'DISCIPLINE to do the boring work when no one is watching.',
+            avatarUrl: '/assets/avatar_kobe.png', scenarioId: 'lvl_age_20_sports',
+            idolTraits: { discipline: 100, resilience: 100, risk: 75, leadership: 88, creativity: 70, empathy: 60, vision: 85 }
+        },
+        // Age 20: NV Sir
+        {
+            id: 'lvl_20_nv_sir',
+            title: 'The Educator\'s Dilemma',
+            description: 'At 20, NV Sir chose teaching over immediate financial relief.',
+            requiredStars: 6, year: 2003, age: 20, theme: 'Education', archetype: 'The Mentor', personality: 'Nitin Vijay (NV Sir)',
+            bio: 'An aspiring engineer whose family needs financial support NOW.',
+            fame: 'One of the most loved Physics teachers in India.',
+            achievements: ['Founder of Motion Education', 'Mentored thousands of IITians', 'Revolutionized online teaching'],
+            lesson: 'LONG-TERM VISION beats short-term comfort.',
+            avatarUrl: '/assets/avatar_nv_sir.jpg', scenarioId: 'lvl_age_20_nv_sir',
+            idolTraits: { discipline: 90, resilience: 95, risk: 85, leadership: 90, creativity: 80, empathy: 95, vision: 100 }
+        },
+        // Age 20: Taylor (Soloist)
+        {
+            id: 'lvl_20_taylor',
+            title: 'The Soloist',
+            description: 'At 20, Taylor faced critics who said she had ghostwriters.',
+            requiredStars: 6, year: 2010, age: 20, theme: 'Music', archetype: 'The Soloist', personality: 'Taylor Swift',
+            bio: 'Already a star, but critics say shes a fake. She needs to prove her voice is hers.',
+            fame: 'The biggest pop star in the world.',
+            achievements: ['Wrote "Speak Now" album entirely alone', 'Highest-grossing tour in history', 'Time Person of the Year'],
+            lesson: 'OWNERSHIP of your work and your narrative.',
+            avatarUrl: '/assets/avatar_taylor_swift.png', scenarioId: 'lvl_age_20_music',
+            idolTraits: { discipline: 88, resilience: 90, risk: 75, leadership: 80, creativity: 98, empathy: 95, vision: 85 }
+        },
+        // Age 20: Frida
+        {
+            id: 'lvl_20_frida',
+            title: 'The Icon',
+            description: 'At 20, Frida painted from her bed in pain.',
+            requiredStars: 6, year: 1927, age: 20, theme: 'Art', archetype: 'The Icon', personality: 'Frida Kahlo',
+            bio: 'Bedridden after a tragic bus accident. Her body is broken, but her spirit is vivid.',
+            fame: 'Mexico\'s most famous artist.',
+            achievements: ['First Mexican artist in the Louvre', 'Icon of feminism and LGBTQ+', 'Master of self-portraits'],
+            lesson: 'RESILIENCE to turn pain into power and art.',
+            avatarUrl: '/assets/avatar_frida.png', scenarioId: 'lvl_age_20_art',
+            idolTraits: { discipline: 70, resilience: 100, risk: 80, leadership: 70, creativity: 99, empathy: 95, vision: 80 }
+        },
+        // Age 20: Arnold
+        {
+            id: 'lvl_20_arnold',
+            title: 'The AWOL Gamble',
+            description: 'At 20, Arnold escaped the army to chase a dream.',
+            requiredStars: 6, year: 1967, age: 20, theme: 'Sports', archetype: 'The Terminator', personality: 'Arnold Schwarzenegger',
+            bio: 'A tank driver in the Austrian Army who dreams of being the strongest man on Earth.',
+            fame: 'Action Hero, Governor, Bodybuilder.',
+            achievements: ['7-time Mr. Olympia', 'Highest paid actor of the 90s', 'Governor of California'],
+            lesson: 'VISION that is so clear, defying authority becomes a necessity.',
+            avatarUrl: '/assets/avatar_arnold.jpg', scenarioId: 'scenario_arnold_awol',
+            idolTraits: { discipline: 95, resilience: 90, risk: 90, leadership: 90, creativity: 60, empathy: 60, vision: 100 }
+        },
+        // Age 20: Hawking
+        {
+            id: 'lvl_20_hawking',
+            title: 'The Death Sentence',
+            description: 'At 20, Stephen was given 2 years to live.',
+            requiredStars: 6, year: 1962, age: 20, theme: 'Science', archetype: 'The Genius', personality: 'Stephen Hawking',
+            bio: 'A brilliant PhD student whose own body becomes his prison.',
+            fame: 'Solved the mysteries of the universe.',
+            achievements: ['Discovered Hawking Radiation', 'Author of A Brief History of Time', 'Lived 55 years longer than predicted'],
+            lesson: 'PURPOSE to find infinite space within a finite time.',
+            avatarUrl: '/assets/avatar_hawking.png', scenarioId: 'scenario_hawking_diagnosis',
+            idolTraits: { discipline: 95, resilience: 100, risk: 60, leadership: 85, creativity: 95, empathy: 75, vision: 100 }
+        },
+        // Age 20: Mary Shelley
+        {
+            id: 'lvl_20_shelley',
+            title: 'The Monster\'s Birth',
+            description: 'At 20, Mary wrote the first sci-fi novel during a storm.',
+            requiredStars: 6, year: 1817, age: 20, theme: 'Writing', archetype: 'The Creator', personality: 'Mary Shelley',
+            bio: 'The daughter of radicals who created a monster that outlived them all.',
+            fame: 'Author of Frankenstein.',
+            achievements: ['Invented Science Fiction', 'Wrote Frankenstein at 19', 'Literary Icon'],
+            lesson: 'IMAGINATION to look into the darkness.',
+            avatarUrl: '/assets/avatar_mary_shelley.jpg', scenarioId: 'lvl_age_20_literature',
+            idolTraits: { discipline: 85, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 90 }
+        },
+        // Age 20: Steven Spielberg
+        {
+            id: 'lvl_20_spielberg',
+            title: 'The Director',
+            description: 'At 20, Steven sneaked into Universal Studios and pretended he worked there.',
+            requiredStars: 6, year: 1966, age: 20, theme: 'Cinema', archetype: 'The Director', personality: 'Steven Spielberg',
+            bio: 'A college reject who refused to take no for an answer.',
+            fame: 'Most successful director in history.',
+            achievements: ['3 Academy Awards', 'Creator of the Blockbuster', 'Co-founded DreamWorks'],
+            lesson: 'AUDACITY to authorize yourself.',
+            avatarUrl: '/assets/avatar_spielberg_young.jpg', scenarioId: 'lvl_age_20_cinema',
+            idolTraits: { discipline: 90, resilience: 95, risk: 90, leadership: 95, creativity: 100, empathy: 85, vision: 100 }
+        },
+        // Age 20: Bill Gates (Default)
+        {
+            id: 'lvl_20_gate',
+            title: 'The Architect',
+            description: 'At 20, Bill saw the future and had to bluff his way into it.',
+            requiredStars: 6, year: 1975, age: 20, theme: 'Tech', archetype: 'The Architect', personality: 'Bill Gates',
+            bio: 'A dropout selling software he hasn\'t written yet to a company he\'s never visited.',
+            fame: 'Founder of Microsoft.',
+            achievements: ['The richest man in the world for 18 years', 'Revolutionized Personal Computing', 'Major Philanthropist'],
+            lesson: 'CONFIDENCE to bet on yourself before you are ready.',
+            avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_20',
+            idolTraits: { discipline: 92, resilience: 85, risk: 90, leadership: 95, creativity: 85, empathy: 70, vision: 98 }
+        },
+        // Age 21
+        {
+            id: 'lvl_21', title: 'The Rebel', description: 'At 21, Steve started a company in a garage with no money.',
+            requiredStars: 9, year: 1976, age: 21, theme: 'Tech', archetype: 'The Rebel', personality: 'Steve Jobs',
+            bio: 'Hippy, fruitarian, and dropout. He sees personal computers as a bicycle for the mind.',
+            fame: 'Co-Founder of Apple.',
+            achievements: ['Created iPhone, Mac, and Pixar', 'Changed 5 industries forever', 'Design genius'],
+            lesson: 'SIMPLICITY in a world of clutter and noise.',
+            avatarUrl: '/assets/avatar_steve_jobs.png', scenarioId: 'lvl_age_21',
+            idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 90, creativity: 100, empathy: 50, vision: 100 }
+        },
+        {
+            id: 'lvl_22', title: 'The Dreamer', description: 'At 22, Walt lost everything and drew a mouse on a train.',
+            requiredStars: 12, year: 1923, age: 22, theme: 'Art', archetype: 'The Dreamer', personality: 'Walt Disney',
+            bio: 'Bankrupt cartoonist. He has a one-way ticket to Hollywood and $40 in his pocket.',
+            fame: 'Creator of the Disney Magic.',
+            achievements: ['Winner of 22 Academy Awards', 'Creator of Mickey Mouse', 'Built Disneyland'],
+            lesson: 'IMAGINATION to see a kingdom where others see a blank page.',
+            avatarUrl: '/assets/avatar_walt_disney.png', scenarioId: 'lvl_age_22',
+            idolTraits: { discipline: 85, resilience: 95, risk: 90, leadership: 85, creativity: 100, empathy: 85, vision: 100 }
+        },
+        {
+            id: 'lvl_23', title: 'The Voice', description: 'At 23, Oprah was fired for being too emotional. It was a gift.',
+            requiredStars: 15, year: 1977, age: 23, theme: 'Media', archetype: 'The Voice', personality: 'Oprah Winfrey',
+            bio: 'An evening news anchor who creates too much connection with the stories.',
+            fame: 'Queen of Media.',
+            achievements: ['First black female billionaire', 'Highest-rated talk show in history', 'Presidential Medal of Freedom'],
+            lesson: 'AUTHENTICITY is your superpower, not your weakness.',
+            avatarUrl: '/assets/avatar_oprah.png', scenarioId: 'lvl_age_23',
+            idolTraits: { discipline: 88, resilience: 92, risk: 80, leadership: 90, creativity: 85, empathy: 100, vision: 90 }
+        },
+        // Age 24: Tina Dabi (Story 1)
+        {
+            id: 'lvl_24_tina_1', title: 'The College Sacrifice', description: 'At 21, Tina had to choose between social life and The Hindu.',
+            requiredStars: 18, year: 2014, age: 24, theme: 'Civil Services', archetype: 'The Strategist', personality: 'Tina Dabi',
+            bio: 'A college student with a singular goal: The hardest exam in the world.',
+            fame: 'UPSC Topper (AIR 1, 2015).',
+            achievements: ['Cleared UPSC at age 22', 'First attempt topper', 'Inspiration to millions of aspirants'],
+            lesson: 'SACRIFICE of the good (fun) for the great (legacy).',
+            avatarUrl: '/assets/avatar_tina_dabi.png', scenarioId: 'scenario_upsc_tina_college',
+            idolTraits: { discipline: 98, resilience: 95, risk: 60, leadership: 85, creativity: 65, empathy: 80, vision: 90 }
+        },
+        {
+            id: 'lvl_25', title: 'The Storyteller', description: 'At 25, J.K. Rowling got the idea for Harry Potter on a delayed train.',
+            requiredStars: 21, year: 1990, age: 25, theme: 'Writing', archetype: 'The Storyteller', personality: 'J.K. Rowling',
+            bio: 'A secretary day-dreaming about wizards on a 4-hour delayed train to London.',
+            fame: 'Author of Harry Potter.',
+            achievements: ['Best-selling book series in history', 'First billionaire author', 'Defined a generation of readers'],
+            lesson: 'CREATIVITY strikes in the quiet moments of life.',
+            avatarUrl: '/assets/avatar_jk_rowling.png', scenarioId: 'lvl_age_25',
+            idolTraits: { discipline: 85, resilience: 98, risk: 85, leadership: 75, creativity: 100, empathy: 90, vision: 95 }
+        }
+    ];
+
+    // STRICT AGE MAPPING
+    // Only return levels that match the user's input age.
+    const filteredLevels = levels.filter(level => level.age === age);
+
+    if (filteredLevels.length === 0) {
+        console.warn(`No content found for age ${age}`);
+    }
+
+    return filteredLevels.map((l) => {
+        // Unlock all matching levels for immediate play
+        return {
+            ...l,
+            status: 'unlocked',
+            isLocked: false,
+            stars: 0
+        } as Level;
+    });
+}

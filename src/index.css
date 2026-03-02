@@ -1,0 +1,435 @@
+@import "tailwindcss";
+
+body {
+  background-color: #0f172a;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  /* Prevent scrollbar flickering from animations */
+}
+
+@theme {
+  --font-comic: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+  --font-yummy: 'Varela Round', 'Quicksand', 'Comic Sans MS', sans-serif;
+}
+
+@keyframes ping-slow {
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+
+/* Ambience Animations - AMPLIFIED */
+@keyframes float-cloud {
+  0% {
+    transform: translateX(-200px) scale(0.8);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  90% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateX(100vw) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-bird {
+  0% {
+    transform: translate(-20vw, 20vh) scale(0.8) rotate(10deg);
+  }
+
+  25% {
+    transform: translate(30vw, 10vh) scale(1.2) rotate(-5deg);
+  }
+
+  50% {
+    transform: translate(60vw, 30vh) scale(1.0) rotate(5deg);
+  }
+
+  75% {
+    transform: translate(90vw, 5vh) scale(1.1) rotate(-5deg);
+  }
+
+  100% {
+    transform: translate(120vw, 20vh) scale(0.9) rotate(10deg);
+  }
+}
+
+@keyframes fly-bird-reverse {
+  0% {
+    transform: translate(120vw, 15vh) scale(0.7) rotate(-10deg) scaleX(-1);
+  }
+
+  100% {
+    transform: translate(-20vw, 40vh) scale(0.9) rotate(5deg) scaleX(-1);
+  }
+}
+
+@keyframes fly-bird-swoop {
+  0% {
+    transform: translate(-10vw, 80vh) scale(0.5) rotate(-40deg);
+  }
+
+  40% {
+    transform: translate(50vw, 20vh) scale(1.0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(110vw, 5vh) scale(0.6) rotate(10deg);
+  }
+}
+
+@keyframes river-flow {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  100% {
+    background-position: 200% 200%;
+  }
+}
+
+@keyframes sparkle-twinkle {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(2.0);
+    filter: drop-shadow(0 0 8px white);
+  }
+}
+
+.animate-cloud-slow {
+  animation: float-cloud 35s linear infinite;
+  /* Faster */
+}
+
+.animate-cloud-medium {
+  animation: float-cloud 25s linear infinite;
+  /* Faster */
+}
+
+.animate-bird-1 {
+  animation: fly-bird 18s ease-in-out infinite;
+  /* Bigger, bolder motion */
+}
+
+.animate-bird-2 {
+  animation: fly-bird 22s ease-in-out infinite;
+  animation-delay: 8s;
+}
+
+.animate-bird-3 {
+  animation: fly-bird-reverse 25s linear infinite;
+  animation-delay: 2s;
+}
+
+.animate-bird-4 {
+  animation: fly-bird-swoop 15s ease-out infinite;
+  animation-delay: 5s;
+}
+
+.animate-bird-5 {
+  animation: fly-bird 20s linear infinite;
+  animation-delay: 12s;
+}
+
+.animate-river-flow {
+  /* Stronger, more visible "water" shimmer */
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0) 30%, rgba(180, 240, 255, 0.5) 50%, rgba(255, 255, 255, 0) 70%);
+  background-size: 200% 200%;
+  animation: river-flow 4s linear infinite;
+  /* Fast flow */
+}
+
+.animate-sparkle {
+  animation: sparkle-twinkle 1.5s ease-in-out infinite;
+}
+
+/* --- CANDY MAP OVERHAUL STYLES --- */
+
+/* 1. Progression Path Stones (Jelly Beans / Hard Candy) */
+.candy-path-stone {
+  /* Base shape */
+  border-radius: 50%;
+  /* 3D "Pop" Effect */
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.2),
+    /* Drop shadow for depth */
+    inset 0 -4px 0 rgba(0, 0, 0, 0.1),
+    /* Bottom lip shade */
+    inset 0 4px 8px rgba(255, 255, 255, 0.5);
+  /* Top gloss shine */
+}
+
+/* 2. Lollipop / Candy Node Styles */
+.lollipop-stick {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 60px;
+  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  border-radius: 4px;
+  z-index: -1;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.candy-node-locked {
+  filter: grayscale(0.8) brightness(1.1);
+}
+
+.candy-node-active {
+  animation: bounce-float 3s ease-in-out infinite;
+}
+
+.candy-node-completed .node-content {
+  filter: sepia(0.2) contrast(1.1);
+}
+
+@keyframes bounce-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 3. Background Layers */
+.layer-hills-back {
+  background: linear-gradient(180deg, #f9a8d4 0%, #f472b6 100%);
+  /* Pink Hills */
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+}
+
+.layer-hills-mid {
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);
+  /* Purple Hills */
+}
+
+.layer-hills-front {
+  background: linear-gradient(180deg, #fdba74 0%, #fb923c 100%);
+  /* Orange Hills */
+}
+
+/* CANDY ANIMATIONS */
+@keyframes float-up {
+  0% {
+    transform: translateY(110vh) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes float-down {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(-360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes wiggly-float {
+  0% {
+    transform: translate(0, 0) rotate(-5deg);
+  }
+
+  50% {
+    transform: translate(20px, -20px) rotate(5deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(-5deg);
+  }
+}
+
+.animate-float-up-slow {
+  animation: float-up 25s linear infinite;
+}
+
+.animate-float-up-medium {
+  animation: float-up 15s linear infinite;
+}
+
+.animate-float-down-slow {
+  animation: float-down 30s linear infinite;
+}
+
+.animate-wiggle-float {
+  animation: wiggly-float 6s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 10s linear infinite;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  @apply bg-slate-950 text-white;
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  50% {
+    transform: scale(1.1) translate(-1%, -1%);
+  }
+
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-in-out infinite alternate;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+
+.animate-float-up {
+  animation: float-up 1.5s ease-out forwards;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes float-score {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.5);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0px) scale(1.2);
+  }
+
+  40% {
+    transform: translateY(0px) scale(1.0);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateY(-30px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+}
+
+.animate-float-score {
+  animation: float-score 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-cursor-blink {
+  animation: blink 0.8s infinite;
+}
+
+@keyframes float-up-screen {
+  0% {
+    transform: translateY(110vh) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.3;
+  }
+
+  90% {
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-float-up {
+  /* Default override for background elements */
+  animation: float-up-screen 20s linear infinite;
+}
+
+@keyframes shine {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shine {
+  animation: shine 2s infinite;
+}
