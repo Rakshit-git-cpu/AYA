@@ -169,7 +169,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                     className="fixed top-0 left-0 w-full layer-mid pb-32 pointer-events-none z-20"
                     style={{ height: totalHeight, y: hudY, opacity: canvasReady ? 1 : 0 }}
                 >
-                    <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-auto h-full">
+                    <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full">
                         {/* CANDY PATH: Stepping Stones */}
                         <div className="absolute inset-0 pointer-events-none">
                             <svg className="absolute top-0 left-0 w-full h-full" style={{ overflow: 'visible' }}>
@@ -205,7 +205,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                             return (
                                 <div
                                     key={level.id}
-                                    className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-all duration-500 z-10"
+                                    className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto"
                                     style={{
                                         top: pos.y,
                                         transform: `translate(calc(-50% + ${pos.x}px), -50%)`,
