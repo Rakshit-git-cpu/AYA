@@ -297,7 +297,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             </div>
 
             {/* Main Content Area */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-end pb-6 items-center max-w-3xl px-6 transition-all duration-300">
+            <div className="relative z-10 w-full h-[100dvh] flex flex-col pb-6 items-center max-w-3xl px-6 transition-all duration-300">
 
                 {/* LEARNING SCREEN HEADER */}
                 {isLearningScreen && (
@@ -312,82 +312,85 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                     </div>
                 )}
 
-                {/* Speaker Label */}
-                {!isLearningScreen && (
-                    <div className="self-start mb-[-12px] ml-4 relative z-20">
-                        <div className={clsx(
-                            "text-black font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
-                            feedbackChoice
-                                ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200" : "bg-red-400 border-red-200"
-                                : "bg-yellow-400 border-yellow-200"
-                        )}>
-                            {feedbackChoice
-                                ? feedbackChoice.feedbackTitle
-                                : (frame.id === 'intro' ? 'Narrator' : 'You')}
+                {/* --- BOTTOM ALIGNED CONTENT --- */}
+                <div className="w-full flex flex-col mt-auto items-center min-h-0">
+                    {/* Speaker Label */}
+                    {!isLearningScreen && (
+                        <div className="self-start mb-[-12px] ml-4 relative z-20 shrink-0">
+                            <div className={clsx(
+                                "text-black font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
+                                feedbackChoice
+                                    ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200" : "bg-red-400 border-red-200"
+                                    : "bg-yellow-400 border-yellow-200"
+                            )}>
+                                {feedbackChoice
+                                    ? feedbackChoice.feedbackTitle
+                                    : (frame.id === 'intro' ? 'Narrator' : 'You')}
+                            </div>
                         </div>
-                    </div>
-                )}
-
-                {/* Dialogue Box */}
-                <div
-                    className={clsx(
-                        "w-full max-h-[80vh] overflow-y-auto custom-scrollbar backdrop-blur-xl rounded-3xl p-6 md:p-8 transform transition-all duration-300",
-                        isCandyTheme
-                            ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
-                            : isLearningScreen
-                                ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
-                                : "bg-slate-950/90 border-2 border-white/10 shadow-2xl rounded-tl-none"
                     )}
-                    onClick={handleTextClick}
-                >
-                    <div className="min-h-[80px]">
-                        <p className={clsx(
-                            "leading-relaxed",
-                            isLearningScreen
-                                ? isCandyTheme
-                                    ? "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-pink-900" // Candy Lesson
-                                    : "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-yellow-100" // Standard Lesson
-                                : isCandyTheme
-                                    ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
-                                    : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
-                        )}>
-                            {displayedText}
-                            {isTyping && <span className={clsx("inline-block w-2 h-6 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
-                        </p>
-                    </div>
 
-                    {!isTyping && !feedbackChoice && (
-                        <div className="mt-8 flex flex-col gap-3 animate-fade-in">
-                            {displayedChoices.map((choice, idx) => (
+                    {/* Dialogue Box */}
+                    <div
+                        className={clsx(
+                            "w-full max-h-[75dvh] overflow-y-auto overscroll-contain touch-pan-y custom-scrollbar backdrop-blur-xl rounded-3xl p-6 md:p-8 transform transition-all duration-300",
+                            isCandyTheme
+                                ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
+                                : isLearningScreen
+                                    ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
+                                    : "bg-slate-950/90 border-2 border-white/10 shadow-2xl rounded-tl-none"
+                        )}
+                        onClick={handleTextClick}
+                    >
+                        <div className="min-h-[80px]">
+                            <p className={clsx(
+                                "leading-relaxed",
+                                isLearningScreen
+                                    ? isCandyTheme
+                                        ? "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-pink-900" // Candy Lesson
+                                        : "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-yellow-100" // Standard Lesson
+                                    : isCandyTheme
+                                        ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
+                                        : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
+                            )}>
+                                {displayedText}
+                                {isTyping && <span className={clsx("inline-block w-2 h-6 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
+                            </p>
+                        </div>
+
+                        {!isTyping && !feedbackChoice && (
+                            <div className="mt-8 flex flex-col gap-3 animate-fade-in">
+                                {displayedChoices.map((choice, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleChoiceClick(choice as Choice)}
+                                        className={clsx(
+                                            "group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
+                                            isCandyTheme
+                                                ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
+                                                : "border border-white/10 hover:border-yellow-400 bg-white/5 hover:bg-white/15"
+                                        )}
+                                    >
+                                        <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-yellow-300")}>
+                                            {choice.text}
+                                        </span>
+                                        {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/30 group-hover:text-yellow-400")} />}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {feedbackChoice && (
+                            <div className="mt-4 animate-fade-in flex justify-end">
                                 <button
-                                    key={idx}
-                                    onClick={() => handleChoiceClick(choice as Choice)}
-                                    className={clsx(
-                                        "group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
-                                        isCandyTheme
-                                            ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
-                                            : "border border-white/10 hover:border-yellow-400 bg-white/5 hover:bg-white/15"
-                                    )}
+                                    onClick={handleFeedbackContinue}
+                                    className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2"
                                 >
-                                    <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-yellow-300")}>
-                                        {choice.text}
-                                    </span>
-                                    {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/30 group-hover:text-yellow-400")} />}
+                                    Continue <ChevronRight size={18} />
                                 </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {feedbackChoice && (
-                        <div className="mt-4 animate-fade-in flex justify-end">
-                            <button
-                                onClick={handleFeedbackContinue}
-                                className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2"
-                            >
-                                Continue <ChevronRight size={18} />
-                            </button>
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
