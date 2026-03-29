@@ -269,17 +269,21 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                                             "absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full transition-colors node-base",
                                             // Mobile: w-20 h-20, Desktop: w-28 h-28
                                             "w-20 h-20 md:w-28 md:h-28",
-                                            isCurrent ? (isCandyMode ? "bg-pink-100/50" : "bg-amber-100/50") : "bg-white/10"
+                                            isCandyMode 
+                                                ? (isCurrent ? "bg-pink-100/50" : "bg-white/10")
+                                                : (isCurrent ? "bg-amber-400/20" : "bg-[#4DD9FF]/10")
                                         )} />
 
                                         {/* Responsive Avatar Ring */}
                                         <div className={clsx(
-                                            "relative rounded-full border-4 overflow-hidden flex items-center justify-center bg-white node-ring",
+                                            "relative rounded-full overflow-hidden flex items-center justify-center bg-white node-ring transition-all duration-300",
                                             // Mobile: w-16 h-16, Desktop: w-24 h-24
                                             "w-16 h-16 md:w-24 md:h-24",
-                                            isCurrent 
-                                                ? (isCandyMode ? "border-pink-400 ring-4 ring-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.6)]" : "border-amber-400 ring-4 ring-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.6)]")
-                                                : "border-slate-300 shadow-[0_8px_0_rgba(0,0,0,0.2)]"
+                                            isCandyMode
+                                                ? (isCurrent ? "border-4 border-pink-400 ring-4 ring-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.6)]" : "border-4 border-slate-300 shadow-[0_8px_0_rgba(0,0,0,0.2)]")
+                                                : (isCurrent 
+                                                    ? "border-4 border-amber-400 ring-4 ring-amber-400/30 shadow-[0_0_25px_rgba(245,158,11,0.8)]"
+                                                    : "border-transparent ring-2 ring-[#4DD9FF]/80 shadow-[0_0_15px_rgba(77,217,255,0.6)]")
                                         )}>
                                             <img src={level.avatarUrl || '/assets/avatar_business.png'} alt={level.archetype} className="w-full h-full object-cover node-content" />
                                             {!isUnlocked && (
@@ -301,9 +305,11 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                                                 <div className={clsx(
                                                     "relative -mb-2 px-3 py-0.5 rounded-full border shadow-sm flex items-center justify-center z-40 animate-float",
                                                     "md:-mb-3 md:px-4 md:py-1 md:border-2",
-                                                    isUnlocked
-                                                        ? "bg-gradient-to-r from-yellow-300 to-yellow-500 border-white text-yellow-900"
-                                                        : "bg-slate-700 border-slate-600 text-slate-400"
+                                                    isCandyMode
+                                                        ? (isUnlocked ? "bg-gradient-to-r from-yellow-300 to-yellow-500 border-white text-yellow-900" : "bg-slate-700 border-slate-600 text-slate-400")
+                                                        : (isUnlocked 
+                                                            ? (isCurrent ? "bg-amber-500 border-amber-300 text-amber-950 shadow-[0_0_10px_rgba(245,158,11,0.5)]" : "bg-[rgba(10,15,40,0.75)] border-[#4DD9FF]/70 text-[#E8E0FF] backdrop-blur-md shadow-[0_0_8px_rgba(77,217,255,0.3)]")
+                                                            : "bg-slate-800 border-slate-700 text-slate-500")
                                                 )}>
                                                     <span className="text-[10px] md:text-sm font-black uppercase tracking-blacker drop-shadow-sm">
                                                         {level.personality}
@@ -313,14 +319,22 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
 
                                             {/* Story Title */}
                                             <div className={clsx(
-                                                "px-4 py-1 pt-3 pb-1 md:px-6 md:py-2 md:pt-4 md:pb-2 rounded-xl border-b-[3px] md:border-b-4 shadow-xl flex items-center justify-center min-w-[100px] md:min-w-[140px]",
-                                                isUnlocked
-                                                    ? (isCandyMode ? "bg-gradient-to-r from-pink-500 to-rose-500 border-rose-800" : "bg-gradient-to-b from-slate-800 to-slate-900 border-slate-950 ring-1 ring-amber-600/50")
-                                                    : "bg-slate-800 border-slate-900"
+                                                "px-4 py-1 pt-3 pb-1 md:px-6 md:py-2 md:pt-4 md:pb-2 rounded-xl shadow-xl flex items-center justify-center min-w-[100px] md:min-w-[140px] transition-all duration-300",
+                                                isCandyMode
+                                                    ? (isUnlocked ? "bg-gradient-to-r from-pink-500 to-rose-500 border-b-[3px] md:border-b-4 border-rose-800" : "border-b-[3px] md:border-b-4 bg-slate-800 border-slate-900")
+                                                    : (isUnlocked
+                                                        ? (isCurrent 
+                                                            ? "bg-gradient-to-r from-amber-500 to-amber-600 border-b-[3px] md:border-b-4 border-amber-800 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
+                                                            : "bg-[rgba(10,15,40,0.75)] backdrop-blur-md border border-[#4DD9FF]/60 shadow-[0_0_15px_rgba(77,217,255,0.15)]")
+                                                        : "bg-slate-800/80 border-b-[3px] md:border-b-4 border-slate-900")
                                             )}>
                                                 <span className={clsx(
                                                     "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center",
-                                                    isUnlocked ? (isCandyMode ? "text-white drop-shadow-md" : "text-amber-400 drop-shadow-md") : "text-slate-500"
+                                                    isCandyMode
+                                                        ? (isUnlocked ? "text-white drop-shadow-md" : "text-slate-500")
+                                                        : (isUnlocked 
+                                                            ? (isCurrent ? "text-white drop-shadow-md" : "text-[#F0EEFF] drop-shadow-[0_0_4px_rgba(240,238,255,0.3)]")
+                                                            : "text-slate-500")
                                                 )}>
                                                     {level.title}
                                                 </span>
