@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { MotionValue } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
 
+// Global Cache for persistent frame images across unmounts/renders
+const GLOBAL_FRAME_CACHE: Record<string, HTMLImageElement[]> = {};
+
 interface AntiGravityCanvasProps {
     progress: MotionValue<number>;
     onReady: () => void;
@@ -13,7 +16,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     const folder = isCandyMode ? 'map_frames' : 'map_frames_dark';
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imagesRef = useRef<HTMLImageElement[]>([]);
+    const imagesRef = useRef<HTMLImageElement[]>(GLOBAL_FRAME_CACHE[folder] || []);
     const [imagesLoaded, setImagesLoaded] = useState(0);
     const [isReady, setIsReady] = useState(false);
 
@@ -23,9 +26,20 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
     // Preload Images
     useEffect(() => {
-        setImagesLoaded(0);
-        setIsReady(false);
-        
+        // If we already have the requested frames fully cached, set instantly and return!
+        if (GLOBAL_FRAME_CACHE[folder] && GLOBAL_FRAME_CACHE[folder].length === totalFrames) {
+            imagesRef.current = GLOBAL_FRAME_CACHE[folder];
+            setIsReady(true);
+            onReady();
+            return;
+        }
+
+        // Only show loading if we have absolute NO cached frames playing in the engine
+        if (imagesRef.current.length === 0) {
+            setIsReady(false);
+            setImagesLoaded(0);
+        }
+
         let loadedCount = 0;
         const loadedImages: HTMLImageElement[] = new Array(totalFrames);
         let mounted = true;
@@ -36,9 +50,15 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
             img.onload = () => {
                 if (!mounted) return;
                 loadedCount++;
-                setImagesLoaded(loadedCount);
+
+                // Track loading progress only if we are displaying the loading screen
+                if (!isReady) {
+                    setImagesLoaded(loadedCount);
+                }
+
                 if (loadedCount === totalFrames) {
-                    imagesRef.current = loadedImages;
+                    GLOBAL_FRAME_CACHE[folder] = loadedImages;     // Cache globally
+                    imagesRef.current = loadedImages;              // Overwrite current holds safely
                     setIsReady(true);
                     onReady();
                 }
@@ -49,8 +69,9 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         return () => {
             mounted = false;
         };
+        // Removed `onReady` and `isCandyMode` from deps, dependent uniquely on `folder` logic.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [onReady, isCandyMode, totalFrames, folder]);
+    }, [folder, totalFrames]);
 
     // High Performance Engine Loop
     useEffect(() => {
@@ -141,7 +162,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     return (
         <>
             {!isReady && (
-                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 text-pink-500 font-mono tracking-widest font-bold">
+                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050814] text-pink-500 font-mono tracking-widest font-bold">
                     <div className="text-xl mb-4 animate-pulse">SYSTEM INITIALIZING</div>
                     <div className="w-64 h-2 bg-slate-800 rounded-full overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.3)]">
                         <div

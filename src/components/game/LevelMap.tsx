@@ -1,6 +1,6 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
@@ -61,6 +61,10 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
     const [canvasReady, setCanvasReady] = useState(false);
+
+    const handleCanvasReady = useCallback(() => {
+        setCanvasReady(true);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => setWindowHeight(window.innerHeight);
@@ -190,7 +194,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                 {/* --- LAYER 1: BACKDROP (AntiGravityCanvas) --- */}
                 <AntiGravityCanvas
                     progress={smoothProgress}
-                    onReady={() => setCanvasReady(true)}
+                    onReady={handleCanvasReady}
                 />
 
                 {!isMobile && canvasReady && (
