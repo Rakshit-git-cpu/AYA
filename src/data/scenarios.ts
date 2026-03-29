@@ -1,4 +1,378 @@
 export const STORY_DATABASE: Record<string, any> = {
+    // AGE 19: Sachin Tendulkar
+    'lvl_age_19_sachin': {
+        title: "The Trial of Fire",
+        source: "Source: Australia tour 1991-92, Perth Test",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_sachin_perth.jpg',
+                text: "It is 1992. You are 19 years old. You are in Perth, Australia, facing the most terrifyingly fast bowling attack in the world on a pitch that bounces violently. Senior batters in your team are struggling. A bouncer just hit you flush on the helmet.",
+                choices: [
+                    {
+                        text: "Show no emotion. Stare the bowler down and prepare to attack the next ball, risking your wicket to break their rhythm.",
+                        next: 'attack',
+                        score: 10,
+                        feedbackTitle: "The Lion's Heart",
+                        feedback: "You hit the next ball for a boundary. The Australians are stunned by your absolute fearlessness. You seize the psychological advantage."
+                    },
+                    {
+                        text: "Play defensively. Survive the spell, protect your wicket, and wait for the spinners to come on later.",
+                        next: 'defend',
+                        score: -5,
+                        feedbackTitle: "Surviving is not Thriving",
+                        feedback: "It's the logical, safe choice. But the fast bowlers smell blood. They pin you down, dot ball after dot ball, until you eventually edge one to the slips."
+                    }
+                ]
+            },
+            {
+                id: 'defend',
+                bg: '/assets/bg_sachin_perth.jpg',
+                text: "You lost your wicket cheaply. The team is collapsing. You realize that against greatness, playing safe is the biggest risk of all.",
+                choices: [
+                    {
+                        text: "Go to the nets. Face extreme pace without a helmet until you stop flinching.",
+                        next: 'attack',
+                        score: 10,
+                        feedbackTitle: "Confronting Fear",
+                        feedback: "You force yourself to find comfort in the danger zone."
+                    },
+                    {
+                        text: "Accept that Australian pitches are just too hostile and wait for the home series.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "The Comfort Zone",
+                        feedback: "You become a good player at home, but never a global legend."
+                    }
+                ]
+            },
+            {
+                id: 'attack',
+                bg: '/assets/bg_sachin_perth.jpg',
+                text: "You are dominating the world's best. You are nearing a historic century. But the tail-end batsmen are falling quickly. You might run out of partners before you reach 100.",
+                choices: [
+                    {
+                        text: "Farm the strike. Take singles on the last ball to protect the tailenders, slowing your own scoring rate.",
+                        next: 'century',
+                        score: 10,
+                        feedbackTitle: "The General",
+                        feedback: "You take responsibility. You shield your weaker partners, slowly inching towards history while frustrating the opposition."
+                    },
+                    {
+                        text: "Try to hit every ball for a boundary to get your 100 before the last man gets out.",
+                        next: 'selfish',
+                        score: -5,
+                        feedbackTitle: "The Glory Shot",
+                        feedback: "You play a rash shot and get caught in the deep on 98. The team gets bowled out in the same over."
+                    }
+                ]
+            },
+            {
+                id: 'selfish',
+                bg: '/assets/bg_sachin_perth.jpg',
+                text: "You missed the milestone because you rushed the process. True mastery requires infinite patience in the final stretch.",
+                choices: [
+                    {
+                        text: "Re-focus. Value the team's total over your personal milestone.",
+                        next: 'century',
+                        score: 10,
+                        feedbackTitle: "Maturing",
+                        feedback: "You learn that the milestones will come if you focus purely on the process of the game."
+                    }
+                ]
+            },
+            {
+                id: 'century',
+                bg: '/assets/avatar_sachin.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You score 114 at Perth, one of the greatest hundreds ever seen in Australia. The world realizes a 19-year-old boy is the best batsman on the planet.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_sachin.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You stepped back when history demanded you step up.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_SACHIN',
+                bg: '/assets/bg_sachin_perth.jpg',
+                text: "LESSON: Courage. When placed in an incredibly hostile environment, playing defensively guarantees failure. True greats attack their extreme fears.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 19: Sundar Pichai
+    'lvl_age_19_sundar': {
+        title: "The Divided Mind",
+        source: "Source: Days at IIT Kharagpur",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_sundar_iit.jpg',
+                text: "You are 19. You are a student at IIT Kharagpur studying Metallurgical Engineering. The academic pressure is suffocating. You are fascinated by computers, but there are only a few slow terminals on campus, and using them takes time away from your core coursework.",
+                choices: [
+                    {
+                        text: "Focus entirely on Metallurgy. Maximize your GPA to ensure a safe, high-paying engineering job.",
+                        next: 'metallurgy',
+                        score: -5,
+                        feedbackTitle: "The Safe Route",
+                        feedback: "You graduate with top honors, but you enter a dying industrial field, completely missing the digital revolution."
+                    },
+                    {
+                        text: "Sacrifice sleep and risk your grades. Spend nights in the computer lab reading about the nascent internet.",
+                        next: 'computers',
+                        score: 10,
+                        feedbackTitle: "The Explorer",
+                        feedback: "Your grades slip slightly, but you discover a profound, obsessive love for software and global connectivity."
+                    }
+                ]
+            },
+            {
+                id: 'metallurgy',
+                bg: '/assets/bg_sundar_iit.jpg',
+                text: "You ace your tests, but you feel intellectually hollow. You see your friends discussing code and feel left behind.",
+                choices: [
+                    {
+                        text: "Accept that your GPA is more important than a hobby.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "Following the Herd",
+                        feedback: "You play it safe. Your impact on the world remains limited."
+                    },
+                    {
+                        text: "Pivot. Start balancing your required studies with self-taught computing.",
+                        next: 'computers',
+                        score: 10,
+                        feedbackTitle: "The Pivot",
+                        feedback: "It's exhausting, but learning a discipline outside your mandate expands your worldview."
+                    }
+                ]
+            },
+            {
+                id: 'computers',
+                bg: '/assets/bg_sundar_iit.jpg',
+                text: "You want to study abroad to dive deeper into technology, but your family in Chennai cannot afford a plane ticket to America, let alone the tuition.",
+                choices: [
+                    {
+                        text: "Take a loan, apply for scholarships, and endure the brutal uncertainty of the process.",
+                        next: 'stanford',
+                        score: 10,
+                        feedbackTitle: "Skin in the Game",
+                        feedback: "Your father withdraws his entire life savings just to buy your flight ticket. The sheer weight of that sacrifice fuels an unbreakable discipline in you."
+                    },
+                    {
+                        text: "Stay in India. The financial burden and risk to your family are simply too high to justify.",
+                        next: 'fail_india',
+                        score: -5,
+                        feedbackTitle: "Noble, but Limiting",
+                        feedback: "You protect your family's finances short-term, but sacrifice the environment needed to maximize your potential."
+                    }
+                ]
+            },
+            {
+                id: 'fail_india',
+                bg: '/assets/bg_sundar_iit.jpg',
+                text: "You take a local job. You do well, but you always wonder what if you had taken the leap.",
+                choices: [
+                    {
+                        text: "Re-evaluate. Take the risk while you are young.",
+                        next: 'stanford',
+                        score: 10,
+                        feedbackTitle: "Taking the Leap",
+                        feedback: "You realize true growth lies on the other side of terrifying financial and geographical risks."
+                    }
+                ]
+            },
+            {
+                id: 'stanford',
+                bg: '/assets/avatar_sundar.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You make it to Stanford. Decades later, your quiet obsession with computing leads you to build Google Chrome, and eventually become the CEO of Alphabet.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_sundar.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You stayed safe. But the world belonged to the curious.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_SUNDAR',
+                bg: '/assets/bg_sundar_iit.jpg',
+                text: "LESSON: Curiosity. The system rewards those who follow the rules, but history rewards those who risk their comfort to explore what fascinates them outside the syllabus.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 19: Shah Rukh Khan
+    'lvl_age_19_srk': {
+        title: "A Stage For Grief",
+        source: "Source: Theatre Action Group (TAG) Delhi, early years",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_srk_delhi.jpg',
+                text: "You are 19. You live in Delhi. Your father just passed away unexpectedly, leaving your family in a precarious financial state. Despite doing well in Economics at Hansraj College, all you want to do is perform in the local theatre.",
+                choices: [
+                    {
+                        text: "Take a steady, boring office job to support your grieving mother and sister immediately.",
+                        next: 'office',
+                        score: -5,
+                        feedbackTitle: "The Responsible Trap",
+                        feedback: "It is the honorable thing to do. However, the soul-crushing routine quietly extinguishes your massive creative energy."
+                    },
+                    {
+                        text: "Keep doing unpaid theatre. Channel your immense grief, anger, and manic energy entirely into your acting.",
+                        next: 'theatre',
+                        score: 10,
+                        feedbackTitle: "The Alchemy of Pain",
+                        feedback: "You have very little money, but on stage under Barry John's direction, your pain transforms into an electric, magnetic aura."
+                    }
+                ]
+            },
+            {
+                id: 'office',
+                bg: '/assets/bg_srk_delhi.jpg',
+                text: "You are making money, but you are miserable. You realize you can't protect your family if you are dead inside.",
+                choices: [
+                    {
+                        text: "Accept this life as your duty.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "Faded Lights",
+                        feedback: "You become another anonymous worker in a massive city."
+                    },
+                    {
+                        text: "Quit the job. Return to the theatre stage where you belong.",
+                        next: 'theatre',
+                        score: 10,
+                        feedbackTitle: "The Rightful Place",
+                        feedback: "You step back onto the stage. The energy returns immediately."
+                    }
+                ]
+            },
+            {
+                id: 'theatre',
+                bg: '/assets/bg_srk_delhi.jpg',
+                text: "Your performances are brilliant but unorthodox. A television director notices you and offers you a role in a show called 'Fauji'. The pay is okay, but television is looked down upon by pure theatre artists who want to do cinema.",
+                choices: [
+                    {
+                        text: "Reject the TV role holding out for a glamorous cinema debut.",
+                        next: 'cinema_wait',
+                        score: -5,
+                        feedbackTitle: "Ego Over Opportunity",
+                        feedback: "You wait years for a film offer that never comes. You starve while waiting for the 'perfect' break."
+                    },
+                    {
+                        text: "Take the TV role. Give it 200% effort, treating it like it's an Academy Award-winning film.",
+                        next: 'tv_success',
+                        score: 10,
+                        feedbackTitle: "There Are No Small Roles",
+                        feedback: "Your intense, manic performance as Abhimanyu Rai makes you a nationwide sensation overnight."
+                    }
+                ]
+            },
+            {
+                id: 'cinema_wait',
+                bg: '/assets/bg_srk_delhi.jpg',
+                text: "Waiting for the perfect launch vehicle is pointless if no one knows who you are.",
+                choices: [
+                    {
+                        text: "Call the TV director back and swallow your pride.",
+                        next: 'tv_success',
+                        score: 10,
+                        feedbackTitle: "Hustle",
+                        feedback: "You take the opportunity in front of you instead of the one in your head."
+                    }
+                ]
+            },
+            {
+                id: 'tv_success',
+                bg: '/assets/avatar_srk.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "Your television success propels you to Mumbai. With zero film connections and immense hustle, you go on to conquer Bollywood and become its undisputed King.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_srk.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "The fire inside you was put out by pragmatism.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_SRK',
+                bg: '/assets/bg_srk_delhi.jpg',
+                text: "LESSON: Passion. When dealing with immense pain, the logical choice is to seek safety. The extraordinary choice is to channel that devastation into an undeniable, obsessive drive for your craft.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
     // AGE 18: Virat Kohli
     'lvl_age_18_kohli': {
         title: "The King's Promise",

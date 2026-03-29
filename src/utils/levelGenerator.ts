@@ -61,6 +61,39 @@ export function generateLevels(age: number): Level[] {
             avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_19', // Placeholder avatar
             idolTraits: { discipline: 90, resilience: 80, risk: 95, leadership: 85, creativity: 75, empathy: 40, vision: 99 }
         },
+        // Age 19: Sachin Tendulkar
+        {
+            id: 'lvl_19_sachin', title: 'The Trial of Fire', description: 'At 19, you must face the most lethal fast bowlers on Earth.',
+            requiredStars: 0, year: 1992, age: 19, theme: 'Sports', archetype: 'The Prodigy', personality: 'Sachin Tendulkar',
+            bio: 'A teenage prodigy entrusted with the hopes of a billion people on the fiercest cricket pitch in the world.',
+            fame: 'The God of Cricket.',
+            achievements: ['100 International Centuries', 'Bharat Ratna Awardee', 'Highest run-scorer in cricket history'],
+            lesson: 'COURAGE to stand your ground when veterans fall.',
+            avatarUrl: '/assets/avatar_sachin.jpg', scenarioId: 'lvl_age_19_sachin',
+            idolTraits: { discipline: 100, resilience: 98, risk: 80, leadership: 85, creativity: 95, empathy: 85, vision: 90 }
+        },
+        // Age 19: Sundar Pichai
+        {
+            id: 'lvl_19_sundar', title: 'The Divided Mind', description: 'At 19, the pressure of IIT threatens to crush your curiosity.',
+            requiredStars: 0, year: 1991, age: 19, theme: 'Tech', archetype: 'The Explorer', personality: 'Sundar Pichai',
+            bio: 'An introverted student at IIT Kharagpur, fascinated by computers but drowning in metallurgical coursework.',
+            fame: 'CEO of Google and Alphabet.',
+            achievements: ['Led development of Google Chrome', 'Became CEO of Alphabet', 'Padma Bhushan Awardee'],
+            lesson: 'CURIOSITY to explore outside the assigned path.',
+            avatarUrl: '/assets/avatar_sundar.jpg', scenarioId: 'lvl_age_19_sundar',
+            idolTraits: { discipline: 95, resilience: 90, risk: 70, leadership: 95, creativity: 85, empathy: 90, vision: 95 }
+        },
+        // Age 19: Shah Rukh Khan
+        {
+            id: 'lvl_19_srk', title: 'A Stage For Grief', description: 'At 19, you lose your father and immerse yourself in the chaotic world of theatre.',
+            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A grieving economics student who finds solace and explosive energy under the lights of Delhi theatre.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'PASSION as the ultimate antidote to despair.',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_19_srk',
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+        },
         // Age 20: Kobe
         {
             id: 'lvl_20_kobe',

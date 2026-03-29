@@ -511,6 +511,90 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
         },
         avatarUrl: '/assets/avatar_ratan_tata.jpg'
     },
+    // Age 19: Sachin Tendulkar
+    "Sachin Tendulkar": {
+        name: "Sachin Tendulkar",
+        archetypeTitle: "The Prodigy",
+        quote: "People throw stones at you and you convert them into milestones.",
+        voice: {
+            tone: "Humble, Focused, Relentless",
+            intro: "When you step onto the pitch, nothing else exists. Just the ball."
+        },
+        missions: {
+            discipline: { title: "The 6 AM Nets", desc: "Wake up early and practice a single skill for two hours straight.", xp: "+50 Repetition" },
+            resilience: { title: "Bouncer to the Chin", desc: "Take a hard critique on your work, wipe the blood, and ask for more.", xp: "+50 Grit" },
+            risk: { title: "Step Out", desc: "Take on a task assigned to someone much older/experienced.", xp: "+50 Fast Track" },
+            leadership: { title: "Carrying the Weight", desc: "Produce the best results in your team when everyone else is failing.", xp: "+50 Anchor" },
+            creativity: { title: "The Upper Cut", desc: "Find an unorthodox solution to a standard problem.", xp: "+50 Innovation" },
+            empathy: { title: "Respect the Kit", desc: "Clean and maintain your workspace or tools with immense respect.", xp: "+50 Ritual" },
+            vision: { title: "Century Mindset", desc: "Break a massive year-long goal into 100 tiny daily runs.", xp: "+50 Pacing" }
+        },
+        profile: {
+            motivation: 'Mastery',
+            risk: 'Calculated',
+            emotional: 'Resilient',
+            social: 'Introverted',
+            passion: 'Physical',
+            coreValue: 'Duty'
+        },
+        avatarUrl: '/assets/avatar_sachin.jpg'
+    },
+    // Age 19: Sundar Pichai
+    "Sundar Pichai": {
+        name: "Sundar Pichai",
+        archetypeTitle: "The Explorer",
+        quote: "Wear your failure as a badge of honor.",
+        voice: {
+            tone: "Quiet, Analytical, Visionary",
+            intro: "Information is powerful, but only if you have the curiosity to seek it."
+        },
+        missions: {
+            discipline: { title: "The Exam Grind", desc: "Study a deeply complex topic you dislike for 3 hours, just to understand the system.", xp: "+50 Logic" },
+            resilience: { title: "Hostel Survival", desc: "Navigate a highly stressful bottleneck without losing your calm demeanor.", xp: "+50 Stoicism" },
+            risk: { title: "The Silicon Leap", desc: "Apply for a scholarship or position that seems entirely out of reach.", xp: "+50 Audacity" },
+            leadership: { title: "Consensus Builder", desc: "Resolve an argument between two friends by finding the quiet middle ground.", xp: "+50 Diplomacy" },
+            creativity: { title: "Side Quest", desc: "Spend 2 hours learning coding or a digital skill outside your major.", xp: "+50 Computing" },
+            empathy: { title: "The Open Web", desc: "Explain a complex concept to someone in the simplest terms possible.", xp: "+50 Accessibility" },
+            vision: { title: "Ten Years Out", desc: "Write down what technology will look like in exactly 10 years.", xp: "+50 Foresight" }
+        },
+        profile: {
+            motivation: 'Innovation',
+            risk: 'Calculated',
+            emotional: 'Calm',
+            social: 'Diplomatic',
+            passion: 'Intellectual',
+            coreValue: 'Curiosity'
+        },
+        avatarUrl: '/assets/avatar_sundar.jpg'
+    },
+    // Age 19: Shah Rukh Khan
+    "Shah Rukh Khan": {
+        name: "Shah Rukh Khan",
+        archetypeTitle: "The Entertainer",
+        quote: "Success is not a good teacher, failure makes you humble.",
+        voice: {
+            tone: "Charismatic, Intense, Witty",
+            intro: "The world is a stage, and you're not meant to be in the background."
+        },
+        missions: {
+            discipline: { title: "The Delhi Hustle", desc: "Work an exhausting 14-hour day without complaining once.", xp: "+50 Engine" },
+            resilience: { title: "Channeling Grief", desc: "Take a painful personal memory and use the energy to create art.", xp: "+50 Alchemy" },
+            risk: { title: "The Blank Canvas", desc: "Quit a 'secure' secondary path to go all-in on your primary passion.", xp: "+50 Obsession" },
+            leadership: { title: "The Center of the Room", desc: "Command the attention of a group for 5 straight minutes with just your energy.", xp: "+50 Charisma" },
+            creativity: { title: "Improvise", desc: "Take a boring prompt or assignment and make it wildly entertaining.", xp: "+50 Flair" },
+            empathy: { title: "Look Them in the Eye", desc: "Make someone feel like they are the only person in the room.", xp: "+50 Connection" },
+            vision: { title: "The King's Plan", desc: "Visualize yourself at the absolute top of your field. Write it down.", xp: "+50 Audacity" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Bold',
+            emotional: 'Passionate',
+            social: 'Extroverted',
+            passion: 'Creative',
+            coreValue: 'Ambition'
+        },
+        avatarUrl: '/assets/avatar_srk.jpg'
+    },
     // Generic fallback for others
     "Default": {
         name: "Mentor",
