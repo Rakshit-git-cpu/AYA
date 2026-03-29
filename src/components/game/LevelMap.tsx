@@ -89,6 +89,8 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
     useEffect(() => {
         if (containerRef.current) {
             containerRef.current.scrollTop = 0;
+            // Force artificial scroll event to kickstart framer-motion parallax calculations instantly on mount!
+            containerRef.current.dispatchEvent(new Event('scroll'));
         }
     }, [levels]);
 

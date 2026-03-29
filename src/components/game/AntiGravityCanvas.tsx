@@ -134,12 +134,13 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         const handleResize = () => {
             setupCanvasContext();
             lastProgressRef.current = -1; // Force a redraw
+            renderNativeFrame(progress.get() || 0); // Force immediate redraw on resize
         };
         window.addEventListener('resize', handleResize);
 
         // Vanilla JS Render Loop - Runs continuously, independent of React
         const tick = () => {
-            const currentProgress = progress.get();
+            const currentProgress = progress.get() || 0; // fallback to 0 if undefined/NaN
 
             // Only draw if scroll progress actually changed
             if (currentProgress !== lastProgressRef.current) {
@@ -149,6 +150,9 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
             loopRef.current = requestAnimationFrame(tick);
         };
+
+        // FORCE FIRST PAINT IMMEDIATELY (Don't wait for scroll delta or tick loop to catch up)
+        renderNativeFrame(progress.get() || 0);
 
         // Start Loop
         tick();
