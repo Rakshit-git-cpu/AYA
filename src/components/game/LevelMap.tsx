@@ -96,7 +96,12 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
             <div className="absolute top-0 left-0 w-full pt-safe-top z-40 pointer-events-none flex justify-center perspective-text">
                 <div className="relative group cursor-default pointer-events-auto filter drop-shadow-[0_5px_5px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 ease-spring mt-16 md:mt-4">
                     <div className="absolute -inset-2 bg-gradient-to-r from-pink-500/0 via-pink-500/20 to-purple-500/0 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <h1 className="text-4xl md:text-5xl font-black text-white md:text-transparent md:bg-clip-text md:bg-gradient-to-b md:from-white md:to-pink-100/90 tracking-blacker font-comic transform -rotate-2 group-hover:rotate-0 transition-transform stroke-text text-center leading-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+                    <h1 className={clsx(
+                        "text-4xl md:text-5xl font-black md:text-transparent md:bg-clip-text tracking-blacker font-comic transform -rotate-2 group-hover:rotate-0 transition-transform stroke-text text-center leading-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]",
+                        isCandyMode
+                            ? "text-white md:bg-gradient-to-b md:from-white md:to-pink-100/90"
+                            : "text-amber-400 md:bg-gradient-to-b md:from-amber-200 md:to-amber-500"
+                    )}>
                         AT YOUR AGE
                     </h1>
                     {/* Decorative Elements */}
@@ -143,15 +148,26 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                     }}
                     className={clsx(
                         "group flex items-center gap-2 md:gap-3 pr-4 md:pr-6 pl-2 py-1.5 md:py-2 rounded-full shadow-2xl transition-all border-2",
-                        "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95"
+                        isCandyMode
+                            ? "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95"
+                            : "bg-slate-900 border-amber-600/50 hover:border-amber-400 hover:scale-105 active:scale-95"
                     )}
                 >
-                    <div className="bg-pink-500 text-white p-1.5 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform">
+                    <div className={clsx(
+                        "text-white p-1.5 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform",
+                        isCandyMode ? "bg-pink-500" : "bg-gradient-to-br from-amber-400 to-amber-600"
+                    )}>
                         <BookOpen size={16} className="stroke-[3] md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col items-start leading-none">
-                        <span className="text-[8px] md:text-[10px] font-bold text-pink-400 uppercase tracking-wider hidden xs:block">MY WISDOM</span>
-                        <span className="text-xs md:text-sm font-black text-slate-800 group-hover:text-pink-600 transition-colors">JOURNAL</span>
+                        <span className={clsx(
+                            "text-[8px] md:text-[10px] font-bold uppercase tracking-wider hidden xs:block",
+                            isCandyMode ? "text-pink-400" : "text-amber-500/80"
+                        )}>MY WISDOM</span>
+                        <span className={clsx(
+                            "text-xs md:text-sm font-black transition-colors",
+                            isCandyMode ? "text-slate-800 group-hover:text-pink-600" : "text-amber-400 group-hover:text-amber-300"
+                        )}>JOURNAL</span>
                     </div>
                 </button>
             </div>
@@ -203,11 +219,11 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                                         return `${path} C ${prevXPercent}% ${prev.y + 70}, ${currXPercent}% ${curr.y - 70}, ${currXPercent}% ${curr.y}`;
                                     }, "")}
                                     fill="none"
-                                    stroke="#F472B6" // pink-400 for better visibility
+                                    stroke={isCandyMode ? "#F472B6" : "#F59E0B"} // pink-400 or amber-500
                                     strokeWidth={isMobile ? "40" : "50"} // Thicker path
                                     strokeLinecap="round"
                                     strokeDasharray="10 20" // Dashed line for style
-                                    className="drop-shadow-[0_0_10px_rgba(244,114,182,0.6)]" // Glow effect
+                                    className={isCandyMode ? "drop-shadow-[0_0_10px_rgba(244,114,182,0.6)]" : "drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]"} // Glow effect
                                 />
                             </svg>
                         </div>
@@ -253,15 +269,17 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                                             "absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full transition-colors node-base",
                                             // Mobile: w-20 h-20, Desktop: w-28 h-28
                                             "w-20 h-20 md:w-28 md:h-28",
-                                            isCurrent ? "bg-pink-100/50" : "bg-white/10"
+                                            isCurrent ? (isCandyMode ? "bg-pink-100/50" : "bg-amber-100/50") : "bg-white/10"
                                         )} />
 
                                         {/* Responsive Avatar Ring */}
                                         <div className={clsx(
-                                            "relative rounded-full border-4 overflow-hidden shadow-[0_8px_0_rgba(0,0,0,0.2)] flex items-center justify-center bg-white node-ring",
+                                            "relative rounded-full border-4 overflow-hidden flex items-center justify-center bg-white node-ring",
                                             // Mobile: w-16 h-16, Desktop: w-24 h-24
                                             "w-16 h-16 md:w-24 md:h-24",
-                                            isCurrent ? "border-pink-400 ring-4 ring-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.6)]" : "border-slate-300"
+                                            isCurrent 
+                                                ? (isCandyMode ? "border-pink-400 ring-4 ring-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.6)]" : "border-amber-400 ring-4 ring-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.6)]")
+                                                : "border-slate-300 shadow-[0_8px_0_rgba(0,0,0,0.2)]"
                                         )}>
                                             <img src={level.avatarUrl || '/assets/avatar_business.png'} alt={level.archetype} className="w-full h-full object-cover node-content" />
                                             {!isUnlocked && (
@@ -297,12 +315,12 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                                             <div className={clsx(
                                                 "px-4 py-1 pt-3 pb-1 md:px-6 md:py-2 md:pt-4 md:pb-2 rounded-xl border-b-[3px] md:border-b-4 shadow-xl flex items-center justify-center min-w-[100px] md:min-w-[140px]",
                                                 isUnlocked
-                                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 border-rose-800"
+                                                    ? (isCandyMode ? "bg-gradient-to-r from-pink-500 to-rose-500 border-rose-800" : "bg-gradient-to-b from-slate-800 to-slate-900 border-slate-950 ring-1 ring-amber-600/50")
                                                     : "bg-slate-800 border-slate-900"
                                             )}>
                                                 <span className={clsx(
                                                     "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center",
-                                                    isUnlocked ? "text-white drop-shadow-md" : "text-slate-500"
+                                                    isUnlocked ? (isCandyMode ? "text-white drop-shadow-md" : "text-amber-400 drop-shadow-md") : "text-slate-500"
                                                 )}>
                                                     {level.title}
                                                 </span>
