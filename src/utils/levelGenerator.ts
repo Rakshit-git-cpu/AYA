@@ -58,7 +58,7 @@ export function generateLevels(age: number): Level[] {
             fame: 'Connects 3 billion people daily.',
             achievements: ['Founder of Facebook', 'Youngest self-made billionaire', 'Revolutionized social media'],
             lesson: 'RISK taking when the "safe path" (Harvard) looks perfect.',
-            avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_19', // Placeholder avatar
+            avatarUrl: '/assets/avatar_zuck.jpg', scenarioId: 'lvl_age_19', // Placeholder avatar
             idolTraits: { discipline: 90, resilience: 80, risk: 95, leadership: 85, creativity: 75, empathy: 40, vision: 99 }
         },
         // Age 19: Sachin Tendulkar
