@@ -257,6 +257,7 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'intro',
                 bg: '/assets/bg_srk_delhi.jpg',
+                bgPosition: 'object-top',
                 text: "You are 19. You live in Delhi. Your father just passed away unexpectedly, leaving your family in a precarious financial state. Despite doing well in Economics at Hansraj College, all you want to do is perform in the local theatre.",
                 choices: [
                     {
@@ -278,6 +279,7 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'office',
                 bg: '/assets/bg_srk_delhi.jpg',
+                bgPosition: 'object-top',
                 text: "You are making money, but you are miserable. You realize you can't protect your family if you are dead inside.",
                 choices: [
                     {
@@ -299,6 +301,7 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'theatre',
                 bg: '/assets/bg_srk_delhi.jpg',
+                bgPosition: 'object-top',
                 text: "Your performances are brilliant but unorthodox. A television director notices you and offers you a role in a show called 'Fauji'. The pay is okay, but television is looked down upon by pure theatre artists who want to do cinema.",
                 choices: [
                     {
@@ -320,6 +323,7 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'cinema_wait',
                 bg: '/assets/bg_srk_delhi.jpg',
+                bgPosition: 'object-top',
                 text: "Waiting for the perfect launch vehicle is pointless if no one knows who you are.",
                 choices: [
                     {
@@ -366,6 +370,7 @@ export const STORY_DATABASE: Record<string, any> = {
             {
                 id: 'LEARNING_SRK',
                 bg: '/assets/bg_srk_delhi.jpg',
+                bgPosition: 'object-top',
                 text: "LESSON: Passion. When dealing with immense pain, the logical choice is to seek safety. The extraordinary choice is to channel that devastation into an undeniable, obsessive drive for your craft.",
                 choices: [
                     { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
