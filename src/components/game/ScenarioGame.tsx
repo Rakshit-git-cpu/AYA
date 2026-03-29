@@ -246,8 +246,8 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                         "w-full h-full transition-opacity duration-1000",
                         // Allow frames to specify object-contain to prevent avatar cropping, fallback to object-cover
                         frame.bgSize || "object-cover",
-                        // Dynamic Object Position (defaults to top if not specified)
-                        frame.bgPosition || "object-top",
+                        // Dynamic Object Position (defaults to center if not specified to prevent cropping subjects)
+                        frame.bgPosition || "object-center",
                         isLearningScreen
                             ? "scale-110 blur-sm opacity-40 grayscale"
                             : isCandyTheme
