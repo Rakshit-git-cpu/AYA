@@ -147,10 +147,10 @@ const FlavorMeter = ({ label, value, color, darkColor, icon: Icon, isCandyMode }
             <div
                 className={clsx(
                     "h-full rounded-full transition-all duration-1000",
-                    isCandyMode ? \`shadow-[0_0_15px_currentColor] \${color}\` : \`shadow-[0_0_10px_currentColor] \${darkColor}\`
+                    isCandyMode ? `shadow-[0_0_15px_currentColor] ${color}` : `shadow-[0_0_10px_currentColor] ${darkColor}`
                 )}
                 style={{
-                    width: \`\${value}%\`,
+                    width: `${value}%`,
                     backgroundImage: isCandyMode ? 'linear-gradient(45deg,rgba(255,255,255,0.4) 25%,transparent 25%,transparent 50%,rgba(255,255,255,0.4) 50%,rgba(255,255,255,0.4) 75%,transparent 75%,transparent)' : 'none',
                     backgroundSize: '12px 12px'
                 }}
@@ -200,7 +200,7 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
                             ? "bg-gradient-to-r from-orange-400 to-yellow-600"
                             : "bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
                     )}
-                    style={{ width: \`\${score}%\` }}
+                    style={{ width: `${score}%` }}
                 />
             </div>
         </div>
@@ -302,7 +302,7 @@ export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onC
                                         ? "bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500"
                                         : "bg-gradient-to-r from-blue-600 via-cyan-400 to-[#4DD9FF]"
                                 )}
-                                style={{ width: \`\${animatedPercent}%\` }}
+                                style={{ width: `${animatedPercent}%` }}
                             >
                                 {isCandyMode && (
                                     <>
