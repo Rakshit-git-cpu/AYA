@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { MotionValue } from 'framer-motion';
-
-const TOTAL_FRAMES = 40;
+import { useUserStore } from '../../store/userStore';
 
 interface AntiGravityCanvasProps {
     progress: MotionValue<number>;
@@ -9,6 +8,10 @@ interface AntiGravityCanvasProps {
 }
 
 export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps) {
+    const isCandyMode = useUserStore((state) => state.isCandyMode);
+    const totalFrames = isCandyMode ? 40 : 240;
+    const folder = isCandyMode ? 'map_frames' : 'map_frames_dark';
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imagesRef = useRef<HTMLImageElement[]>([]);
     const [imagesLoaded, setImagesLoaded] = useState(0);
@@ -20,18 +23,21 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
     // Preload Images
     useEffect(() => {
+        setImagesLoaded(0);
+        setIsReady(false);
+        
         let loadedCount = 0;
-        const loadedImages: HTMLImageElement[] = new Array(TOTAL_FRAMES);
+        const loadedImages: HTMLImageElement[] = new Array(totalFrames);
         let mounted = true;
 
-        for (let i = 1; i <= TOTAL_FRAMES; i++) {
+        for (let i = 1; i <= totalFrames; i++) {
             const img = new Image();
-            img.src = `/assets/map_frames/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`;
+            img.src = `/assets/${folder}/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`;
             img.onload = () => {
                 if (!mounted) return;
                 loadedCount++;
                 setImagesLoaded(loadedCount);
-                if (loadedCount === TOTAL_FRAMES) {
+                if (loadedCount === totalFrames) {
                     imagesRef.current = loadedImages;
                     setIsReady(true);
                     onReady();
@@ -44,7 +50,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
             mounted = false;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [onReady]);
+    }, [onReady, isCandyMode, totalFrames, folder]);
 
     // High Performance Engine Loop
     useEffect(() => {
@@ -77,8 +83,8 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
         // Optimized native draw function (no React lifecycle tied)
         const renderNativeFrame = (val: number) => {
-            const index = Math.floor(val * (TOTAL_FRAMES - 1));
-            const safeIndex = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+            const index = Math.floor(val * (totalFrames - 1));
+            const safeIndex = Math.max(0, Math.min(totalFrames - 1, index));
             const img = imagesRef.current[safeIndex];
 
             if (!img) return;
@@ -130,7 +136,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(loopRef.current);
         };
-    }, [isReady, progress]); // Only rebinds if completely Unready/Ready again
+    }, [isReady, progress, totalFrames]); // Only rebinds if completely Unready/Ready again
 
     return (
         <>
@@ -140,7 +146,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                     <div className="w-64 h-2 bg-slate-800 rounded-full overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.3)]">
                         <div
                             className="h-full bg-pink-500 transition-all duration-200"
-                            style={{ width: `${(imagesLoaded / TOTAL_FRAMES) * 100}%` }}
+                            style={{ width: `${(imagesLoaded / totalFrames) * 100}%` }}
                         />
                     </div>
                 </div>

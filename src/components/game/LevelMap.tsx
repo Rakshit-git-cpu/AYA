@@ -1,5 +1,5 @@
 import { useUserStore } from '../../store/userStore';
-import { Lock, Star, Settings, BookOpen, Volume2, VolumeX } from 'lucide-react';
+import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
@@ -14,6 +14,8 @@ interface LevelMapProps {
 
 export function LevelMap({ onPlayLevel }: LevelMapProps) {
     const levels = useUserStore((state) => state.levels);
+    const isCandyMode = useUserStore((state) => state.isCandyMode);
+    const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
 
     // Settings State
     const [showSettings, setShowSettings] = useState(false);
@@ -103,7 +105,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                 </div>
             </div>
 
-            {/* Settings Button - Larger Touch Target */}
+            {/* Settings & Theme Buttons */}
             <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex flex-col gap-2 pt-safe-top">
                 <button
                     onClick={() => {
@@ -114,6 +116,21 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                     aria-label="Settings"
                 >
                     <Settings size={24} className="md:w-5 md:h-5" />
+                </button>
+                <button
+                    onClick={() => {
+                        audioSynth.playClick();
+                        toggleCandyMode();
+                    }}
+                    className={clsx(
+                        "w-12 h-12 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
+                        isCandyMode
+                            ? "bg-amber-400/20 hover:bg-amber-400/40 border-amber-300/50"
+                            : "bg-indigo-500/20 hover:bg-indigo-500/40 border-indigo-400/50"
+                    )}
+                    aria-label="Toggle Theme"
+                >
+                    {isCandyMode ? <Sun size={24} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={24} className="md:w-5 md:h-5 text-indigo-300" />}
                 </button>
             </div>
 
