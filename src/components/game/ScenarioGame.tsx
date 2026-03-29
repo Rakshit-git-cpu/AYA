@@ -3,7 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
-import { ChevronRight, Star, AlertCircle, CheckCircle, Palette } from 'lucide-react';
+import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from 'lucide-react';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -45,6 +45,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     const [score, setScore] = useState(0);
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
+
+    // Background Loading State (prevents UI from showing until image is ready)
+    const [isBgLoaded, setIsBgLoaded] = useState(false);
 
     // Floating Text State
     const [floatTexts, setFloatTexts] = useState<FloatText[]>([]);
@@ -105,8 +108,16 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     // Determine what text to show
     const activeText = feedbackChoice ? feedbackChoice.feedback : frame.text;
 
+    // Reset bg loaded state when background changes
+    useEffect(() => {
+        setIsBgLoaded(false);
+    }, [frame.bg]);
+
     // Reset typewriter when text changes
     useEffect(() => {
+        // Do not start typing until the background image finishes loading
+        if (!isBgLoaded) return;
+
         setDisplayedText("");
         setIsTyping(true);
 
@@ -130,7 +141,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             clearTimeout(startDelay);
             if (timer) clearInterval(timer);
         };
-    }, [activeText]);
+    }, [activeText, isBgLoaded]);
 
     const handleTextClick = () => {
         if (isTyping) {
@@ -242,8 +253,10 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                     key={frame.bg}
                     src={frame.bg}
                     alt="Scenario Scene"
+                    onLoad={() => setIsBgLoaded(true)}
                     className={clsx(
                         "w-full h-full transition-opacity duration-1000",
+                        !isBgLoaded ? "opacity-0" : "opacity-100",
                         // Allow frames to specify object-contain to prevent avatar cropping, fallback to object-cover
                         frame.bgSize || "object-cover",
                         // Dynamic Object Position (defaults to center if not specified to prevent cropping subjects)
@@ -251,7 +264,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                         isLearningScreen
                             ? "scale-110 blur-sm opacity-40 grayscale"
                             : isCandyTheme
-                                ? "animate-ken-burns opacity-100 saturate-125" // Brighter, saturated
+                                ? "animate-ken-burns saturate-125" // Brighter, saturated
                                 : "animate-ken-burns opacity-80"
                     )}
                 />
@@ -263,8 +276,20 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 )} />
             </div>
 
+            {!isBgLoaded && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-slate-950/80 backdrop-blur-sm transition-opacity duration-300">
+                    <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
+                    <span className="text-yellow-500/80 font-bold uppercase tracking-[0.2em] animate-pulse">
+                        Loading Scene
+                    </span>
+                </div>
+            )}
+
             {/* Top Bar (Stats) */}
-            <div className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center text-white/80">
+            <div className={clsx(
+                "absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center text-white/80 transition-opacity duration-500",
+                isBgLoaded ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}>
                 <button
                     onClick={onBack}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
@@ -297,7 +322,10 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             </div>
 
             {/* Main Content Area */}
-            <div className="relative z-10 w-full h-[100dvh] flex flex-col pb-6 items-center max-w-3xl px-6 transition-all duration-300">
+            <div className={clsx(
+                "relative z-10 w-full h-[100dvh] flex flex-col pb-6 items-center max-w-3xl px-6 transition-opacity duration-700",
+                isBgLoaded ? "opacity-100 delay-300" : "opacity-0 pointer-events-none"
+            )}>
 
                 {/* LEARNING SCREEN HEADER */}
                 {isLearningScreen && (
