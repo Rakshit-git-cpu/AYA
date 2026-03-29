@@ -8,6 +8,61 @@ export function generateLevels(age: number): Level[] {
 
     // Master List of ALL Levels
     const levels: Omit<Level, 'status' | 'isLocked' | 'stars'>[] = [
+        // Age 17: P.V. Sindhu
+        {
+            id: 'lvl_17_sindhu', title: 'The Olympic Prelude', description: 'At 17, Sindhu faced the seemingly invincible Olympic gold medalist.',
+            requiredStars: 0, year: 2012, age: 17, theme: 'Sports', archetype: 'The Challenger', personality: 'P.V. Sindhu',
+            bio: 'A 17-year-old badminton prodigy facing a brutal match against the reigning Olympic champion, Li Xuerui.',
+            fame: 'India\'s badminton icon and two-time Olympic medalist.',
+            achievements: ['First Indian woman to win two Olympic medals', 'World Champion 2019', 'Padma Bhushan Awardee'],
+            lesson: 'RESPECT for your opponent does not mean fearing them.',
+            avatarUrl: '/assets/avatar_sindhu.jpg', scenarioId: 'lvl_age_17_sindhu',
+            idolTraits: { discipline: 100, resilience: 95, risk: 75, leadership: 70, creativity: 80, empathy: 85, vision: 90 }
+        },
+        // Age 17: A.R. Rahman
+        {
+            id: 'lvl_17_rahman', title: 'The Silent Melody', description: 'At 17, a grieving son drops out of school to support his family through music.',
+            requiredStars: 0, year: 1984, age: 17, theme: 'Arts', archetype: 'The Maestro', personality: 'A.R. Rahman',
+            bio: 'Forced to become the breadwinner after his father\'s death, playing keyboards endlessly in studios.',
+            fame: 'Two-time Academy Award-winning composer.',
+            achievements: ['2 Academy Awards', '2 Grammy Awards', 'Padma Shri & Padma Bhushan Awardee'],
+            lesson: 'SACRIFICE can forge the greatest talent.',
+            avatarUrl: '/assets/avatar_rahman.jpg', scenarioId: 'lvl_age_17_rahman',
+            idolTraits: { discipline: 95, resilience: 90, risk: 85, leadership: 80, creativity: 100, empathy: 95, vision: 98 }
+        },
+        // Age 17: Malala Yousafzai
+        {
+            id: 'lvl_17_malala', title: 'The Price of Peace', description: 'At 17, Malala won the Nobel Prize. But was the global spotlight worth the trauma?',
+            requiredStars: 0, year: 2014, age: 17, theme: 'Activism', archetype: 'The Peacemaker', personality: 'Malala Yousafzai',
+            bio: 'Surviving an assassination attempt to become the global face of girls\' education while trying to finish high school.',
+            fame: 'Youngest-ever Nobel Prize laureate.',
+            achievements: ['Nobel Peace Prize', 'UN Messenger of Peace', 'Bestselling Author'],
+            lesson: 'PURPOSE transcends personal comfort.',
+            avatarUrl: '/assets/avatar_malala.jpg', scenarioId: 'lvl_age_17_malala',
+            idolTraits: { discipline: 90, resilience: 100, risk: 95, leadership: 95, creativity: 80, empathy: 100, vision: 95 }
+        },
+        // Age 17: Steve Jobs
+        {
+            id: 'lvl_17_jobs', title: 'The Dropout\'s Intuition', description: 'At 17, Jobs dropped out of Harvard to audit calligraphy classes.',
+            requiredStars: 0, year: 1972, age: 17, theme: 'Tech', archetype: 'The Visionary', personality: 'Steve Jobs',
+            bio: 'A college freshman wasting his working-class parents\' savings on an education that feels meaningless.',
+            fame: 'Co-founder of Apple Inc. and pioneer of the personal computer revolution.',
+            achievements: ['Created iPhone, Mac, iPad', 'Transformed Pixar Animation', 'Changed multiple industries permanently'],
+            lesson: 'INTUITION is the compass when the map fails.',
+            avatarUrl: '/assets/avatar_jobs.jpg', scenarioId: 'lvl_age_17_jobs',
+            idolTraits: { discipline: 75, resilience: 90, risk: 100, leadership: 90, creativity: 100, empathy: 60, vision: 100 }
+        },
+        // Age 17: Indra Nooyi
+        {
+            id: 'lvl_17_nooyi', title: 'The Rulebreaker', description: 'At 17, a young Indian woman played in an all-girls rock band and broke every conventional rule.',
+            requiredStars: 0, year: 1972, age: 17, theme: 'Business', archetype: 'The Executive', personality: 'Indra Nooyi',
+            bio: 'A college student in conservative Madras joining a rock band and playing cricket against societal norms.',
+            fame: 'Former CEO and Chairperson of PepsiCo.',
+            achievements: ['Ranked consistently among World\'s 100 Most Powerful Women', 'Increased PepsiCo\'s revenue by 80%', 'Padma Bhushan Awardee'],
+            lesson: 'AUTHENTICITY requires braving societal friction.',
+            avatarUrl: '/assets/avatar_nooyi.jpg', scenarioId: 'lvl_age_17_nooyi',
+            idolTraits: { discipline: 95, resilience: 90, risk: 90, leadership: 100, creativity: 85, empathy: 85, vision: 95 }
+        },
         {
             id: 'lvl_18', title: 'The Beginning (Country)', description: 'At 18, Taylor faced a choice: Security or Authenticity.',
             requiredStars: 0, year: 2008, age: 18, theme: 'Music', archetype: 'The Artist', personality: 'Taylor Swift',
