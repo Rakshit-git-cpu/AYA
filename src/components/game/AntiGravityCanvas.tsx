@@ -29,6 +29,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         // If we already have the requested frames fully cached, set instantly and return!
         if (GLOBAL_FRAME_CACHE[folder] && GLOBAL_FRAME_CACHE[folder].length === totalFrames) {
             imagesRef.current = GLOBAL_FRAME_CACHE[folder];
+            lastProgressRef.current = -1; // CRITICAL: Force the `tick` loop to redraw using the new cache
             setIsReady(true);
             onReady();
             return;
@@ -59,6 +60,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                 if (loadedCount === totalFrames) {
                     GLOBAL_FRAME_CACHE[folder] = loadedImages;     // Cache globally
                     imagesRef.current = loadedImages;              // Overwrite current holds safely
+                    lastProgressRef.current = -1;                  // CRITICAL: Force the `tick` loop to instantly paint the new theme
                     setIsReady(true);
                     onReady();
                 }
