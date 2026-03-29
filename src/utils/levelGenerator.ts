@@ -18,6 +18,39 @@ export function generateLevels(age: number): Level[] {
             avatarUrl: '/assets/avatar_taylor_swift.png', scenarioId: 'lvl_age_18',
             idolTraits: { discipline: 80, resilience: 85, risk: 70, leadership: 60, creativity: 90, empathy: 95, vision: 80 }
         },
+        // Age 18: Virat Kohli
+        {
+            id: 'lvl_18_kohli', title: 'The King\'s Promise', description: 'At 18, Virat faced the ultimate test of duty and grief.',
+            requiredStars: 0, year: 2006, age: 18, theme: 'Sports', archetype: 'The King', personality: 'Virat Kohli',
+            bio: 'A rising cricketing star who loses his father in the middle of a crucial match.',
+            fame: 'One of the greatest batsmen in cricket history.',
+            achievements: ['Most runs in a single IPL season', 'Fastest to 10k ODI runs', 'World Cup Winner'],
+            lesson: 'DUTY to team and self in the face of unimaginable grief.',
+            avatarUrl: '/assets/avatar_virat_kohli.jpg', scenarioId: 'lvl_age_18_kohli',
+            idolTraits: { discipline: 95, resilience: 100, risk: 85, leadership: 90, creativity: 75, empathy: 70, vision: 85 }
+        },
+        // Age 18: Dr. A.P.J. Abdul Kalam
+        {
+            id: 'lvl_18_kalam', title: 'The Big Leap', description: 'At 18, Kalam left his humble town for a prestigious college.',
+            requiredStars: 0, year: 1949, age: 18, theme: 'Education', archetype: 'The Visionary', personality: 'Dr. A.P.J. Abdul Kalam',
+            bio: 'A brilliant student from a modest background facing the intimidating world of city-bred prodigies.',
+            fame: 'The Missile Man of India, 11th President of India.',
+            achievements: ['Developed India\'s missile program', 'Bharat Ratna Awardee', 'Beloved People\'s President'],
+            lesson: 'SELF-BELIEF is stronger than circumstances.',
+            avatarUrl: '/assets/avatar_apj_kalam.jpg', scenarioId: 'lvl_age_18_kalam',
+            idolTraits: { discipline: 98, resilience: 95, risk: 70, leadership: 90, creativity: 95, empathy: 100, vision: 100 }
+        },
+        // Age 18: Ratan Tata
+        {
+            id: 'lvl_18_tata', title: 'The Defiant Blueprint', description: 'At 18, Ratan chose architecture over his father\'s engineering dreams.',
+            requiredStars: 0, year: 1955, age: 18, theme: 'Business', archetype: 'The Patriarch', personality: 'Ratan Tata',
+            bio: 'A young heir who defies family pressure to study what he truly loves.',
+            fame: 'Iconic leader of the Tata Group.',
+            achievements: ['Grew Tata Group revenues 40X', 'Acquired Jaguar Land Rover & Tetley', 'Padma Vibhushan Awardee'],
+            lesson: 'AUTHENTICITY over expectation.',
+            avatarUrl: '/assets/avatar_ratan_tata.jpg', scenarioId: 'lvl_age_18_tata',
+            idolTraits: { discipline: 90, resilience: 90, risk: 85, leadership: 100, creativity: 85, empathy: 95, vision: 98 }
+        },
         {
             id: 'lvl_19', title: 'The Visionary', description: 'At 19, Mark had to choose between Harvard and his side project.',
             requiredStars: 3, year: 2004, age: 19, theme: 'Tech', archetype: 'The Founder', personality: 'Mark Zuckerberg',

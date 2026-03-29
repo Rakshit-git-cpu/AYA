@@ -429,6 +429,88 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
         },
         avatarUrl: '/assets/avatar_nv_sir.jpg'
     },
+    // NEW ADDITIONS: AGE 18 INDIAN STORIES
+    "Virat Kohli": {
+        name: "Virat Kohli",
+        archetypeTitle: "The King",
+        quote: "Self-belief and hard work will always earn you success.",
+        voice: {
+            tone: "Intense, Aggressive, Passionate",
+            intro: "The pitch doesn't care about your excuses. Show up and dominate."
+        },
+        missions: {
+            discipline: { title: "Diet Check", desc: "Skip your favorite junk food today for a healthier alternative.", xp: "+50 Peak Fitness" },
+            resilience: { title: "The Next Train", desc: "If you failed at something recently, try it again immediately without overthinking.", xp: "+50 Mental Toughness" },
+            risk: { title: "Take the Shot", desc: "Speak up in a meeting or class where you usually stay quiet.", xp: "+50 Courage" },
+            leadership: { title: "Frontline", desc: "Take responsibility for a team mistake.", xp: "+50 Ownership" },
+            creativity: { title: "New Technique", desc: "Try a completely new way of studying or working for 1 hour.", xp: "+50 Adaptability" },
+            empathy: { title: "Acknowledge the Obo", desc: "Praise a rival or competitor's good work.", xp: "+50 Big Picture" },
+            vision: { title: "The Chase", desc: "Set an impossible goal for the day and break it down into overs.", xp: "+50 Masterclass" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Aggressive',
+            emotional: 'Passionate',
+            social: 'Leader',
+            passion: 'Physical',
+            coreValue: 'Excellence'
+        },
+        avatarUrl: '/assets/avatar_virat_kohli.jpg'
+    },
+    "Dr. A.P.J. Abdul Kalam": {
+        name: "Dr. A.P.J. Abdul Kalam",
+        archetypeTitle: "The Visionary",
+        quote: "Dream, dream, dream. Dreams transform into thoughts and thoughts result in action.",
+        voice: {
+            tone: "Warm, Inspiring, Professor-like",
+            intro: "Your background does not define your trajectory, my young friend. Only your dreams do."
+        },
+        missions: {
+            discipline: { title: "Early Rise", desc: "Wake up 1 hour earlier than usual and read something inspiring.", xp: "+50 Dawn of Success" },
+            resilience: { title: "Accept Rejection", desc: "Write down a recent failure and extract one positive lesson from it.", xp: "+50 Ignition" },
+            risk: { title: "The Unknown", desc: "Learn about a completely different field of science or art today.", xp: "+50 Missile Mind" },
+            leadership: { title: "Ignite Minds", desc: "Encourage a friend who is doubting their abilities.", xp: "+50 Empowerment" },
+            creativity: { title: "Resourceful", desc: "Fix a problem using only the tools you have right now.", xp: "+50 Innovation" },
+            empathy: { title: "The Newspaper", desc: "Read about the struggles of people in a different part of the world.", xp: "+50 Compassion" },
+            vision: { title: "India 2020", desc: "Write down your vision for your life 10 years from now.", xp: "+50 Future Ready" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Calculated',
+            emotional: 'Stoic',
+            social: 'Mentor',
+            passion: 'Intellectual',
+            coreValue: 'Knowledge'
+        },
+        avatarUrl: '/assets/avatar_apj_kalam.jpg'
+    },
+    "Ratan Tata": {
+        name: "Ratan Tata",
+        archetypeTitle: "The Patriarch",
+        quote: "I don't believe in taking right decisions. I take decisions and then make them right.",
+        voice: {
+            tone: "Calm, Dignified, Wise",
+            intro: "Business is not just about profits. It is about the community you serve."
+        },
+        missions: {
+            discipline: { title: "Quiet Work", desc: "Work for two hours completely uninterrupted.", xp: "+50 Focus" },
+            resilience: { title: "The Long Game", desc: "Invest in a skill that will take years to master.", xp: "+50 Compound Interest" },
+            risk: { title: "The Bold Buy", desc: "Make a bold choice today that others might doubt.", xp: "+50 Defiance" },
+            leadership: { title: "Silent Leader", desc: "Lead a group project without dominating the conversation.", xp: "+50 Grace" },
+            creativity: { title: "The Nano", desc: "Think of a way to make an expensive service or product accessible to the poor.", xp: "+50 Frugal Innovation" },
+            empathy: { title: "Street Dogs", desc: "Feed a stray animal or help someone who cannot help you back.", xp: "+50 Kindness" },
+            vision: { title: "Global Footprint", desc: "Research how your current industry operates in another country.", xp: "+50 Expansion" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Balanced',
+            emotional: 'Resilient',
+            social: 'Observer',
+            passion: 'Intellectual',
+            coreValue: 'Integrity'
+        },
+        avatarUrl: '/assets/avatar_ratan_tata.jpg'
+    },
     // Generic fallback for others
     "Default": {
         name: "Mentor",

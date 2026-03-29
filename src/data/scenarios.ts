@@ -1,4 +1,406 @@
 export const STORY_DATABASE: Record<string, any> = {
+    // AGE 18: Virat Kohli
+    'lvl_age_18_kohli': {
+        title: "The King's Promise",
+        source: "Source: Delhi vs Karnataka, Ranji Trophy 2006",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_virat_pavilion.jpg',
+                text: "December 19, 2006. You are 18. You are batting overnight on 40 for Delhi in a crucial Ranji Trophy match against Karnataka. Your team is struggling and staring at a follow-on. At 3 AM, your father passes away from a stroke.",
+                choices: [
+                    {
+                        text: "Stay home and mourn. Family first.",
+                        next: 'stay_home',
+                        score: -10,
+                        feedbackTitle: "Understandable, but ordinary",
+                        feedback: "Everyone expected you to stay. It's the normal thing to do. Your team loses the match, and cricket takes a back seat for years."
+                    },
+                    {
+                        text: "Go to the stadium and bat. Save the team.",
+                        next: 'go_bat',
+                        score: 10,
+                        feedbackTitle: "The Defining Moment",
+                        feedback: "Your coach and teammates are shocked to see you. You pad up in silence. You know this is what your father wanted for you."
+                    }
+                ]
+            },
+            {
+                id: 'stay_home',
+                bg: '/assets/bg_virat_pavilion.jpg',
+                text: "You stayed back. The grief is overwhelming. A month later, you return to the nets, but the fire isn't the same.",
+                choices: [
+                    {
+                        text: "Push yourself harder to make him proud.",
+                        next: 'go_bat',
+                        score: 10,
+                        feedbackTitle: "Redemption",
+                        feedback: "You realize he wouldn't want you to quit. You get back to the grind."
+                    },
+                    {
+                        text: "It's too much pressure. Focus on a normal job.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "A Faded Dream",
+                        feedback: "Not everyone is built to absorb that kind of tragedy and turn it into fuel."
+                    }
+                ]
+            },
+            {
+                id: 'go_bat',
+                bg: '/assets/bg_virat_pitch.jpg',
+                text: "You walk out to the middle. The opposition is fierce, knowing your mental state. Every ball is a test of your focus.",
+                choices: [
+                    {
+                        text: "Play aggressively. Let the anger out.",
+                        next: 'aggressive',
+                        score: -5,
+                        feedbackTitle: "Lost Control",
+                        feedback: "You hit a few boundaries but throw your wicket away in anger. The team still loses."
+                    },
+                    {
+                        text: "Block the noise. Focus entirely on the ball. Play a disciplined innings.",
+                        next: 'disciplined_90',
+                        score: 10,
+                        feedbackTitle: "The Anchor",
+                        feedback: "You batted for almost 5 hours. You scored a match-saving 90 runs. The umpires called it off due to bad light."
+                    }
+                ]
+            },
+            {
+                id: 'aggressive',
+                bg: '/assets/bg_virat_pitch.jpg',
+                text: "Your anger clouded your judgment. But your resolve is noted by the selectors.",
+                choices: [
+                    {
+                        text: "Accept the mistake and focus on control next time.",
+                        next: 'disciplined_90',
+                        score: 10,
+                        feedbackTitle: "Growth Mindset",
+                        feedback: "Channeling aggression into discipline is what separates the good from the great."
+                    }
+                ]
+            },
+            {
+                id: 'disciplined_90',
+                bg: '/assets/bg_virat_pitch.jpg',
+                text: "After you were controversially given out on 90, you saved Delhi from the follow-on. Only after the day's play did you go straight to your father's cremation.",
+                choices: [
+                    {
+                        text: "Acknowledge the defining day of your life.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "A Boy Became a Man",
+                        feedback: "That day changed you. The boy who loved to party became obsessed with fitness, discipline, and winning. You became The King."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_virat_kohli.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "From that day on, you never compromised on cricket. You went on to lead India to historic victories globally.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_virat_kohli.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "Your journey diverged from greatness. The pain was too great a burden.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_VIRAT',
+                bg: '/assets/bg_virat_pitch.jpg',
+                text: "LESSON: Resilience. When personal tragedy strikes, the greats channel their pain into their craft, transforming grief into unwavering focus.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 18: Dr. A.P.J. Abdul Kalam
+    'lvl_age_18_kalam': {
+        title: "The Big Leap",
+        source: "Source: 'Wings of Fire', Autobiography",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "It is 1949. You are 18. You've arrived at St. Joseph's College in Tiruchirappalli from the small temple town of Rameswaram. You used to deliver newspapers. Now, you are surrounded by wealthy, English-speaking, city-bred students.",
+                choices: [
+                    {
+                        text: "Hide in your room. Try not to be noticed.",
+                        next: 'hide',
+                        score: -10,
+                        feedbackTitle: "Inferiority Complex",
+                        feedback: "You let your background dictate your worth. You pass your classes but remain unremarkable."
+                    },
+                    {
+                        text: "Embrace the library. Your intellect is your true equalizer.",
+                        next: 'library',
+                        score: 10,
+                        feedbackTitle: "The Seeker",
+                        feedback: "You realize that physics doesn't care if you speak perfect English. You dive deep into textbooks."
+                    }
+                ]
+            },
+            {
+                id: 'hide',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "You feel invisible. Your grades are suffering because you are too afraid to ask questions in class.",
+                choices: [
+                    {
+                        text: "Gather courage and approach a professor for help.",
+                        next: 'library',
+                        score: 10,
+                        feedbackTitle: "Breaking the Shell",
+                        feedback: "Rev. Father Iyadurai is impressed by your curiosity and takes you under his wing."
+                    },
+                    {
+                        text: "Give up and return to Rameswaram.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "Retreat",
+                        feedback: "You go back. India loses a visionary."
+                    }
+                ]
+            },
+            {
+                id: 'library',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "Your dedication is absolute. Your roommate, reading a novel, asks you to take a break and go to town.",
+                choices: [
+                    {
+                        text: "Go to town. Socializing is important too.",
+                        next: 'distraction',
+                        score: -5,
+                        feedbackTitle: "Lost Focus",
+                        feedback: "It's fine to relax, but you lose precious hours reviewing a complex aerodynamics concept."
+                    },
+                    {
+                        text: "Politely decline. Let's finish this chapter on subatomic physics first.",
+                        next: 'focus_physics',
+                        score: 10,
+                        feedbackTitle: "Laser Focus",
+                        feedback: "Your professors notice your relentless curiosity. You aren't just memorizing; you are understanding the universe."
+                    }
+                ]
+            },
+            {
+                id: 'distraction',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "You enjoyed the evening, but tomorrow's test hits you hard. You realize time is the only asset you have.",
+                choices: [
+                    {
+                        text: "Double down on studying tonight to catch up.",
+                        next: 'focus_physics',
+                        score: 10,
+                        feedbackTitle: "Correction",
+                        feedback: "You bounce back. It's about how you recover."
+                    }
+                ]
+            },
+            {
+                id: 'focus_physics',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "Through pure grit, you excel. A visiting professor talks about a new field: Aeronautics. Your eyes light up.",
+                choices: [
+                    {
+                        text: "Decide right then that you will build planes.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "The Dream is Born",
+                        feedback: "From a boy selling newspapers on a train platform, you set your sights on the sky."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_apj_kalam.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You eventually go to Madras Institute of Technology. You go on to build India's first satellite launch vehicle and serve as the People's President.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_apj_kalam.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "The intimidation of the city was too much. The dream ended before it began.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_KALAM',
+                bg: '/assets/bg_kalam_college.jpg',
+                text: "LESSON: Self-Belief. Your current circumstances or background do not define your potential. Knowledge is the ultimate equalizer.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 18: Ratan Tata
+    'lvl_age_18_tata': {
+        title: "The Defiant Blueprint",
+        source: "Source: Ratan Tata's early life interviews",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_tata_cornell.jpg',
+                text: "It is 1955. You are an 18-year-old Ratan Tata. You have just arrived at Cornell University in New York. Your father strongly expects you to study Engineering and join the family business.",
+                choices: [
+                    {
+                        text: "Follow your father's wishes. Enroll in Engineering.",
+                        next: 'engineering',
+                        score: -10,
+                        feedbackTitle: "Dutiful, but Hollow",
+                        feedback: "You study engineering, but your heart isn't in it. You become a capable manager, but lack creative vision."
+                    },
+                    {
+                        text: "Refuse. Enroll secretly in Architecture, your true passion.",
+                        next: 'architecture',
+                        score: 10,
+                        feedbackTitle: "The Rebel Heir",
+                        feedback: "You risk your father's wrath. You want to design, to build structures with empathy and aesthetic."
+                    }
+                ]
+            },
+            {
+                id: 'engineering',
+                bg: '/assets/bg_tata_cornell.jpg',
+                text: "Engineering classes feel like a chore. You find yourself sketching buildings in the margins of your thermodynamics notes.",
+                choices: [
+                    {
+                        text: "Make the bold switch to Architecture now.",
+                        next: 'architecture',
+                        score: 10,
+                        feedbackTitle: "Better Late",
+                        feedback: "You finally gather the courage to follow your own path."
+                    },
+                    {
+                        text: "Stay the course. Don't rocking the boat.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "A Life Unlived",
+                        feedback: "You conform. The fire inside you slowly dies."
+                    }
+                ]
+            },
+            {
+                id: 'architecture',
+                bg: '/assets/bg_tata_cornell.jpg',
+                text: "You switch to architecture. When your father finds out, he is furious. He cuts off significant financial support.",
+                choices: [
+                    {
+                        text: "Apologize and switch back to Engineering.",
+                        next: 'engineering',
+                        score: -10,
+                        feedbackTitle: "Yielding to Pressure",
+                        feedback: "You chose financial security over your passion."
+                    },
+                    {
+                        text: "Work odd jobs in the US to support yourself. Stick to your choice.",
+                        next: 'odd_jobs',
+                        score: 10,
+                        feedbackTitle: "Independence",
+                        feedback: "You wash dishes. You learn the dignity of labor. You realize you don't need the Tata name to survive."
+                    }
+                ]
+            },
+            {
+                id: 'odd_jobs',
+                bg: '/assets/bg_tata_cornell.jpg',
+                text: "You graduate with a degree in Architecture. Your grandmother, Navajbai, is proud of your independence.",
+                choices: [
+                    {
+                        text: "Now that you have your degree, chart your own path.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "The Authentic Leader",
+                        feedback: "The design thinking and structural empathy you learned in architecture later became your superpower when leading the vast Tata conglomerate."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_ratan_tata.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You returned to India and eventually led the Tata Group, launching the Indica, acquiring JLR, and operating with deep empathy.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_ratan_tata.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You lived a comfortable life, but always wondered what you could have built.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_TATA',
+                bg: '/assets/bg_tata_cornell.jpg',
+                text: "LESSON: Authenticity. Defying expectations to follow your true passion is painful, but it gives you a unique perspective that conformity never could.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
     // AGE 18: Taylor Swift (The Artist)
     'lvl_age_18': {
         title: "The Nashville Choice",
