@@ -2,7 +2,7 @@ import type { Level } from '../types/gameTypes';
 
 
 
-export function generateLevels(age: number): Level[] {
+export function generateLevels(_age: number): Level[] {
     // Clamp age to available content range (18-25)
     // const targetAge = Math.max(18, Math.min(25, age)); // Not using age-based skipping anymore if linear
 
@@ -320,16 +320,10 @@ export function generateLevels(age: number): Level[] {
         }
     ];
 
-    // STRICT AGE MAPPING
-    // Only return levels that match the user's input age.
-    const filteredLevels = levels.filter(level => level.age === age);
-
-    if (filteredLevels.length === 0) {
-        console.warn(`No content found for age ${age}`);
-    }
-
-    return filteredLevels.map((l) => {
-        // Unlock all matching levels for immediate play
+    // Instead of isolating the user to only one age group,
+    // we return the entire timeline of scenarios mapped together into a massive journey.
+    return levels.map((l) => {
+        // Unlock all levels initially for testing and immediate availability
         return {
             ...l,
             status: 'unlocked',
