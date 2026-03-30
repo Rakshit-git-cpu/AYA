@@ -166,7 +166,7 @@ export const useUserStore = create<UserState>()(
             })
         }),
         {
-            name: 'aya-user-storage-v2', // unique name
+            name: 'aya-user-storage-v4', // Forced cache clear to fix Age 17 empty issues
             partialize: (state) => ({
                 levels: state.levels,
                 levelScores: state.levelScores,
