@@ -17,12 +17,10 @@ export function GameRoot() {
     const unlockLevel = useUserStore((state) => state.unlockLevel);
     const syncLevels = useUserStore((state) => state.syncLevels);
 
-    // Sync levels with the latest codebase configurations when Game mounts
+    // Always sync levels on mount so new codebase content is always injected
     useEffect(() => {
-        if (profile) {
-            syncLevels();
-        }
-    }, [profile, syncLevels]);
+        syncLevels();
+    }, [syncLevels]);
 
     // State to track if we are currently PLAYING a level (Visual Novel Mode)
     // HOOKS MUST BE AT THE TOP LEVEL

@@ -87,9 +87,8 @@ export const useUserStore = create<UserState>()(
             },
 
             syncLevels: () => set((state) => {
-                if (!state.profile) return state;
-
-                const latestMasterLevels = generateLevels(state.profile.age);
+                // generateLevels now returns ALL levels (age param ignored but required by signature)
+                const latestMasterLevels = generateLevels(0);
 
                 // Merge latest codebase levels with the locally cached progress
                 const mergedLevels = latestMasterLevels.map(latestLevel => {
@@ -166,8 +165,12 @@ export const useUserStore = create<UserState>()(
             })
         }),
         {
-            name: 'aya-user-storage-v4', // Forced cache clear to fix Age 17 empty issues
+            name: 'aya-user-storage-v5', // v5: persist profile to fix empty-map-on-refresh bug
             partialize: (state) => ({
+                // CRITICAL: persist profile so syncLevels can run after hard refresh
+                profile: state.profile,
+                completedOnboarding: state.completedOnboarding,
+
                 levels: state.levels,
                 levelScores: state.levelScores,
                 isCandyMode: state.isCandyMode,
