@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { LevelMap } from '../components/game/LevelMap';
@@ -15,6 +15,14 @@ export function GameRoot() {
 
     const levels = useUserStore((state) => state.levels);
     const unlockLevel = useUserStore((state) => state.unlockLevel);
+    const syncLevels = useUserStore((state) => state.syncLevels);
+
+    // Sync levels with the latest codebase configurations when Game mounts
+    useEffect(() => {
+        if (profile) {
+            syncLevels();
+        }
+    }, [profile, syncLevels]);
 
     // State to track if we are currently PLAYING a level (Visual Novel Mode)
     // HOOKS MUST BE AT THE TOP LEVEL

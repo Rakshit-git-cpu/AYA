@@ -14,6 +14,7 @@ interface UserState {
     unlockLevel: (levelId: string) => void;
     completeLevel: (levelId: string, stars: number) => void;
     addXp: (amount: number) => void;
+    syncLevels: () => void;
 
     // Personality System Actions
     updateTraits: (modifiers: Partial<PersonalityTraits>) => void;
@@ -84,6 +85,28 @@ export const useUserStore = create<UserState>()(
                     levels: dynamicLevels
                 });
             },
+
+            syncLevels: () => set((state) => {
+                if (!state.profile) return state;
+
+                const latestMasterLevels = generateLevels(state.profile.age);
+
+                // Merge latest codebase levels with the locally cached progress
+                const mergedLevels = latestMasterLevels.map(latestLevel => {
+                    const cachedLevel = state.levels.find(l => l.id === latestLevel.id);
+                    if (cachedLevel) {
+                        return {
+                            ...latestLevel,
+                            status: cachedLevel.status,
+                            isLocked: cachedLevel.isLocked,
+                            stars: cachedLevel.stars
+                        };
+                    }
+                    return latestLevel;
+                });
+
+                return { levels: mergedLevels };
+            }),
 
             // Personality Actions
             updateTraits: (modifiers) => set((state) => {
