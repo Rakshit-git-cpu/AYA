@@ -14,6 +14,10 @@ interface LevelMapProps {
 
 export function LevelMap({ onPlayLevel }: LevelMapProps) {
     const levels = useUserStore((state) => state.levels);
+    const profile = useUserStore((state) => state.profile);
+    const activeAge = profile?.age || 18;
+    const ageLevels = levels.filter(l => l.age === activeAge);
+
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
 
@@ -42,7 +46,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
 
     const NODE_OFFSETS = isMobile ? MOBILE_NODE_OFFSETS : DESKTOP_NODE_OFFSETS;
 
-    const totalHeight = (levels.length * NODE_SPACING) + (isMobile ? 300 : 400);
+    const totalHeight = (ageLevels.length * NODE_SPACING) + (isMobile ? 300 : 400);
 
     // Helper to calculate X/Y for a node based on index
     const getPosition = (index: number) => {
@@ -100,7 +104,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
         const timer = setTimeout(scrollToBottom, 150); // Fallback for heavy paints
 
         return () => clearTimeout(timer);
-    }, [levels.length]);
+    }, [ageLevels.length]);
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden select-none">
@@ -222,7 +226,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                             <svg className="absolute top-0 left-0 w-full h-full" style={{ overflow: 'visible' }}>
                                 {/* Path logic identical, just re-rendered with new getPosition */}
                                 <path
-                                    d={levels.reduce((path, _, i) => {
+                                    d={ageLevels.reduce((path, _, i) => {
                                         if (i === 0) return `M ${50 + (0)}% 80`;
                                         const prev = getPosition(i - 1);
                                         const curr = getPosition(i);
@@ -243,7 +247,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                         </div>
 
                         {/* LEVEL NODES */}
-                        {levels.map((level, i) => {
+                        {ageLevels.map((level, i) => {
                             const pos = getPosition(i);
                             const isUnlocked = level.status !== 'locked';
                             const isCompleted = level.status === 'completed';

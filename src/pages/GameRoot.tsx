@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { LevelMap } from '../components/game/LevelMap';
+import { CharacterSelection } from '../components/game/CharacterSelection';
 import { ScenarioGame } from '../components/game/ScenarioGame';
 import { PersonalityIntro } from '../components/game/PersonalityIntro';
 import { PersonalityAssessment } from '../components/game/PersonalityAssessment';
 import type { Level } from '../types/gameTypes';
-
 import { MatchReport } from '../components/game/MatchReport';
 
 export function GameRoot() {
@@ -17,67 +17,71 @@ export function GameRoot() {
     const unlockLevel = useUserStore((state) => state.unlockLevel);
     const syncLevels = useUserStore((state) => state.syncLevels);
 
-    // Always sync levels on mount so new codebase content is always injected
     useEffect(() => {
         syncLevels();
     }, [syncLevels]);
 
-    // State to track if we are currently PLAYING a level (Visual Novel Mode)
-    // HOOKS MUST BE AT THE TOP LEVEL
-    const [view, setView] = useState<'map' | 'intro' | 'game' | 'report'>('map');
+    // NEW STATE: track the view and the currently selected age & character
+    const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report'>('map');
+    const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
 
-
-
-    // If no profile, show Onboarding Wizard
     if (!profile) {
         return <OnboardingWizard />;
     }
 
-    // NEW: If profile exists but assessment not done, show Assessment
     if (!profile.assessmentCompleted) {
         return <PersonalityAssessment />;
     }
 
-    // Handler when a level is clicked in the LevelMap
+    // MAP: When user clicks a Level Node
     const handleLevelClick = (level: Level) => {
-        // Only allow playing if unlocked
-        if (!level.isLocked || level.status === 'unlocked') {
-            setActiveLevel(level); // Renamed from setPlayingLevel
-            setView('intro'); // SHOW INTRO FIRST
-        }
+        setActiveLevel(level);
+        setView('intro');
     };
 
-    // Handler for completing a scenario - Renamed and updated
+    // SELECTION: When user chooses a character card (No longer used by map directly, but keeping if needed)
+    const handleCharacterSelect = (level: Level) => {
+        setActiveLevel(level);
+        setView('intro');
+    };
+
     const handleLevelComplete = (stars: number) => {
         if (!activeLevel) return;
 
-        // 1. Save Score
         completeLevel(activeLevel.id, stars);
 
-        // 2. Unlock Next Level
-        // Find current index in the full levels list
+        // Unlock next Level logic (optional, keeping original behavior for now)
         const currentIndex = levels.findIndex(l => l.id === activeLevel.id);
         if (currentIndex !== -1 && currentIndex < levels.length - 1) {
             const nextLevel = levels[currentIndex + 1];
             unlockLevel(nextLevel.id);
         }
 
-        setView('report'); // Show Match Report instead of going to map immediately
-        // setActiveLevel(null); // Keep active level for report data
+        setView('report');
     };
 
     return (
         <div className="w-full h-screen bg-slate-950 overflow-hidden relative">
-            {/* If we are playing a level, show ScenarioGame. Otherwise show Map. */}
-            {/* VIEW ROUTING */}
+            {view === 'selection' && activeAge !== null && (
+                <CharacterSelection 
+                    age={activeAge}
+                    options={levels.filter(l => l.age === activeAge)}
+                    onSelect={handleCharacterSelect}
+                    onBack={() => {
+                        setActiveAge(null);
+                        setView('map');
+                    }}
+                />
+            )}
+
             {view === 'intro' && activeLevel && (
                 <PersonalityIntro
                     level={activeLevel}
                     onStart={() => setView('game')}
                     onBack={() => {
                         setActiveLevel(null);
-                        setView('map');
+                        setView('map'); // Go back directly to map
                     }}
                 />
             )}
@@ -93,7 +97,6 @@ export function GameRoot() {
                 />
             )}
 
-            {/* MATCH REPORT VIEW */}
             {view === 'report' && activeLevel && profile && (
                 <MatchReport
                     userTraits={profile.traits}
@@ -102,12 +105,12 @@ export function GameRoot() {
                     idolName={activeLevel.personality || activeLevel.archetype}
                     onClose={() => {
                         setActiveLevel(null);
+                        setActiveAge(null);
                         setView('map');
                     }}
                 />
             )}
 
-            {/* Map is always rendered in background for smooth transition, or hide it if performance needed */}
             <LevelMap onPlayLevel={handleLevelClick} />
         </div>
     );
