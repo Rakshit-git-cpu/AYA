@@ -89,19 +89,19 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
     const scrollableDistance = Math.max(0, totalHeight - windowHeight);
     const hudY = useTransform(smoothProgress, [0, 1], [0, -scrollableDistance]);
 
-    // --- AUTO-SCROLL TO BOTTOM ON MOUNT ---
+    // --- AUTO-SCROLL TO TOP ON MOUNT ---
     useEffect(() => {
-        const scrollToBottom = () => {
+        const scrollToTop = () => {
             if (containerRef.current) {
-                containerRef.current.scrollTop = containerRef.current.scrollHeight;
+                containerRef.current.scrollTop = 0;
                 // Force artificial scroll event to kickstart framer-motion parallax calculations instantly on mount!
                 containerRef.current.dispatchEvent(new Event('scroll'));
             }
         };
 
         // De-sync slightly to allow the React DOM to fully render the 6000px absolute layout before measuring
-        requestAnimationFrame(scrollToBottom);
-        const timer = setTimeout(scrollToBottom, 150); // Fallback for heavy paints
+        requestAnimationFrame(scrollToTop);
+        const timer = setTimeout(scrollToTop, 150); // Fallback for heavy paints
 
         return () => clearTimeout(timer);
     }, [ageLevels.length]);
