@@ -4,6 +4,7 @@ import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
 import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -43,6 +44,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
 
     // Scoring State
     const [score, setScore] = useState(0);
+    const [sessionChoices, setSessionChoices] = useState<string[]>([]);
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
 
@@ -150,7 +152,10 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
         }
     };
 
-    const handleChoiceClick = (choice: Choice) => {
+    const handleChoiceClick = async (choice: Choice) => {
+        // Track the choice
+        setSessionChoices(prev => [...prev, choice.text]);
+
         // If "Try Again" or "Complete", generic handling
         if (choice.next === 'intro') {
             // RETRY LOGIC: Allow going back to intro without wiping score (preserves penalty)
@@ -197,6 +202,21 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 matchResult: matchResult
             };
             collectLesson(lessonData);
+
+            // Supabase Tracking
+            const userProfile = useUserStore.getState().profile;
+            if (userProfile?.id) {
+                try {
+                    await supabase.from('game_sessions').insert([{
+                        user_id: userProfile.id,
+                        selected_personality: level.personality || level.archetype,
+                        scenario_choices: [...sessionChoices, choice.text], // include the final choice
+                        match_score: matchResult ? matchResult.matchPercentage : 0
+                    }]);
+                } catch (err) {
+                    console.error("Failed to save session to Supabase", err);
+                }
+            }
 
             // Add Global XP
             addXp(score);

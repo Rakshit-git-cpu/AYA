@@ -33,6 +33,8 @@ export interface MatchResult {
 }
 
 export interface UserProfile {
+    id?: string;
+    mobile?: string;
     name: string;
     age: number;
     interests?: string[];

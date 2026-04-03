@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { ArrowRight, Flame, Briefcase, Eye, Shield, Award, Zap } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
 // ---- NEW PSYCHOLOGICAL QUESTIONS (Deep Profiling) ----
@@ -83,7 +84,10 @@ const QUESTIONS = [
 export function PersonalityAssessment() {
     const [step, setStep] = useState(0);
     const completeAssessment = useUserStore(state => state.completeAssessment);
+    const userProfile = useUserStore(state => state.profile);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [answers, setAnswers] = useState<string[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Initial Base Stats
     const [traits, setTraits] = useState<PersonalityTraits>({
@@ -108,7 +112,8 @@ export function PersonalityAssessment() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleAnswer = (option: any) => {
+    const handleAnswer = async (option: any) => {
+        if (isSaving) return;
         audioSynth.playClick();
 
         const modifiers = option.modifiers;
@@ -128,32 +133,60 @@ export function PersonalityAssessment() {
 
         setTraits(newTraits);
 
-        // 2. Build Deep Profile
+        // 2. Build Deep Profile & Record Answer
         const currentQ = QUESTIONS[step];
         const newProfile = { ...profileBuilder, [currentQ.dimension]: option.value };
+        const newAnswers = [...answers, option.text];
+        
         setProfileBuilder(newProfile);
+        setAnswers(newAnswers);
 
         if (step < QUESTIONS.length - 1) {
             setStep(step + 1);
         } else {
-            if (audioSynth.playLevelComplete) audioSynth.playLevelComplete();
+            setIsSaving(true);
+            try {
+                if (userProfile?.id) {
+                    // Save Quiz Responses
+                    await supabase.from('quiz_responses').insert([{
+                        user_id: userProfile.id,
+                        question_1: newAnswers[0] || '',
+                        question_2: newAnswers[1] || '',
+                        question_3: newAnswers[2] || '',
+                        question_4: newAnswers[3] || '',
+                        question_5: newAnswers[4] || '',
+                        question_6: newAnswers[5] || ''
+                    }]);
 
-            // Finalize Profile (Fill defaults if somehow missing)
-            const finalProfile: PsychologicalProfile = {
-                motivation: (newProfile.motivation as MotivationType) || 'Stability',
-                risk: (newProfile.risk as RiskAppetite) || 'Balanced',
-                emotional: (newProfile.emotional as EmotionalStyle) || 'Resilient',
-                social: (newProfile.social as SocialRole) || 'Supporter',
-                passion: (newProfile.passion as PassionType) || 'Creative',
-                coreValue: (newProfile.coreValue as CoreValue) || 'Success'
-            };
+                    // Save Profile
+                    await supabase.from('personality_profiles').insert([{
+                        user_id: userProfile.id,
+                        trait_risk_taker: newTraits.risk,
+                        trait_creative: newTraits.creativity,
+                        trait_analytical: newTraits.vision,
+                        trait_social: newTraits.empathy,
+                        trait_ambitious: newTraits.leadership
+                    }]);
+                }
+            } catch (err) {
+                console.error("Failed to save to Supabase", err);
+            } finally {
+                setIsSaving(false);
+                if (audioSynth.playLevelComplete) audioSynth.playLevelComplete();
 
+                // Finalize Profile (Fill defaults if somehow missing)
+                const finalProfile: PsychologicalProfile = {
+                    motivation: (newProfile.motivation as MotivationType) || 'Stability',
+                    risk: (newProfile.risk as RiskAppetite) || 'Balanced',
+                    emotional: (newProfile.emotional as EmotionalStyle) || 'Resilient',
+                    social: (newProfile.social as SocialRole) || 'Supporter',
+                    passion: (newProfile.passion as PassionType) || 'Creative',
+                    coreValue: (newProfile.coreValue as CoreValue) || 'Success'
+                };
 
-
-
-
-            // IMMEDIATE COMPLETION - No Report Here
-            completeAssessment(newTraits, finalProfile);
+                // IMMEDIATE COMPLETION - No Report Here
+                completeAssessment(newTraits, finalProfile);
+            }
         }
     };
 
@@ -212,6 +245,7 @@ export function PersonalityAssessment() {
                         <h2 className="text-2xl md:text-3xl font-black text-white mb-2 leading-snug drop-shadow-md">
                             {currentQ.text}
                         </h2>
+                        {isSaving && <div className="mt-4 text-white animate-pulse">Saving Profile...</div>}
                     </div>
 
                     {/* Options Area */}
