@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { audioSynth } from '../../utils/audioSynth';
-import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw } from 'lucide-react';
+import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw, Copy, Check } from 'lucide-react';
 import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTypes';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
@@ -247,6 +247,60 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
         return Math.max(0, Math.min(100, score));
     }, [userTraits, idolName]);
 
+    const personalityDNA = useMemo(() => {
+        const diffs: { name: string; diff: number }[] = [];
+        for (const [name, profile] of Object.entries(IDOL_PROFILES)) {
+            if (name === idolName || name === "Default") continue;
+            
+            const totalDiff = 
+                Math.abs((userTraits.risk || 50) - profile.risk) +
+                Math.abs((userTraits.creativity || 50) - profile.creativity) +
+                Math.abs((userTraits.vision || 50) - profile.analytical) +
+                Math.abs((userTraits.empathy || 50) - profile.social) +
+                Math.abs((userTraits.leadership || 50) - profile.ambitious);
+                
+            diffs.push({ name, diff: totalDiff });
+        }
+        
+        diffs.sort((a, b) => a.diff - b.diff);
+        const top2 = diffs.slice(0, 2).map(d => d.name);
+        
+        const getTraitDesc = (name: string) => {
+            const p = IDOL_PROFILES[name];
+            const maxVal = Math.max(p.ambitious, p.creativity, p.analytical, p.social, p.risk);
+            
+            if (maxVal === p.ambitious) return `${name}'s relentless drive`;
+            if (maxVal === p.creativity) return `${name}'s creative vision`;
+            if (maxVal === p.analytical) return `${name}'s analytical mind`;
+            if (maxVal === p.social) return `${name}'s emotional depth`;
+            return `${name}'s bold fearlessness`;
+        };
+
+        if (top2.length < 2) return null;
+
+        return {
+            idol1: {
+                name: top2[0],
+                avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '',
+                desc: getTraitDesc(top2[0])
+            },
+            idol2: {
+                name: top2[1],
+                avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '',
+                desc: getTraitDesc(top2[1])
+            }
+        };
+    }, [userTraits, idolName]);
+
+    const [copiedDNA, setCopiedDNA] = useState(false);
+    const handleShareDNA = () => {
+        if (!personalityDNA) return;
+        const textToCopy = `My Personality DNA: I have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}. Discover yours at https://aya-game.com 🧬`;
+        navigator.clipboard.writeText(textToCopy);
+        setCopiedDNA(true);
+        setTimeout(() => setCopiedDNA(false), 2000);
+    };
+
     useEffect(() => {
         if (audioSynth.playWin) audioSynth.playWin();
         let start = 0;
@@ -415,6 +469,85 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                     {displayBlindSpots.slice(0, 3).map((str, i) => <BlockerIcon key={i} label={str} isCandyMode={isCandyMode} />)}
                                 </FrostedGrapePanel>
                             </div>
+
+                            {/* PERSONALITY DNA SECTION */}
+                            {personalityDNA && (
+                                <div className="w-full max-w-2xl mb-8">
+                                    <div className={clsx(
+                                        "relative rounded-3xl overflow-hidden shadow-2xl p-6 flex flex-col items-center",
+                                        isCandyMode
+                                            ? "bg-purple-900/60 border-2 border-purple-400/30"
+                                            : "bg-slate-900/60 border border-[#4DD9FF]/20"
+                                    )}>
+                                        {/* Glass effect */}
+                                        <div className="absolute inset-0 backdrop-blur-md z-0" />
+                                        
+                                        <div className="relative z-10 w-full flex flex-col items-center">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-xl">🧬</span>
+                                                <h3 className={clsx(
+                                                    "text-sm font-black tracking-[0.2em] uppercase",
+                                                    isCandyMode ? "text-pink-300" : "text-[#4DD9FF]"
+                                                )}>YOUR PERSONALITY DNA</h3>
+                                            </div>
+                                            
+                                            <p className="text-slate-300 text-sm mb-6">You are a unique mix of:</p>
+
+                                            <div className="flex items-center justify-center gap-4 md:gap-8 mb-6 w-full">
+                                                {/* Idol 1 */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className={clsx(
+                                                        "w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden mb-3",
+                                                        isCandyMode ? "border-pink-500/50" : "border-slate-700"
+                                                    )}>
+                                                        <img src={personalityDNA.idol1.avatarUrl} alt={personalityDNA.idol1.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                </div>
+
+                                                {/* Glowing Plus */}
+                                                <div className={clsx(
+                                                    "text-3xl font-black mb-3 drop-shadow-lg",
+                                                    isCandyMode ? "text-yellow-300 shadow-yellow-300/50" : "text-amber-400 shadow-amber-400/50"
+                                                )}>
+                                                    +
+                                                </div>
+
+                                                {/* Idol 2 */}
+                                                <div className="flex flex-col items-center">
+                                                    <div className={clsx(
+                                                        "w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden mb-3",
+                                                        isCandyMode ? "border-purple-500/50" : "border-slate-700"
+                                                    )}>
+                                                        <img src={personalityDNA.idol2.avatarUrl} alt={personalityDNA.idol2.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Traits Description */}
+                                            <p className={clsx(
+                                                "text-center text-lg md:text-xl italic font-serif mb-6 max-w-lg leading-relaxed",
+                                                isCandyMode ? "text-yellow-100 font-yummy" : "text-amber-100/90"
+                                            )}>
+                                                "You have {personalityDNA.idol1.desc} <br className="hidden md:block"/> and {personalityDNA.idol2.desc}"
+                                            </p>
+
+                                            {/* Share Button */}
+                                            <button 
+                                                onClick={handleShareDNA}
+                                                className={clsx(
+                                                    "flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all hover:scale-105 active:scale-95 text-sm uppercase tracking-wider",
+                                                    isCandyMode
+                                                        ? "bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-[0_0_15px_rgba(236,72,153,0.4)]"
+                                                        : "bg-slate-800 border border-[#4DD9FF]/30 text-[#4DD9FF] hover:bg-slate-700/80 shadow-[0_0_10px_rgba(77,217,255,0.15)]"
+                                                )}
+                                            >
+                                                {copiedDNA ? <Check size={18} /> : <Copy size={18} />}
+                                                {copiedDNA ? "COPIED TO CLIPBOARD!" : "SHARE YOUR DNA"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Honey Mission Box / Cyber Directive */}
                             <div className="relative w-full max-w-2xl transform hover:scale-[1.02] transition-transform">
