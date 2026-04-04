@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUserStore } from '../../store/userStore';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
@@ -59,7 +59,13 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
 
     // Scoring State
     const [score, setScore] = useState(0);
+    // Ref mirror tracks session choices — avoids React stale closure when reading at COMPLETE time
+    const sessionChoicesRef = useRef<SessionChoiceData[]>([]);
     const [sessionChoices, setSessionChoices] = useState<SessionChoiceData[]>([]);
+    const addChoiceToSession = (c: SessionChoiceData) => {
+        sessionChoicesRef.current = [...sessionChoicesRef.current, c];
+        setSessionChoices(sessionChoicesRef.current);
+    };
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
 
@@ -228,8 +234,11 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
            trait_impacts: adjustedImpacts
         };
 
+        // DEBUG: Log each choice being recorded
+        console.log('[AYA] Choice recorded:', JSON.stringify(choiceData, null, 2));
+
         if (choice.next !== 'intro' && choice.next !== 'COMPLETE') {
-             setSessionChoices(prev => [...prev, choiceData]);
+             addChoiceToSession(choiceData);
         }
 
         // If "Try Again" or "Complete", generic handling
@@ -240,8 +249,8 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
         }
 
         if (choice.next === 'COMPLETE') {
-            const finalSessionChoices = [...sessionChoices, choiceData];
-            setSessionChoices(finalSessionChoices);
+            // Use the ref to get the definitive up-to-date list (avoids React stale closure)
+            const finalSessionChoices = [...sessionChoicesRef.current, choiceData];
 
             // Fetch Base Profile (Source 1 - 40%)
             const userProfile = useUserStore.getState().profile;
@@ -323,11 +332,19 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                         })
                         .eq('user_id', userProfile.id);
 
+                    // Safely serialize for Supabase JSONB — ensures no TypeScript fields are silently dropped
+                    const serializedChoices = JSON.parse(JSON.stringify(finalSessionChoices)) as SessionChoiceData[];
+
+                    // DEBUG: Log exact payload going into Supabase
+                    console.log('[AYA] Saving game_sessions — scenario_choices payload:');
+                    console.log(JSON.stringify(serializedChoices, null, 2));
+                    console.log('[AYA] Total choices:', serializedChoices.length);
+
                     // Insert the detailed session records
                     await supabase.from('game_sessions').insert([{
                         user_id: userProfile.id,
                         selected_personality: level.personality || level.archetype,
-                        scenario_choices: finalSessionChoices as any,
+                        scenario_choices: serializedChoices,
                         match_score: matchPercent
                     }]);
                 } catch (err) {
