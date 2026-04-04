@@ -91,7 +91,7 @@ export const InstagramCard = forwardRef<HTMLDivElement, InstagramCardProps>(
                                 <div className="flex flex-col items-center gap-4">
                                     <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-[#99f7ff] to-transparent shadow-[0_0_30px_rgba(153,247,255,0.3)]">
                                         <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#99f7ff]/40">
-                                            <img src={personalityDNA.idol1.avatarUrl} alt="Idol 1" className="w-full h-full object-cover" />
+                                            <img src={personalityDNA.idol1.avatarUrl} alt="Idol 1" crossOrigin="anonymous" className="w-full h-full object-cover" />
                                         </div>
                                     </div>
                                     <span className="text-[16px] tracking-widest text-[#f2effb]/60 uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -110,7 +110,7 @@ export const InstagramCard = forwardRef<HTMLDivElement, InstagramCardProps>(
                                 <div className="flex flex-col items-center gap-4">
                                     <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-[#d575ff] to-transparent shadow-[0_0_30px_rgba(213,117,255,0.3)]">
                                         <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#d575ff]/40">
-                                            <img src={personalityDNA.idol2.avatarUrl} alt="Idol 2" className="w-full h-full object-cover" />
+                                            <img src={personalityDNA.idol2.avatarUrl} alt="Idol 2" crossOrigin="anonymous" className="w-full h-full object-cover" />
                                         </div>
                                     </div>
                                     <span className="text-[16px] tracking-widest text-[#f2effb]/60 uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>

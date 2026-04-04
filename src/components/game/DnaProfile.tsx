@@ -4,7 +4,7 @@ import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList } from 'l
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 import { calculateLevelInfo } from '../../utils/levelSystem';
-import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 import { InstagramCard } from './InstagramCard';
 import { useRef } from 'react';
 
@@ -161,24 +161,30 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     };
 
     const handleDownloadCard = async () => {
+        console.log('Download card clicked');
         if (!cardRef.current || isGenerating) return;
         
         try {
             audioSynth.playClick();
             setIsGenerating(true);
+
+            // Give React a frame to ensure the DOM is completely ready including the refs
+            await new Promise(resolve => setTimeout(resolve, 100));
             
-            const canvas = await html2canvas(cardRef.current, {
-                backgroundColor: null,
-                scale: 2, // High DPI for Instagram
-                useCORS: true,
-                logging: false,
-                windowWidth: 1080,
-                windowHeight: 1080
+            const dataUrl = await domtoimage.toPng(cardRef.current, {
+                quality: 1,
+                bgcolor: '#000000',
+                width: 1080,
+                height: 1080,
+                style: {
+                    transform: 'scale(1)',
+                    transformOrigin: 'top left'
+                }
             });
             
             const link = document.createElement('a');
             link.download = `aya-dna-${profile?.name || 'card'}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.href = dataUrl;
             link.click();
             
             setTimeout(() => setShowOptions(false), 1000);
