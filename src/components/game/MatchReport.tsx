@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { audioSynth } from '../../utils/audioSynth';
 import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw } from 'lucide-react';
 import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTypes';
-import { IDOL_MINDSETS } from '../../data/idolMindsets';
+import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 
 interface MatchReportProps {
@@ -231,23 +231,21 @@ export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onC
     else if (struggleStr.includes('Fear of what others think')) realLifeChallenge = "Share one honest opinion with someone today.";
     else if (struggleStr.includes('Staying consistent')) realLifeChallenge = "Set one non-negotiable daily habit starting tonight.";
 
-    // Dynamic Match Calculation
+    // Dynamic Match Calculation using strict IDOL_PROFILES
     const matchScore = useMemo(() => {
-        if (!userTraits || !idolTraits) return 76; // Fallback
+        const strictIdolTraits = IDOL_PROFILES[idolName] || IDOL_PROFILES["Default"];
+        
+        const totalDiff = 
+            Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
+            Math.abs((userTraits.creativity || 50) - strictIdolTraits.creativity) +
+            Math.abs((userTraits.vision || 50) - strictIdolTraits.analytical) +
+            Math.abs((userTraits.empathy || 50) - strictIdolTraits.social) +
+            Math.abs((userTraits.leadership || 50) - strictIdolTraits.ambitious);
 
-        const traitKeys = Object.keys(idolTraits) as Array<keyof PersonalityTraits>;
-        if (traitKeys.length === 0) return 85;
-
-        const totalDiff = traitKeys.reduce((acc, key) => {
-            const userVal = userTraits[key] || 50;
-            const idolVal = idolTraits[key] || 50;
-            return acc + Math.abs(userVal - idolVal);
-        }, 0);
-
-        const avgDiff = totalDiff / traitKeys.length;
+        const avgDiff = totalDiff / 5;
         let score = Math.round(100 - avgDiff);
-        return Math.max(65, Math.min(99, score));
-    }, [userTraits, idolTraits]);
+        return Math.max(0, Math.min(100, score));
+    }, [userTraits, idolName]);
 
     useEffect(() => {
         if (audioSynth.playWin) audioSynth.playWin();

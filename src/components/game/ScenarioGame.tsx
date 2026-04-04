@@ -5,6 +5,7 @@ import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
 import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { IDOL_PROFILES } from '../../data/idolMindsets';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -30,6 +31,20 @@ interface Choice {
     feedback: string;
 }
 
+// Session Choice Tracker Data
+interface SessionChoiceData {
+    question: string;
+    chosen_option: string;
+    time_taken_seconds: number;
+    trait_impacts: {
+        risk_taker: number;
+        creative: number;
+        analytical: number;
+        social: number;
+        ambitious: number;
+    };
+}
+
 // Enhanced Scenario Data with Scoring
 // TODO: Move this to a separate data file in the next step
 // SCENARIO_DATA Removed - Using STORY_DATABASE from data/scenarios
@@ -44,7 +59,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
 
     // Scoring State
     const [score, setScore] = useState(0);
-    const [sessionChoices, setSessionChoices] = useState<string[]>([]);
+    const [sessionChoices, setSessionChoices] = useState<SessionChoiceData[]>([]);
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
 
@@ -56,6 +71,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
 
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
+    
+    // Timing State for Source 3 Matching
+    const [frameStartTime, setFrameStartTime] = useState<number>(Date.now());
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
     const collectLesson = useUserStore((state) => state.collectLesson);
     const addXp = useUserStore((state) => state.addXp); // Global XP Action
@@ -134,6 +152,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                     setDisplayedText(activeText.slice(0, i));
                 } else {
                     setIsTyping(false);
+                    setFrameStartTime(Date.now()); // Restart timer once question is readable
                     clearInterval(timer);
                 }
             }, 20); // Slightly faster typing
@@ -149,12 +168,69 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
         if (isTyping) {
             setDisplayedText(activeText);
             setIsTyping(false);
+            setFrameStartTime(Date.now()); // Question is readable, start timer now
         }
     };
 
+    // Semantic Keyword Engine (Match Source 2)
+    const calculateTraitImpacts = (text: string, baseScore: number) => {
+        const impacts = { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 };
+        const lowerText = text.toLowerCase();
+        
+        if (lowerText.match(/risk|bold|dare|attack|fearless|leap/)) impacts.risk_taker += 5;
+        if (lowerText.match(/safe|defend|wait|hide|careful/)) impacts.risk_taker -= 5;
+        
+        if (lowerText.match(/creative|art|imagine|different|new|silly/)) impacts.creative += 5;
+        if (lowerText.match(/routine|normal|rules|boring/)) impacts.creative -= 5;
+        
+        if (lowerText.match(/logic|study|plan|focus|read|strategy/)) impacts.analytical += 5;
+        if (lowerText.match(/impulse|rush|distraction|anger/)) impacts.analytical -= 5;
+        
+        if (lowerText.match(/team|help|people|listen|talk|friend/)) impacts.social += 5;
+        if (lowerText.match(/alone|ignore|selfish/)) impacts.social -= 5;
+        
+        if (lowerText.match(/goal|lead|win|push|success/)) impacts.ambitious += 5;
+        if (lowerText.match(/quit|give up|stop|fail/)) impacts.ambitious -= 5;
+
+        // Apply intensity scaling based on choice baseline score
+        if (Object.values(impacts).every(v => v === 0)) {
+           if (baseScore > 0) impacts.ambitious += Math.min(baseScore, 5); 
+        } else {
+           const sign = baseScore >= 0 ? 1 : -1;
+           const magnitude = Math.abs(baseScore);
+           for (const key in impacts) {
+               if (impacts[key as keyof typeof impacts] !== 0) {
+                  impacts[key as keyof typeof impacts] += (sign * Math.floor(magnitude / 2));
+               }
+           }
+        }
+        return impacts;
+    };
+
     const handleChoiceClick = async (choice: Choice) => {
-        // Track the choice
-        setSessionChoices(prev => [...prev, choice.text]);
+        const timeTakenSeconds = Math.max(1, Math.round((Date.now() - frameStartTime) / 1000));
+        
+        const rawImpacts = calculateTraitImpacts(choice.text, choice.score);
+        const adjustedImpacts = { ...rawImpacts };
+        
+        // Speed Adjustment Source 3 (20% Weight impact logic translated to point modifiers)
+        for (const key in adjustedImpacts) {
+            if (adjustedImpacts[key as keyof typeof adjustedImpacts] > 0) {
+                 if (timeTakenSeconds <= 5) adjustedImpacts[key as keyof typeof adjustedImpacts] += 2; // High Confidence
+                 if (timeTakenSeconds >= 15) adjustedImpacts[key as keyof typeof adjustedImpacts] -= 2; // Uncertainty
+            }
+        }
+        
+        const choiceData: SessionChoiceData = {
+           question: displayedText,
+           chosen_option: choice.text,
+           time_taken_seconds: timeTakenSeconds,
+           trait_impacts: adjustedImpacts
+        };
+
+        if (choice.next !== 'intro' && choice.next !== 'COMPLETE') {
+             setSessionChoices(prev => [...prev, choiceData]);
+        }
 
         // If "Try Again" or "Complete", generic handling
         if (choice.next === 'intro') {
@@ -164,32 +240,61 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
         }
 
         if (choice.next === 'COMPLETE') {
-            // Calculate Stars based on accumulated score
+            const finalSessionChoices = [...sessionChoices, choiceData];
+            setSessionChoices(finalSessionChoices);
+
+            // Fetch Base Profile (Source 1 - 40%)
+            const userProfile = useUserStore.getState().profile;
+            const quizTraits = userProfile?.traits || { risk: 50, creativity: 50, vision: 50, empathy: 50, leadership: 50 };
+            
+            // Aggregate Game Choices (Source 2 & 3)
+            let scenarioAccumulator = { risk: 0, creativity: 0, analytical: 0, social: 0, ambitious: 0 };
+            finalSessionChoices.forEach(c => {
+                scenarioAccumulator.risk += c.trait_impacts.risk_taker;
+                scenarioAccumulator.creativity += c.trait_impacts.creative;
+                scenarioAccumulator.analytical += c.trait_impacts.analytical;
+                scenarioAccumulator.social += c.trait_impacts.social;
+                scenarioAccumulator.ambitious += c.trait_impacts.ambitious;
+            });
+
+            // Calculate Combined Traits
+            const safeClamp = (val: number) => Math.max(0, Math.min(100, Math.round(val)));
+            const recalibratedTraits = {
+                risk: safeClamp((quizTraits.risk * 0.4) + ((50 + scenarioAccumulator.risk) * 0.6)),
+                creativity: safeClamp((quizTraits.creativity * 0.4) + ((50 + scenarioAccumulator.creativity) * 0.6)),
+                vision: safeClamp((quizTraits.vision * 0.4) + ((50 + scenarioAccumulator.analytical) * 0.6)), // analytical = vision
+                empathy: safeClamp((quizTraits.empathy * 0.4) + ((50 + scenarioAccumulator.social) * 0.6)), // social = empathy
+                leadership: safeClamp((quizTraits.leadership * 0.4) + ((50 + scenarioAccumulator.ambitious) * 0.6)) // ambitious = leadership
+            };
+
+            // Calculate Match Result against IDOL_PROFILES
+            const idolName = level.personality || level.archetype || "Default";
+            const idolTraits = IDOL_PROFILES[idolName] || IDOL_PROFILES["Default"];
+            
+            const totalDiff = 
+                Math.abs(recalibratedTraits.risk - idolTraits.risk) +
+                Math.abs(recalibratedTraits.creativity - idolTraits.creativity) +
+                Math.abs(recalibratedTraits.vision - idolTraits.analytical) +
+                Math.abs(recalibratedTraits.empathy - idolTraits.social) +
+                Math.abs(recalibratedTraits.leadership - idolTraits.ambitious);
+                
+            const matchPercent = Math.max(0, Math.round(100 - (totalDiff / 5)));
+
+            // Identify dominant gap
+            const userTraitMap: any = { risk: recalibratedTraits.risk, creative: recalibratedTraits.creativity, analytical: recalibratedTraits.vision, social: recalibratedTraits.empathy, ambitious: recalibratedTraits.leadership };
+            const gapTrait = Object.keys(idolTraits).reduce((a, b) => {
+                const gapA = idolTraits[a] - userTraitMap[a];
+                const gapB = idolTraits[b] - userTraitMap[b];
+                return gapA > gapB ? a : b;
+            });
+
+            const matchResult = {
+                matchPercentage: matchPercent,
+                gapAnalysis: `Growth Area: ${gapTrait}`,
+                idolName: idolName
+            };
+            
             const starCount = score >= 20 ? 3 : score >= 10 ? 2 : 1;
-
-            // Calculate Match Result for saving
-            const userTraits = (useUserStore.getState().profile?.traits || {}) as Record<string, number>;
-            const idolTraits = (level.idolTraits || {}) as Record<string, number>;
-            let matchResult = undefined;
-
-            if (level.idolTraits) {
-                const traitKeys = Object.keys(userTraits);
-                const totalDiff = traitKeys.reduce((acc, key) => acc + Math.abs((userTraits[key] || 50) - (idolTraits[key] || 50)), 0);
-                const matchPercent = Math.max(0, Math.round(100 - (totalDiff / (traitKeys.length || 1))));
-
-                // Identify dominant gap
-                const gapTrait = traitKeys.length > 0 ? traitKeys.reduce((a, b) => {
-                    const gapA = (idolTraits[a] || 50) - (userTraits[a] || 50);
-                    const gapB = (idolTraits[b] || 50) - (userTraits[b] || 50);
-                    return gapA > gapB ? a : b;
-                }) : 'None';
-
-                matchResult = {
-                    matchPercentage: matchPercent,
-                    gapAnalysis: `Growth Area: ${String(gapTrait)}`,
-                    idolName: level.personality || level.archetype
-                };
-            }
 
             // Collect Lesson
             const lessonData: Lesson = {
@@ -204,14 +309,26 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             collectLesson(lessonData);
 
             // Supabase Tracking
-            const userProfile = useUserStore.getState().profile;
             if (userProfile?.id) {
                 try {
+                    // Update the user's base personality profile with the new recalibrated traits
+                    await supabase.from('personality_profiles')
+                        .update({
+                            trait_risk_taker: recalibratedTraits.risk,
+                            trait_creative: recalibratedTraits.creativity,
+                            trait_analytical: recalibratedTraits.vision,
+                            trait_social: recalibratedTraits.empathy,
+                            trait_ambitious: recalibratedTraits.leadership,
+                            last_updated: new Date().toISOString()
+                        })
+                        .eq('user_id', userProfile.id);
+
+                    // Insert the detailed session records
                     await supabase.from('game_sessions').insert([{
                         user_id: userProfile.id,
                         selected_personality: level.personality || level.archetype,
-                        scenario_choices: [...sessionChoices, choice.text], // include the final choice
-                        match_score: matchResult ? matchResult.matchPercentage : 0
+                        scenario_choices: finalSessionChoices as any,
+                        match_score: matchPercent
                     }]);
                 } catch (err) {
                     console.error("Failed to save session to Supabase", err);
@@ -221,14 +338,14 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             // Add Global XP
             addXp(score);
 
-            // UPDATE TRAITS (Heuristic)
-            if (score > 10) {
-                updateTraits({
-                    discipline: 2,
-                    resilience: 2,
-                    risk: 1
-                });
-            }
+            // UPDATE TRAITS globally
+            updateTraits({
+                risk: recalibratedTraits.risk - quizTraits.risk,
+                creativity: recalibratedTraits.creativity - quizTraits.creativity,
+                vision: recalibratedTraits.vision - quizTraits.vision,
+                empathy: recalibratedTraits.empathy - quizTraits.empathy,
+                leadership: recalibratedTraits.leadership - quizTraits.leadership
+            });
 
             handleLevelComplete(starCount);
             return;
