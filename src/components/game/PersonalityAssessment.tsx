@@ -378,42 +378,37 @@ export function PersonalityAssessment() {
                                         )}>
                                             {opt.text}
                                         </span>
-                                        <div className={clsx(
-                                            "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0",
-                                            isNeon ? (
-                                                isSelected
-                                                    ? "bg-cyan-500 text-slate-900 shadow-[0_0_10px_rgba(20,184,166,0.8)]"
-                                                    : "bg-slate-800 text-slate-500 border border-slate-600 group-hover:border-cyan-400 group-hover:text-cyan-400"
-                                            ) : (
+                                        {isNeon ? (
+                                            isSelected && (
+                                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0 bg-cyan-400 text-slate-900 shadow-[0_0_15px_rgba(34,211,238,1)]">
+                                                    <Check size={20} className="md:w-6 md:h-6 stroke-[3]" />
+                                                </div>
+                                            )
+                                        ) : (
+                                            <div className={clsx(
+                                                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0",
                                                 isSelected 
                                                     ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" 
                                                     : "bg-pink-100 group-hover:bg-pink-500 group-hover:text-white"
-                                            )
-                                        )}>
-                                            {isSelected ? <Check size={16} className="md:w-5 md:h-5" /> : <ArrowRight size={16} className="md:w-5 md:h-5" />}
-                                        </div>
+                                            )}>
+                                                {isSelected ? <Check size={16} className="md:w-5 md:h-5" /> : <ArrowRight size={16} className="md:w-5 md:h-5" />}
+                                            </div>
+                                        )}
                                     </div>
                                 </button>
                             );
                         })}
                         
                         {/* Multi-Select Continue Button */}
-                        {currentQ.multiSelect && (
-                            <div className="mt-8 flex justify-center pb-4">
+                        {currentQ.multiSelect && currentSelection.length > 0 && (
+                            <div className="mt-8 flex justify-center pb-4 animate-[float-score_0.5s_ease-out_forwards]">
                                 <button
                                     onClick={() => commitAnswer(currentSelection)}
-                                    disabled={currentSelection.length === 0}
                                     className={clsx(
-                                        "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300",
-                                        isNeon ? (
-                                            currentSelection.length > 0
-                                                ? "bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:scale-105 active:scale-95 hover:bg-cyan-400 cursor-pointer"
-                                                : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
-                                        ) : (
-                                            currentSelection.length > 0
-                                                ? "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] hover:scale-105 active:scale-95 cursor-pointer"
-                                                : "bg-slate-700/50 text-slate-500 border border-slate-600 cursor-not-allowed"
-                                        )
+                                        "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer",
+                                        isNeon 
+                                            ? "bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:bg-cyan-400"
+                                            : "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)]"
                                     )}
                                 >
                                     Continue
