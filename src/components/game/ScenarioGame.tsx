@@ -182,24 +182,34 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     };
 
     // Semantic Keyword Engine (Match Source 2)
+    const NAVIGATION_CHOICES = ['next chapter', 'finish chapter', 'collect reward', 'complete level'];
+
     const calculateTraitImpacts = (text: string, baseScore: number) => {
         const impacts = { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 };
         const lowerText = text.toLowerCase();
+
+        // Skip navigation-only choices entirely
+        if (NAVIGATION_CHOICES.some(nav => lowerText === nav)) return impacts;
         
-        if (lowerText.match(/risk|bold|dare|attack|fearless|leap/)) impacts.risk_taker += 5;
-        if (lowerText.match(/safe|defend|wait|hide|careful/)) impacts.risk_taker -= 5;
+        // RISK_TAKER: bold action vs playing safe
+        if (lowerText.match(/risk|bold|dare|attack|fearless|leap|jump|escape|rebel|defy|unconventional|break|secret|unauthorized|sneak|confront|charge|storm|aggressive|reckless|challenge|disobey|steal|fight|resist/)) impacts.risk_taker += 5;
+        if (lowerText.match(/safe|defend|wait|hide|careful|cautious|protect|avoid|retreat|comply|obey|follow orders|stay quiet|keep your head down|play it safe/)) impacts.risk_taker -= 5;
         
-        if (lowerText.match(/creative|art|imagine|different|new|silly/)) impacts.creative += 5;
-        if (lowerText.match(/routine|normal|rules|boring/)) impacts.creative -= 5;
+        // CREATIVE: artistic expression vs routine
+        if (lowerText.match(/creative|art|write|create|design|story|direct|imagine|build|invent|theatre|music|draw|film|paint|compose|dream|vision|original|unique|style|craft|sculpt|improvise|experiment|innovate/)) impacts.creative += 5;
+        if (lowerText.match(/routine|normal|boring|copy|standard|conventional|mundane|repetitive|textbook/)) impacts.creative -= 5;
         
-        if (lowerText.match(/logic|study|plan|focus|read|strategy/)) impacts.analytical += 5;
-        if (lowerText.match(/impulse|rush|distraction|anger/)) impacts.analytical -= 5;
+        // ANALYTICAL: thinking and strategy vs impulsive
+        if (lowerText.match(/study|plan|research|logic|strategy|analyse|analyze|calculate|think|review|audit|observe|focus|read|data|methodical|systematic|examine|investigate|evaluate|assess|reason|evidence|proof|pattern|prepare/)) impacts.analytical += 5;
+        if (lowerText.match(/impulse|rush|distraction|anger|panic|emotional|rash|hasty|gut feeling|wing it|blindly/)) impacts.analytical -= 5;
         
-        if (lowerText.match(/team|help|people|listen|talk|friend/)) impacts.social += 5;
-        if (lowerText.match(/alone|ignore|selfish/)) impacts.social -= 5;
+        // SOCIAL: connection vs isolation
+        if (lowerText.match(/team|people|friend|connect|talk|listen|coach|mentor|network|collaborate|meet|help|support|community|share|together|unite|gather|recruit|ally|partner|trust|confide|ask|empathy|compassion|kindness/)) impacts.social += 5;
+        if (lowerText.match(/alone|ignore|selfish|isolate|solo|abandon|betray|ghost|silent treatment|cold shoulder|dismiss/)) impacts.social -= 5;
         
-        if (lowerText.match(/goal|lead|win|push|success/)) impacts.ambitious += 5;
-        if (lowerText.match(/quit|give up|stop|fail/)) impacts.ambitious -= 5;
+        // AMBITIOUS: drive and ambition vs giving up
+        if (lowerText.match(/name|director|goal|success|win|achieve|top|lead|claim|own|declare|door|office|contract|opportunity|power|dominate|climb|prove|demand|ambition|hustle|grind|first|best|conquer|pitch|negotiate|promote|champion|throne|empire/)) impacts.ambitious += 5;
+        if (lowerText.match(/quit|give up|stop|fail|surrender|settle|accept defeat|step down|walk away|resign|mediocre/)) impacts.ambitious -= 5;
 
         // Apply intensity scaling based on choice baseline score
         if (Object.values(impacts).every(v => v === 0)) {
@@ -220,16 +230,23 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
 
+        // Skip trait calculation for navigation-only choices
+        const isNavChoice = NAVIGATION_CHOICES.some(nav => choice.text.toLowerCase() === nav);
+
         const timeTakenSeconds = Math.max(1, Math.round((Date.now() - frameStartTime) / 1000));
         
-        const rawImpacts = calculateTraitImpacts(choice.text, choice.score);
+        const rawImpacts = isNavChoice
+            ? { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+            : calculateTraitImpacts(choice.text, choice.score);
         const adjustedImpacts = { ...rawImpacts };
         
         // Speed Adjustment Source 3 (20% Weight impact logic translated to point modifiers)
-        for (const key in adjustedImpacts) {
-            if (adjustedImpacts[key as keyof typeof adjustedImpacts] > 0) {
-                 if (timeTakenSeconds <= 5) adjustedImpacts[key as keyof typeof adjustedImpacts] += 2; // High Confidence
-                 if (timeTakenSeconds >= 15) adjustedImpacts[key as keyof typeof adjustedImpacts] -= 2; // Uncertainty
+        if (!isNavChoice) {
+            for (const key in adjustedImpacts) {
+                if (adjustedImpacts[key as keyof typeof adjustedImpacts] > 0) {
+                     if (timeTakenSeconds <= 5) adjustedImpacts[key as keyof typeof adjustedImpacts] += 2; // High Confidence
+                     if (timeTakenSeconds >= 15) adjustedImpacts[key as keyof typeof adjustedImpacts] -= 2; // Uncertainty
+                }
             }
         }
         
