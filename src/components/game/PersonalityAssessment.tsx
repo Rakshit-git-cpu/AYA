@@ -343,6 +343,8 @@ export function PersonalityAssessment() {
                                     onClick={() => {
                                         if (currentQ.multiSelect) {
                                             toggleOption(opt);
+                                        } else if (isNeon) {
+                                            setCurrentSelection([opt]);
                                         } else {
                                             commitAnswer([opt]);
                                         }
@@ -399,8 +401,8 @@ export function PersonalityAssessment() {
                             );
                         })}
                         
-                        {/* Multi-Select Continue Button */}
-                        {currentQ.multiSelect && currentSelection.length > 0 && (
+                        {/* Continue Button */}
+                        {(currentQ.multiSelect || isNeon) && currentSelection.length > 0 && (
                             <div className="mt-8 flex justify-center pb-4 animate-[float-score_0.5s_ease-out_forwards]">
                                 <button
                                     onClick={() => commitAnswer(currentSelection)}
