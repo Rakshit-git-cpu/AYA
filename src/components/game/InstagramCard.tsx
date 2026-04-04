@@ -9,151 +9,315 @@ interface InstagramCardProps {
     } | null;
     dynamicProfileTag: string;
     levelName: string;
+    topMatchName?: string;
+    topMatchScore?: number;
 }
 
 export const InstagramCard = forwardRef<HTMLDivElement, InstagramCardProps>(
-    ({ profile, personalityDNA, dynamicProfileTag, levelName }, ref) => {
-        // Fallback traits if profile missing completely
+    ({ profile, personalityDNA, levelName, topMatchName, topMatchScore }, ref) => {
+
         const userTraits = profile?.traits || {
-            risk: 50,
-            creativity: 50,
-            vision: 50,
-            empathy: 50,
-            leadership: 50
+            risk: 50, creativity: 50, vision: 50, empathy: 50, leadership: 50
         };
 
-        const renderBar = (label: string, value: number, colorClass: string, glowClass: string) => (
-            <div className="space-y-2">
-                <div className="flex justify-between items-end">
-                    <span className={`font-space text-[14px] uppercase tracking-wider ${colorClass}`}>{label}</span>
-                    <span className="font-space text-lg font-bold text-[#f2effb]">{value}%</span>
+        const hookCelebrity = topMatchName || 'Kobe Bryant';
+        const matchScore = topMatchScore || Math.floor(Math.random() * 20) + 70;
+
+        const renderBar = (
+            label: string,
+            value: number,
+            colorHex: string,
+            bgFrom: string
+        ) => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '6px' }}>
+                <span style={{
+                    width: '86px',
+                    fontSize: '9px',
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.15em',
+                    color: '#d0c6ab',
+                    fontWeight: 700,
+                    flexShrink: 0
+                }}>
+                    {label}
+                </span>
+                <div style={{
+                    flexGrow: 1,
+                    height: '4px',
+                    backgroundColor: '#353534',
+                    overflow: 'hidden',
+                    position: 'relative'
+                }}>
+                    <div style={{
+                        height: '100%',
+                        width: `${value}%`,
+                        background: `linear-gradient(90deg, ${bgFrom}66, ${colorHex})`,
+                        boxShadow: `0 0 8px ${colorHex}`
+                    }} />
                 </div>
-                <div className="h-2.5 w-full bg-[#252531] rounded-full overflow-hidden">
-                    <div className={`h-full bg-gradient-to-r ${glowClass}`} style={{ width: `${value}%` }}></div>
-                </div>
+                <span style={{
+                    width: '28px',
+                    textAlign: 'right',
+                    fontSize: '9px',
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 700,
+                    color: colorHex,
+                    flexShrink: 0
+                }}>
+                    {value}%
+                </span>
             </div>
         );
 
         return (
-            <div 
+            <div
                 ref={ref}
-                /* We ensure text sizes scale nicely assuming 1080px base */
-                className="relative w-[1080px] h-[1080px] bg-[#000000] overflow-hidden flex flex-col items-stretch justify-between"
-                style={{ 
-                    fontFamily: "'Manrope', sans-serif",
-                    // Use a slight transform or container hack so html2canvas renders perfectly at 1:1
+                style={{
+                    width: '1080px',
+                    height: '1080px',
+                    backgroundColor: '#131313',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    fontFamily: "'Space Grotesk', sans-serif",
                     boxSizing: 'border-box'
                 }}
             >
-                {/* Atmospheric Background Effects */}
-                <div className="absolute inset-0 pointer-events-none">
-                    {/* Neon Corner Glows */}
-                    <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-[#99f7ff]/20 rounded-full blur-[120px]"></div>
-                    <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-[#d575ff]/20 rounded-full blur-[120px]"></div>
-                    <div className="absolute top-1/2 -right-20 w-[400px] h-[400px] bg-[#ff51fa]/10 rounded-full blur-[100px]"></div>
-                    
-                    {/* Particle Field Simulation */}
-                    <div className="absolute w-1 h-1 bg-white rounded-full opacity-30 top-10 left-20"></div>
-                    <div className="absolute w-1 h-1 bg-white rounded-full opacity-30 top-40 left-80"></div>
-                    <div className="absolute w-1 h-1 bg-white rounded-full opacity-30 top-1/4 right-1/4"></div>
-                    <div className="absolute w-1 h-1 bg-white rounded-full opacity-30 bottom-1/3 left-10"></div>
-                    <div className="absolute w-1 h-1 bg-white rounded-full opacity-30 bottom-10 right-20"></div>
-                    <div className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-50 top-1/2 left-1/2"></div>
+                {/* Google Fonts Load */}
+                <style>{`
+                    @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Space+Grotesk:wght@300..700&display=swap');
+                    .aya-serif { font-family: 'Newsreader', serif; }
+                    .aya-sans { font-family: 'Space Grotesk', sans-serif; }
+                `}</style>
+
+                {/* === TEXTURE LAYERS === */}
+                {/* Dot Grid */}
+                <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    backgroundImage: 'radial-gradient(#4d4732 1px, transparent 1px)',
+                    backgroundSize: '28px 28px',
+                    opacity: 0.15
+                }} />
+                {/* Diagonal Light Leak */}
+                <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background: 'linear-gradient(135deg, rgba(255,215,0,0.06) 0%, transparent 40%, rgba(0,241,254,0.06) 100%)'
+                }} />
+                {/* Corner Vignette */}
+                <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background: 'radial-gradient(ellipse at center, transparent 30%, #000 110%)'
+                }} />
+                {/* Extra Heavy Corners */}
+                <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background: 'linear-gradient(to bottom right, rgba(0,0,0,0.6) 0%, transparent 35%, transparent 65%, rgba(0,0,0,0.6) 100%)'
+                }} />
+
+                {/* === HEADER BAR === */}
+                <div style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '28px 48px',
+                    background: 'rgba(10,10,10,0.85)',
+                    backdropFilter: 'blur(12px)',
+                    borderBottom: '1px solid rgba(255,215,0,0.1)',
+                    position: 'relative', zIndex: 10
+                }}>
+                    <span className="aya-serif" style={{
+                        color: '#FFD700',
+                        fontSize: '28px',
+                        fontWeight: 900,
+                        letterSpacing: '-0.01em',
+                        textTransform: 'uppercase'
+                    }}>AT YOUR AGE</span>
+                    <span className="aya-sans" style={{
+                        fontSize: '9px',
+                        color: '#d0c6ab',
+                        letterSpacing: '0.2em',
+                        textTransform: 'uppercase',
+                        opacity: 0.5
+                    }}>Your personality. Their story. Your destiny.</span>
                 </div>
 
-                {/* Header Section */}
-                <header className="relative z-10 px-16 pt-16 text-center flex flex-col items-center">
-                    <h1 className="text-7xl font-bold tracking-[0.1em] text-[#99f7ff] drop-shadow-[0_0_20px_rgba(153,247,255,0.8)]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                        AT YOUR AGE
-                    </h1>
-                    <p className="mt-4 text-[#acaab5] italic font-light tracking-wide text-2xl">Who were you meant to become?</p>
-                </header>
+                {/* === MAIN CONTENT === */}
+                <div style={{
+                    flexGrow: 1, display: 'flex', flexDirection: 'column',
+                    padding: '44px 52px 36px',
+                    position: 'relative', zIndex: 5
+                }}>
 
-                {/* User Identity & Main Content Canvas */}
-                <main className="relative z-10 flex-grow px-16 flex flex-col justify-center gap-10 py-10">
-                    
-                    {/* Identity Card */}
-                    <div className="bg-[rgba(25,25,35,0.4)] backdrop-blur-[16px] rounded-3xl p-8 border border-[#484751]/40 shadow-lg text-center">
-                        <h2 className="text-6xl font-extrabold tracking-tight text-[#f2effb] uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            {profile?.name || 'GUEST_0X'}
-                        </h2>
-                        <p className="text-[#99f7ff] text-2xl font-semibold tracking-[0.2em] mt-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            Age {profile?.age || 18} • Level {profile?.level || 1} — {levelName}
+                    {/* === HOOK SECTION === */}
+                    <div style={{ marginBottom: '36px' }}>
+                        <h1 className="aya-serif" style={{
+                            fontSize: '84px',
+                            fontWeight: 900,
+                            color: '#fff6df',
+                            letterSpacing: '-0.03em',
+                            lineHeight: 1,
+                            transform: 'rotate(-1.5deg)',
+                            display: 'inline-block',
+                            marginBottom: '10px'
+                        }}>
+                            AT YOUR AGE...
+                        </h1>
+                        <p className="aya-serif" style={{
+                            fontSize: '22px',
+                            fontStyle: 'italic',
+                            color: '#FFD700',
+                            lineHeight: 1.3,
+                            marginBottom: '14px'
+                        }}>
+                            {hookCelebrity} was already rewriting their destiny
                         </p>
-                    </div>
-
-                    {/* DNA Match Section */}
-                    {personalityDNA && (
-                        <div className="flex flex-col items-center gap-8">
-                            <div className="flex items-center justify-center gap-16 relative">
-                                
-                                {/* DNA Portrait 1 */}
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-[#99f7ff] to-transparent shadow-[0_0_30px_rgba(153,247,255,0.3)]">
-                                        <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#99f7ff]/40">
-                                            <img src={personalityDNA.idol1.avatarUrl} alt="Idol 1" crossOrigin="anonymous" className="w-full h-full object-cover" />
-                                        </div>
-                                    </div>
-                                    <span className="text-[16px] tracking-widest text-[#f2effb]/60 uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                                        {personalityDNA.idol1.name}
-                                    </span>
-                                </div>
-
-                                {/* Add Icon */}
-                                <div className="absolute z-20 flex items-center justify-center">
-                                    <div className="bg-[#191923] rounded-full p-4 border-2 border-[#484751] shadow-xl text-[#99f7ff] text-5xl font-black">
-                                        +
-                                    </div>
-                                </div>
-
-                                {/* DNA Portrait 2 */}
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="relative w-44 h-44 rounded-full p-1.5 bg-gradient-to-tr from-[#d575ff] to-transparent shadow-[0_0_30px_rgba(213,117,255,0.3)]">
-                                        <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#d575ff]/40">
-                                            <img src={personalityDNA.idol2.avatarUrl} alt="Idol 2" crossOrigin="anonymous" className="w-full h-full object-cover" />
-                                        </div>
-                                    </div>
-                                    <span className="text-[16px] tracking-widest text-[#f2effb]/60 uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                                        {personalityDNA.idol2.name}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Quote */}
-                            <p className="text-[#ffb800] italic text-center text-3xl px-12 leading-relaxed opacity-95 max-w-4xl" style={{ textShadow: "0 0 10px rgba(255,184,0,0.4)" }}>
-                                "{`You have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}`}"
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Trait Bars Section */}
-                    <div className="grid grid-cols-1 gap-7 px-8 mt-4">
-                        {renderBar("Risk Taker", userTraits.risk || 50, "text-[#ff716c]", "from-[#ff716c]/40 to-[#ff716c] shadow-[0_0_10px_#ff716c]")}
-                        {renderBar("Creative", userTraits.creativity || 50, "text-[#d575ff]", "from-[#d575ff]/40 to-[#d575ff] shadow-[0_0_10px_#d575ff]")}
-                        {renderBar("Analytical", userTraits.vision || 50, "text-[#99f7ff]", "from-[#99f7ff]/40 to-[#99f7ff] shadow-[0_0_10px_#99f7ff]")}
-                        {renderBar("Social", userTraits.empathy || 50, "text-[#4ade80]", "from-[#4ade80]/40 to-[#4ade80] shadow-[0_0_10px_#4ade80]")}
-                        {renderBar("Ambitious", userTraits.leadership || 50, "text-[#fbbf24]", "from-[#fbbf24]/40 to-[#fbbf24] shadow-[0_0_10px_#fbbf24]")}
-                    </div>
-
-                </main>
-
-                {/* Footer Section */}
-                <footer className="relative z-20 w-full bg-[rgba(25,25,35,0.4)] backdrop-blur-[16px] border-t border-[#484751]/30 py-8 px-16 flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-4">
-                        <span className="text-2xl font-bold tracking-wide text-[#f2effb]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            {Math.max(50, Math.floor(Math.random() * 50) + 50)}% match with {dynamicProfileTag}
+                        <span className="aya-sans" style={{
+                            display: 'inline-block',
+                            padding: '5px 14px',
+                            background: 'rgba(53,53,52,0.7)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(77,71,50,0.4)',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            letterSpacing: '0.2em',
+                            textTransform: 'uppercase',
+                            color: '#e5e2e1'
+                        }}>
+                            What would YOU have done?
                         </span>
                     </div>
-                    
-                    <p className="text-[14px] tracking-[0.3em] uppercase text-[#acaab5]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                        Discover your personality DNA
-                    </p>
-                    
-                    <div className="mt-2 text-[#99f7ff] text-[16px] font-bold tracking-widest uppercase flex items-center gap-3">
-                        <span className="text-white/20">SYSTEM_OVERRIDE //</span>
-                        aya-phi-liard.vercel.app
+
+                    {/* === IDENTITY SECTION === */}
+                    <div style={{ marginBottom: '32px' }}>
+                        <h2 className="aya-sans" style={{
+                            fontSize: '80px',
+                            fontWeight: 800,
+                            color: '#e5e2e1',
+                            letterSpacing: '-0.02em',
+                            textTransform: 'uppercase',
+                            lineHeight: 1,
+                            marginBottom: '8px'
+                        }}>
+                            {profile?.name || 'GUEST_0X'}
+                        </h2>
+                        <p className="aya-sans" style={{
+                            fontSize: '15px',
+                            fontWeight: 700,
+                            color: '#00f1fe',
+                            letterSpacing: '0.2em',
+                            textTransform: 'uppercase'
+                        }}>
+                            Age {profile?.age || 18}  •  Level {profile?.level || 1}  —  {levelName}
+                        </p>
+
+                        {/* Portrait Row */}
+                        {personalityDNA && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '24px' }}>
+                                {/* Portrait 1 — Gold ring */}
+                                <div style={{
+                                    width: '100px', height: '100px', borderRadius: '50%',
+                                    border: '2.5px solid #FFD700',
+                                    boxShadow: '0 0 30px rgba(255,215,0,0.35), 0 0 60px rgba(255,215,0,0.1)',
+                                    overflow: 'hidden', flexShrink: 0,
+                                    padding: '3px', background: 'rgba(0,0,0,0.5)'
+                                }}>
+                                    <img
+                                        src={personalityDNA.idol1.avatarUrl}
+                                        alt={personalityDNA.idol1.name}
+                                        crossOrigin="anonymous"
+                                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                    />
+                                </div>
+                                <span className="aya-sans" style={{ fontSize: '28px', color: '#FFD700', fontWeight: 900 }}>+</span>
+                                {/* Portrait 2 — Cyan ring */}
+                                <div style={{
+                                    width: '88px', height: '88px', borderRadius: '50%',
+                                    border: '2.5px solid #00f1fe',
+                                    boxShadow: '0 0 30px rgba(0,241,254,0.35), 0 0 60px rgba(0,241,254,0.1)',
+                                    overflow: 'hidden', flexShrink: 0,
+                                    padding: '3px', background: 'rgba(0,0,0,0.5)'
+                                }}>
+                                    <img
+                                        src={personalityDNA.idol2.avatarUrl}
+                                        alt={personalityDNA.idol2.name}
+                                        crossOrigin="anonymous"
+                                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                    />
+                                </div>
+
+                                {/* Gold Blockquote */}
+                                <blockquote className="aya-serif" style={{
+                                    fontSize: '17px',
+                                    fontStyle: 'italic',
+                                    color: 'rgba(255,215,0,0.9)',
+                                    lineHeight: 1.4,
+                                    borderLeft: '2px solid rgba(255,215,0,0.3)',
+                                    paddingLeft: '16px',
+                                    maxWidth: '340px'
+                                }}>
+                                    "{`You have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}`}"
+                                </blockquote>
+                            </div>
+                        )}
                     </div>
-                </footer>
+
+                    {/* === PERSONALITY DNA STATS HUD === */}
+                    <div style={{ marginTop: 'auto' }}>
+                        <div className="aya-sans" style={{
+                            fontSize: '9px',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.35em',
+                            color: '#999077',
+                            marginBottom: '18px'
+                        }}>
+                            PERSONALITY DNA
+                        </div>
+
+                        {renderBar('Risk Taker', userTraits.risk || 50, '#ff716c', '#ff2d55')}
+                        {renderBar('Creative', userTraits.creativity || 50, '#d575ff', '#9800d0')}
+                        {renderBar('Analytical', userTraits.vision || 50, '#00f1fe', '#00a8c6')}
+                        {renderBar('Social', userTraits.empathy || 50, '#4ade80', '#16a34a')}
+                        {renderBar('Ambitious', userTraits.leadership || 50, '#FFD700', '#b45309')}
+
+                        {/* Match Score */}
+                        <div style={{ marginTop: '18px' }}>
+                            <span className="aya-sans" style={{
+                                fontSize: '19px',
+                                fontWeight: 700,
+                                color: '#FFD700',
+                                letterSpacing: '0.02em'
+                            }}>
+                                {matchScore}% DNA Match with {hookCelebrity} 🏆
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* === FOOTER === */}
+                <div style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '20px 48px',
+                    background: 'rgba(10,10,10,0.6)',
+                    backdropFilter: 'blur(12px)',
+                    borderTop: '1px solid rgba(0,241,254,0.12)',
+                    boxShadow: '0 -4px 24px rgba(0,241,254,0.08)',
+                    position: 'relative', zIndex: 10
+                }}>
+                    <span className="aya-sans" style={{
+                        fontSize: '24px', fontWeight: 900, color: '#FFD700', letterSpacing: '-0.01em'
+                    }}>AYA</span>
+                    <span className="aya-sans" style={{
+                        fontSize: '10px', color: '#00f1fe', letterSpacing: '0.15em', textTransform: 'uppercase'
+                    }}>
+                        Play Free → aya-phi-liard.vercel.app
+                    </span>
+                    <span className="aya-sans" style={{
+                        fontSize: '10px', color: '#e5e2e1', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.7
+                    }}>
+                        🧬 Find YOUR DNA
+                    </span>
+                </div>
             </div>
         );
     }
