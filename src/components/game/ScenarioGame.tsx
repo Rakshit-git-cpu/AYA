@@ -66,6 +66,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     const [score, setScore] = useState(0);
     // Ref tracks session choices — avoids React stale closure when reading at COMPLETE time
     const sessionChoicesRef = useRef<SessionChoiceData[]>([]);
+    const hasInsertedSession = useRef(false);
     const addChoiceToSession = (c: SessionChoiceData) => {
         sessionChoicesRef.current = [...sessionChoicesRef.current, c];
     };
@@ -344,7 +345,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             // DEBUG: This fires even if user has no ID — confirms COMPLETE branch was reached
             console.log('[AYA DEBUG] COMPLETE branch reached. userProfile.id =', userProfile?.id, '| finalSessionChoices.length =', finalSessionChoices.length);
 
-            if (userProfile?.id) {
+            if (userProfile?.id && !hasInsertedSession.current) {
+                // Guard: prevent duplicate inserts from StrictMode double-renders or rapid re-triggers
+                hasInsertedSession.current = true;
                 try {
                     // Update the user's base personality profile with the new recalibrated traits
                     await supabase.from('personality_profiles')
@@ -382,8 +385,11 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                         console.log('[AYA] Supabase INSERT SUCCESS:', insertData);
                     }
                 } catch (err) {
+                    hasInsertedSession.current = false; // Reset on failure so user can retry
                     console.error("[AYA] Failed to save session to Supabase", err);
                 }
+            } else if (hasInsertedSession.current) {
+                console.log('[AYA] Skipping duplicate game_sessions insert — already saved this session');
             }
 
             // Add Global XP
