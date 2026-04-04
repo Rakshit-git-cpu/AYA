@@ -729,3 +729,32 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
         avatarUrl: '/assets/avatar_nooyi.jpg'
     },
 };
+
+export const IDOL_PROFILES: Record<string, Record<string, number>> = {
+    "Arnold Schwarzenegger": { analytical: 60, ambitious: 100, risk: 90, creativity: 50, social: 75 },
+    "Stephen Hawking": { analytical: 100, ambitious: 80, risk: 70, creativity: 95, social: 40 },
+    "Frida Kahlo": { analytical: 40, ambitious: 70, risk: 95, creativity: 100, social: 80 },
+    "Kobe Bryant": { analytical: 85, ambitious: 100, risk: 90, creativity: 60, social: 65 },
+    "Taylor Swift": { analytical: 75, ambitious: 95, risk: 80, creativity: 100, social: 90 },
+    "Mark Zuckerberg": { analytical: 95, ambitious: 90, risk: 85, creativity: 75, social: 60 },
+    "Steve Jobs": { analytical: 80, ambitious: 100, risk: 95, creativity: 95, social: 50 },
+    "Walt Disney": { analytical: 65, ambitious: 90, risk: 95, creativity: 100, social: 85 },
+    "Oprah Winfrey": { analytical: 75, ambitious: 95, risk: 80, creativity: 70, social: 100 },
+    "Bill Gates": { analytical: 95, ambitious: 90, risk: 80, creativity: 75, social: 60 },
+    "J.K. Rowling": { analytical: 60, ambitious: 85, risk: 80, creativity: 100, social: 55 },
+    "Mary Shelley": { analytical: 70, ambitious: 60, risk: 90, creativity: 100, social: 40 },
+    "Steven Spielberg": { analytical: 70, ambitious: 90, risk: 85, creativity: 100, social: 80 },
+    "Tina Dabi": { analytical: 95, ambitious: 95, risk: 70, creativity: 60, social: 85 },
+    "Nitin Vijay (NV Sir)": { analytical: 90, ambitious: 85, risk: 80, creativity: 65, social: 90 },
+    "Virat Kohli": { analytical: 75, ambitious: 100, risk: 95, creativity: 60, social: 85 },
+    "Dr. A.P.J. Abdul Kalam": { analytical: 100, ambitious: 80, risk: 75, creativity: 95, social: 90 },
+    "Ratan Tata": { analytical: 80, ambitious: 85, risk: 85, creativity: 70, social: 95 },
+    "Sachin Tendulkar": { analytical: 90, ambitious: 95, risk: 70, creativity: 60, social: 75 },
+    "Sundar Pichai": { analytical: 95, ambitious: 85, risk: 75, creativity: 80, social: 85 },
+    "Shah Rukh Khan": { analytical: 70, ambitious: 100, risk: 95, creativity: 90, social: 100 },
+    "P.V. Sindhu": { analytical: 80, ambitious: 95, risk: 85, creativity: 60, social: 70 },
+    "A.R. Rahman": { analytical: 65, ambitious: 75, risk: 70, creativity: 100, social: 50 },
+    "Malala Yousafzai": { analytical: 85, ambitious: 85, risk: 100, creativity: 70, social: 95 },
+    "Indra Nooyi": { analytical: 95, ambitious: 95, risk: 80, creativity: 70, social: 85 },
+    "Default": { analytical: 50, ambitious: 50, risk: 50, creativity: 50, social: 50 }
+};

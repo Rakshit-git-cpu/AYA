@@ -24,6 +24,9 @@ export interface PsychologicalProfile {
     social: SocialRole;
     passion: PassionType;
     coreValue: CoreValue;
+    interest_goal?: string;
+    interest_struggle?: string;
+    interest_domain?: string;
 }
 
 export interface MatchResult {

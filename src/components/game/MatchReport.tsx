@@ -3,8 +3,7 @@ import clsx from 'clsx';
 import { audioSynth } from '../../utils/audioSynth';
 import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw } from 'lucide-react';
 import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTypes';
-import { IDOL_MINDSETS } from '../../data/idolMindsets';
-import { PersonalityAnalysisEngine } from '../../utils/personalityAnalysis';
+import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 
 interface MatchReportProps {
@@ -207,52 +206,46 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
     </div>
 );
 
-export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onClose }: MatchReportProps) {
+export function MatchReport({ userTraits, userProfile, idolName, onClose }: MatchReportProps) {
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const [animatedPercent, setAnimatedPercent] = useState(0);
-    const dominantTrait = (Object.keys(userTraits) as Array<keyof PersonalityTraits>).reduce((a, b) => userTraits[a] > userTraits[b] ? a : b);
     const idolData = IDOL_MINDSETS[idolName] || IDOL_MINDSETS["Default"];
 
-    // Override Logic
-    const SPECIFIC_TRAITS: Record<string, { strengths: string[], blindSpots: string[] }> = {
-        "Frida Kahlo": {
-            strengths: ["Emotional Depth", "Raw Authenticity", "Creative Resilience"],
-            blindSpots: ["Stubbornness", "Perfectionist Shell", "Over-intensity"]
-        },
-        "Elon Musk": {
-            strengths: ["Futuristic Strategy", "Unyielding Drive", "Complex Problem Solving"],
-            blindSpots: ["Impulsive Risk", "Communication Gaps", "High-Pressure Tendencies"]
-        },
-        "Bill Gates": {
-            strengths: ["Visionary Optimization", "Digital Architect", "Scale Thinking"],
-            blindSpots: ["Analysis Paralysis", "Emotional Disconnect", "Control Freak"]
-        }
-    };
+    // Dynamic Trait Calculation based on Supabase mapped properties
+    const TRAIT_MAP = [
+        { score: userTraits.risk || 50, strength: 'Bold Decision Maker', blindSpot: 'Plays It Too Safe' },
+        { score: userTraits.creativity || 50, strength: 'Creative Visionary', blindSpot: 'Stuck In Routine' },
+        { score: userTraits.vision || 50, strength: 'Strategic Thinker', blindSpot: 'Impulsive Tendencies' },
+        { score: userTraits.empathy || 50, strength: 'Natural Connector', blindSpot: 'Lone Wolf Syndrome' },
+        { score: userTraits.leadership || 50, strength: 'Relentless Achiever', blindSpot: 'Consistency Gap' }
+    ];
+    
+    const sortedTraits = [...TRAIT_MAP].sort((a, b) => b.score - a.score);
+    const displayStrengths = sortedTraits.slice(0, 3).map(t => t.strength);
+    const displayBlindSpots = sortedTraits.slice(-2).map(t => t.blindSpot);
 
-    const effectiveProfile = userProfile || { motivation: 'Impact' } as any;
+    const struggleStr = userProfile?.interest_struggle || '';
+    let realLifeChallenge = "Embrace the unknown and act courageously today.";
+    if (struggleStr.includes('Overthinking')) realLifeChallenge = "Write 3 decisions you've been delaying. Pick one and act today.";
+    else if (struggleStr.includes('Laziness & Procrastination')) realLifeChallenge = "Do the one task you've been avoiding for just 5 minutes right now.";
+    else if (struggleStr.includes('Fear of what others think')) realLifeChallenge = "Share one honest opinion with someone today.";
+    else if (struggleStr.includes('Staying consistent')) realLifeChallenge = "Set one non-negotiable daily habit starting tonight.";
 
-    const displayStrengths = SPECIFIC_TRAITS[idolName]?.strengths ||
-        PersonalityAnalysisEngine.getStrengths(effectiveProfile as any, dominantTrait).map(s => s.title);
-    const displayBlindSpots = SPECIFIC_TRAITS[idolName]?.blindSpots ||
-        PersonalityAnalysisEngine.getBlindSpots(effectiveProfile as any).map(s => s.title);
-
-    // Dynamic Match Calculation
+    // Dynamic Match Calculation using strict IDOL_PROFILES
     const matchScore = useMemo(() => {
-        if (!userTraits || !idolTraits) return 76; // Fallback
+        const strictIdolTraits = IDOL_PROFILES[idolName] || IDOL_PROFILES["Default"];
+        
+        const totalDiff = 
+            Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
+            Math.abs((userTraits.creativity || 50) - strictIdolTraits.creativity) +
+            Math.abs((userTraits.vision || 50) - strictIdolTraits.analytical) +
+            Math.abs((userTraits.empathy || 50) - strictIdolTraits.social) +
+            Math.abs((userTraits.leadership || 50) - strictIdolTraits.ambitious);
 
-        const traitKeys = Object.keys(idolTraits) as Array<keyof PersonalityTraits>;
-        if (traitKeys.length === 0) return 85;
-
-        const totalDiff = traitKeys.reduce((acc, key) => {
-            const userVal = userTraits[key] || 50;
-            const idolVal = idolTraits[key] || 50;
-            return acc + Math.abs(userVal - idolVal);
-        }, 0);
-
-        const avgDiff = totalDiff / traitKeys.length;
+        const avgDiff = totalDiff / 5;
         let score = Math.round(100 - avgDiff);
-        return Math.max(65, Math.min(99, score));
-    }, [userTraits, idolTraits]);
+        return Math.max(0, Math.min(100, score));
+    }, [userTraits, idolName]);
 
     useEffect(() => {
         if (audioSynth.playWin) audioSynth.playWin();
@@ -342,9 +335,11 @@ export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onC
                                             ? "bg-black/40 border border-white/10"
                                             : "bg-slate-900/40 border border-[#4DD9FF]/10"
                                     )}>
-                                        <FlavorMeter label="Sweetness (Empathy)" value={userTraits.empathy} color="bg-pink-500" darkColor="bg-[#4DD9FF]" icon={Heart} isCandyMode={isCandyMode} />
-                                        <FlavorMeter label="Spice (Drive)" value={userTraits.risk} color="bg-orange-500" darkColor="bg-amber-500" icon={Flame} isCandyMode={isCandyMode} />
-                                        <FlavorMeter label="Sour (Logic)" value={userTraits.discipline} color="bg-green-500" darkColor="bg-purple-500" icon={Brain} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Risk Taker" value={userTraits.risk || 50} color="bg-orange-500" darkColor="bg-[#ff4d4d]" icon={Flame} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Creative" value={userTraits.creativity || 50} color="bg-pink-500" darkColor="bg-[#ff4df2]" icon={Sparkles} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Analytical" value={userTraits.vision || 50} color="bg-cyan-500" darkColor="bg-[#4DFFFF]" icon={Brain} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Social" value={userTraits.empathy || 50} color="bg-green-500" darkColor="bg-[#4dff4d]" icon={Heart} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Ambitious" value={userTraits.leadership || 50} color="bg-yellow-500" darkColor="bg-[#ffff4d]" icon={Star} isCandyMode={isCandyMode} />
                                     </div>
 
                                     {/* Bottom Badge */}
@@ -453,6 +448,20 @@ export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onC
                                                 isCandyMode ? "text-white" : "text-amber-50"
                                             )}>
                                                 Embrace your unique strengths and carve your legacy.
+                                            </div>
+                                            
+                                            {/* Real Life Challenge Based on User Struggle */}
+                                            <div className="mt-4 pt-4 border-t border-amber-500/30">
+                                                <div className={clsx(
+                                                    "text-sm leading-none mb-2 tracking-widest uppercase",
+                                                    isCandyMode ? "font-yummy text-orange-900" : "font-black text-amber-500/80 drop-shadow-md"
+                                                )}>REAL LIFE CHALLENGE</div>
+                                                <div className={clsx(
+                                                    "font-bold text-lg leading-tight drop-shadow-md",
+                                                    isCandyMode ? "text-white" : "text-amber-100"
+                                                )}>
+                                                    {realLifeChallenge}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

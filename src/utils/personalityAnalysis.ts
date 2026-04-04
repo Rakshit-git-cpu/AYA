@@ -94,7 +94,7 @@ export const PersonalityAnalysisEngine = {
         const diffs: string[] = [];
 
         (Object.keys(userProfile) as Array<keyof PsychologicalProfile>).forEach(k => {
-            if (userProfile[k] === idolData.profile[k]) matches.push(k);
+            if ((userProfile as any)[k] === (idolData.profile as any)[k]) matches.push(k);
             else diffs.push(k);
         });
 
@@ -102,9 +102,12 @@ export const PersonalityAnalysisEngine = {
         const sharedValue = matches.includes('coreValue') ? userProfile.coreValue : (matches[0] || 'Vision');
         const diffTrait = diffs[0] || 'Style';
 
+        const idolVal = diffTrait !== 'Style' ? (idolData.profile as any)[diffTrait] : 'different';
+        const userVal = diffTrait !== 'Style' ? (userProfile as any)[diffTrait] : 'unique';
+
         return {
             title: `Like ${idolName.split(' ')[0]}, you value ${sharedValue}.`,
-            desc: `You both operate with a core belief in ${sharedValue}. However, where ${idolName} tends to be ${idolData.profile[diffTrait as keyof PsychologicalProfile]}, you bring a more ${userProfile[diffTrait as keyof PsychologicalProfile]} approach. This makes your path unique.`
+            desc: `You both operate with a core belief in ${sharedValue}. However, where ${idolName} tends to be ${idolVal}, you bring a more ${userVal} approach. This makes your path unique.`
         };
     },
 
