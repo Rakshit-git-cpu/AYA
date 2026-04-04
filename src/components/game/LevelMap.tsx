@@ -10,9 +10,10 @@ import { AntiGravityCanvas } from './AntiGravityCanvas';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
+    onOpenDnaProfile: () => void;
 }
 
-export function LevelMap({ onPlayLevel }: LevelMapProps) {
+export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
     const levels = useUserStore((state) => state.levels);
     const profile = useUserStore((state) => state.profile);
     const activeAge = profile?.age || 18;
@@ -197,7 +198,7 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
             </div>
 
             {/* Journal Toggle Button - Compact Mobile Layout */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50 animate-fade-in-delayed pt-safe-top">
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50 animate-fade-in-delayed pt-safe-top flex flex-col gap-2 items-end">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
@@ -226,6 +227,31 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
                             isCandyMode ? "text-slate-800 group-hover:text-pink-600" : "text-amber-400 group-hover:text-amber-300"
                         )}>JOURNAL</span>
                     </div>
+                </button>
+
+                {/* DNA Profile Button */}
+                <button
+                    onClick={() => {
+                        audioSynth.playClick();
+                        onOpenDnaProfile();
+                    }}
+                    className={clsx(
+                        "group flex items-center gap-2 pr-3 md:pr-4 pl-2 py-1.5 border-2 hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full",
+                        isCandyMode
+                            ? "bg-purple-900/40 border-purple-400/50 backdrop-blur-md"
+                            : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md"
+                    )}
+                >
+                    <div className={clsx(
+                        "text-sm font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white",
+                        isCandyMode ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-gradient-to-r from-[#00f2ff] to-[#d575ff]"
+                    )}>
+                        🧬
+                    </div>
+                    <span className={clsx(
+                        "text-[10px] md:text-xs font-bold uppercase tracking-widest",
+                        isCandyMode ? "text-pink-300" : "text-[#00f2ff]"
+                    )}>DNA DATA</span>
                 </button>
             </div>
 

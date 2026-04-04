@@ -295,7 +295,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
     const [copiedDNA, setCopiedDNA] = useState(false);
     const handleShareDNA = () => {
         if (!personalityDNA) return;
-        const textToCopy = `My Personality DNA: I have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}. Discover yours at https://aya-game.com 🧬`;
+        const textToCopy = `My Personality DNA: I have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}. Discover yours at https://aya-phi-liard.vercel.app 🧬`;
         navigator.clipboard.writeText(textToCopy);
         setCopiedDNA(true);
         setTimeout(() => setCopiedDNA(false), 2000);
