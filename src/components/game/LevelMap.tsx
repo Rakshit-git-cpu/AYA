@@ -229,28 +229,29 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                     </div>
                 </button>
 
-                {/* DNA Profile Button */}
+                {/* DNA Profile Button - Isolated to prevent disappearing */}
                 <button
                     onClick={() => {
+                        console.log('DNA button clicked');
                         audioSynth.playClick();
                         onOpenDnaProfile();
                     }}
                     className={clsx(
-                        "group flex items-center gap-2 pr-3 md:pr-4 pl-2 py-1.5 border-2 hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full",
+                        "group flex items-center gap-2 pr-3 md:pr-4 pl-2 py-1.5 border-2 hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
                         isCandyMode
                             ? "bg-purple-900/40 border-purple-400/50 backdrop-blur-md"
                             : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md"
                     )}
                 >
                     <div className={clsx(
-                        "text-sm font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white",
+                        "text-sm font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white border border-white/20",
                         isCandyMode ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-gradient-to-r from-[#00f2ff] to-[#d575ff]"
                     )}>
                         🧬
                     </div>
                     <span className={clsx(
-                        "text-[10px] md:text-xs font-bold uppercase tracking-widest",
-                        isCandyMode ? "text-pink-300" : "text-[#00f2ff]"
+                        "text-[10px] md:text-xs font-black uppercase tracking-widest leading-none border-l pl-2",
+                        isCandyMode ? "text-pink-100 border-pink-400/50" : "text-[#99f7ff] border-[#00f2ff]/30"
                     )}>DNA DATA</span>
                 </button>
             </div>
