@@ -101,30 +101,43 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         diffs.sort((a, b) => a.diff - b.diff);
         const top2 = diffs.slice(0, 2).map(d => d.name);
         
-        const getTraitDesc = (name: string) => {
+        const getTraitDesc = (name: string, excludedTrait?: string) => {
             const p = IDOL_PROFILES[name];
-            if (!p) return "";
-            const maxVal = Math.max(p.ambitious, p.creativity, p.analytical, p.social, p.risk);
+            if (!p) return { key: '', desc: '' };
+            let traits = [
+                { key: 'ambitious', value: p.ambitious, desc: `${name.split(' ')[0]}'s relentless drive` },
+                { key: 'creativity', value: p.creativity, desc: `${name.split(' ')[0]}'s creative vision` },
+                { key: 'analytical', value: p.analytical, desc: `${name.split(' ')[0]}'s analytical mind` },
+                { key: 'social', value: p.social, desc: `${name.split(' ')[0]}'s emotional depth` },
+                { key: 'risk', value: p.risk, desc: `${name.split(' ')[0]}'s bold fearlessness` }
+            ];
             
-            if (maxVal === p.ambitious) return `${name.split(' ')[0]}'s relentless drive`;
-            if (maxVal === p.creativity) return `${name.split(' ')[0]}'s creative vision`;
-            if (maxVal === p.analytical) return `${name.split(' ')[0]}'s analytical mind`;
-            if (maxVal === p.social) return `${name.split(' ')[0]}'s emotional depth`;
-            return `${name.split(' ')[0]}'s bold fearlessness`;
+            if (excludedTrait) {
+                traits = traits.filter(t => t.key !== excludedTrait);
+            }
+            
+            traits.sort((a, b) => b.value - a.value);
+            return traits[0];
         };
 
         if (top2.length < 2) return null;
+
+        const t1 = getTraitDesc(top2[0]);
+        let t2 = getTraitDesc(top2[1]);
+        if (t1.key === t2.key) {
+            t2 = getTraitDesc(top2[1], t1.key);
+        }
 
         return {
             idol1: {
                 name: top2[0],
                 avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '',
-                desc: getTraitDesc(top2[0])
+                desc: t1.desc
             },
             idol2: {
                 name: top2[1],
                 avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '',
-                desc: getTraitDesc(top2[1])
+                desc: t2.desc
             }
         };
     }, [userTraits]);
@@ -231,24 +244,24 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                             
                             <div className="flex items-center justify-center gap-6 sm:gap-10 mb-8">
                                 {/* Portrait 1 */}
-                                <div className="relative">
+                                <div className="relative flex flex-col items-center">
                                     <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-[#00f2ff] shadow-[0_0_20px_rgba(0,242,255,0.4)]">
-                                        <img src={personalityDNA.idol1.avatarUrl} alt={personalityDNA.idol1.name} className="w-full h-full object-cover grayscale opacity-80" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#004145] to-transparent mix-blend-overlay" />
+                                        <img src={personalityDNA.idol1.avatarUrl} alt={personalityDNA.idol1.name} className="w-full h-full object-cover" />
                                     </div>
+                                    <span className="mt-3 text-xs md:text-sm font-black uppercase tracking-widest text-[#00f2ff] drop-shadow-md text-center max-w-[120px]">{personalityDNA.idol1.name}</span>
                                 </div>
                                 
                                 {/* Glowing Plus */}
-                                <div className="text-5xl font-black text-[#ff51fa] drop-shadow-[0_0_15px_#ff51fa] animate-pulse">
+                                <div className="text-5xl font-black text-[#ff51fa] drop-shadow-[0_0_15px_#ff51fa] animate-pulse pb-8">
                                     +
                                 </div>
 
                                 {/* Portrait 2 */}
-                                <div className="relative">
+                                <div className="relative flex flex-col items-center">
                                     <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-[#d575ff] shadow-[0_0_20px_rgba(213,117,255,0.4)]">
-                                        <img src={personalityDNA.idol2.avatarUrl} alt={personalityDNA.idol2.name} className="w-full h-full object-cover grayscale opacity-80" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#390050] to-transparent mix-blend-overlay" />
+                                        <img src={personalityDNA.idol2.avatarUrl} alt={personalityDNA.idol2.name} className="w-full h-full object-cover" />
                                     </div>
+                                    <span className="mt-3 text-xs md:text-sm font-black uppercase tracking-widest text-[#d575ff] drop-shadow-md text-center max-w-[120px]">{personalityDNA.idol2.name}</span>
                                 </div>
                             </div>
 
