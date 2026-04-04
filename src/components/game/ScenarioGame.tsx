@@ -53,6 +53,8 @@ interface SessionChoiceData {
 export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     // DEBUG: Confirms this component is the active one (check console on game load)
     console.log('[AYA DEBUG] ScenarioGame mounted for level:', level?.id, level?.personality);
+    // BUILD MARKER: If this timestamp matches deployment time, the new code is live
+    console.log('[AYA BUILD_MARKER] deployed 2026-04-04T15:50 IST — if you see this, prod is serving the latest code');
 
     const [currentFrameId, setCurrentFrameId] = useState('intro');
 
@@ -346,16 +348,24 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                     console.log('[AYA] Saving game_sessions — scenario_choices payload:');
                     console.log(JSON.stringify(serializedChoices, null, 2));
                     console.log('[AYA] Total choices:', serializedChoices.length);
+                    console.log('[AYA] First choice sample:', serializedChoices[0]);
 
                     // Insert the detailed session records
-                    await supabase.from('game_sessions').insert([{
+                    const { data: insertData, error: insertError } = await supabase.from('game_sessions').insert([{
                         user_id: userProfile.id,
                         selected_personality: level.personality || level.archetype,
                         scenario_choices: serializedChoices,
                         match_score: matchPercent
-                    }]);
+                    }]).select();
+
+                    // DEBUG: Log the Supabase response
+                    if (insertError) {
+                        console.error('[AYA] Supabase INSERT ERROR:', insertError);
+                    } else {
+                        console.log('[AYA] Supabase INSERT SUCCESS:', insertData);
+                    }
                 } catch (err) {
-                    console.error("Failed to save session to Supabase", err);
+                    console.error("[AYA] Failed to save session to Supabase", err);
                 }
             }
 
