@@ -8,6 +8,7 @@ import { PersonalityIntro } from '../components/game/PersonalityIntro';
 import { PersonalityAssessment } from '../components/game/PersonalityAssessment';
 import type { Level } from '../types/gameTypes';
 import { MatchReport } from '../components/game/MatchReport';
+import { DnaProfile } from '../components/game/DnaProfile';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
@@ -22,7 +23,7 @@ export function GameRoot() {
     }, [syncLevels]);
 
     // NEW STATE: track the view and the currently selected age & character
-    const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report'>('map');
+    const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
 
@@ -111,7 +112,14 @@ export function GameRoot() {
                 />
             )}
 
-            <LevelMap onPlayLevel={handleLevelClick} />
+            {view === 'dna' && profile && (
+                <DnaProfile onBack={() => setView('map')} />
+            )}
+
+            <LevelMap 
+                onPlayLevel={handleLevelClick} 
+                onOpenDnaProfile={() => setView('dna')}
+            />
         </div>
     );
 }
