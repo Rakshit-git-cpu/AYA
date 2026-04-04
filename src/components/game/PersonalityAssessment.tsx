@@ -332,7 +332,7 @@ export function PersonalityAssessment() {
                     </div>
 
                     <div className={clsx(
-                        "flex-1 min-h-0 p-6 md:p-10 pt-8 md:pt-8 space-y-4 md:space-y-5 pb-6 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin scroll-smooth",
+                        "flex-1 min-h-0 px-6 md:px-10 pb-8 pt-4 space-y-3 md:space-y-4 overflow-y-auto scrollbar-thin scroll-smooth",
                         isNeon ? "neon-scrollbar" : ""
                     )}>
                         {currentQ.options.map((opt: any, i: number) => {
@@ -403,23 +403,21 @@ export function PersonalityAssessment() {
                     </div>
 
                     {/* Fixed Footer for Continue Button */}
-                    <div className="h-24 shrink-0 flex items-center justify-center px-6 pb-6 mt-2 relative z-10">
-                        {(currentQ.multiSelect || isNeon) && currentSelection.length > 0 && (
-                            <div className="animate-[float-score_0.5s_ease-out_forwards] w-full flex justify-center">
-                                <button
-                                    onClick={() => commitAnswer(currentSelection)}
-                                    className={clsx(
-                                        "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer",
-                                        isNeon 
-                                            ? "bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:bg-cyan-400"
-                                            : "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)]"
-                                    )}
-                                >
-                                    Continue
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    {(currentQ.multiSelect || isNeon) && currentSelection.length > 0 && (
+                        <div className="shrink-0 flex items-center justify-center px-6 pb-8 md:pb-10 pt-2 animate-[float-score_0.3s_ease-out_forwards]">
+                            <button
+                                onClick={() => commitAnswer(currentSelection)}
+                                className={clsx(
+                                    "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer",
+                                    isNeon 
+                                        ? "bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:bg-cyan-400"
+                                        : "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)]"
+                                )}
+                            >
+                                Continue &rarr;
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
