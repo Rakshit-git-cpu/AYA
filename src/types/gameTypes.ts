@@ -48,6 +48,11 @@ export interface UserProfile {
     traits: PersonalityTraits;
     psychologicalProfile?: PsychologicalProfile; // New deep profile
     assessmentCompleted: boolean;
+
+    // Progression System
+    total_xp?: number;
+    level?: number;
+    stories_completed?: number;
 }
 
 export interface Lesson {
