@@ -214,6 +214,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     };
 
     const handleChoiceClick = async (choice: Choice) => {
+        // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
+        console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
+
         const timeTakenSeconds = Math.max(1, Math.round((Date.now() - frameStartTime) / 1000));
         
         const rawImpacts = calculateTraitImpacts(choice.text, choice.score);
@@ -234,8 +237,8 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
            trait_impacts: adjustedImpacts
         };
 
-        // DEBUG: Log each choice being recorded
-        console.log('[AYA] Choice recorded:', JSON.stringify(choiceData, null, 2));
+        // DEBUG: Full payload for each choice
+        console.log('[AYA DEBUG] choiceData built:', JSON.stringify(choiceData, null, 2));
 
         if (choice.next !== 'intro' && choice.next !== 'COMPLETE') {
              addChoiceToSession(choiceData);
