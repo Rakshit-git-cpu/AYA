@@ -332,7 +332,7 @@ export function PersonalityAssessment() {
                     </div>
 
                     <div className={clsx(
-                        "flex-1 min-h-0 p-6 md:p-10 pt-8 md:pt-8 space-y-4 md:space-y-5 pb-20 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin scroll-smooth",
+                        "flex-1 min-h-0 p-6 md:p-10 pt-8 md:pt-8 space-y-4 md:space-y-5 pb-6 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin scroll-smooth",
                         isNeon ? "neon-scrollbar" : ""
                     )}>
                         {currentQ.options.map((opt: any, i: number) => {
@@ -400,10 +400,12 @@ export function PersonalityAssessment() {
                                 </button>
                             );
                         })}
-                        
-                        {/* Continue Button */}
+                    </div>
+
+                    {/* Fixed Footer for Continue Button */}
+                    <div className="h-24 shrink-0 flex items-center justify-center px-6 pb-6 mt-2 relative z-10">
                         {(currentQ.multiSelect || isNeon) && currentSelection.length > 0 && (
-                            <div className="mt-8 flex justify-center pb-4 animate-[float-score_0.5s_ease-out_forwards]">
+                            <div className="animate-[float-score_0.5s_ease-out_forwards] w-full flex justify-center">
                                 <button
                                     onClick={() => commitAnswer(currentSelection)}
                                     className={clsx(
