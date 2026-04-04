@@ -206,7 +206,7 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
     </div>
 );
 
-export function MatchReport({ userTraits, userProfile, idolTraits, idolName, onClose }: MatchReportProps) {
+export function MatchReport({ userTraits, userProfile, idolName, onClose }: MatchReportProps) {
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const [animatedPercent, setAnimatedPercent] = useState(0);
     const idolData = IDOL_MINDSETS[idolName] || IDOL_MINDSETS["Default"];

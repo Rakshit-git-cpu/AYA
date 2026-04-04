@@ -62,12 +62,10 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
 
     // Scoring State
     const [score, setScore] = useState(0);
-    // Ref mirror tracks session choices — avoids React stale closure when reading at COMPLETE time
+    // Ref tracks session choices — avoids React stale closure when reading at COMPLETE time
     const sessionChoicesRef = useRef<SessionChoiceData[]>([]);
-    const [sessionChoices, setSessionChoices] = useState<SessionChoiceData[]>([]);
     const addChoiceToSession = (c: SessionChoiceData) => {
         sessionChoicesRef.current = [...sessionChoicesRef.current, c];
-        setSessionChoices(sessionChoicesRef.current);
     };
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
