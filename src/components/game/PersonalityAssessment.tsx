@@ -256,52 +256,85 @@ export function PersonalityAssessment() {
 
     const currentQ: any = QUESTIONS[step];
     const Icon = currentQ ? currentQ.icon : Flame;
+    const isNeon = step >= 6; // Dark Neon theme applied to Q7, Q8, Q9
 
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden bg-slate-900">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 animate-pulse-slow"></div>
-                <div className="absolute top-10 left-10 w-32 md:w-48 h-32 md:h-48 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float" />
-                <div className="absolute bottom-20 right-10 w-48 md:w-64 h-48 md:h-64 bg-cyan-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float animation-delay-2000" />
-            </div>
+        <div className={clsx("fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden transition-colors duration-1000", isNeon ? "bg-slate-950" : "bg-slate-900")}>
+            
+            {/* Background Layer */}
+            {isNeon ? (
+                <div className="absolute inset-0 bg-slate-950 transition-opacity duration-1000">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 animate-pulse-slow"></div>
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-cyan-500 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-float" />
+                    <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-float animation-delay-2000" />
+                </div>
+            ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy transition-opacity duration-1000">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 animate-pulse-slow"></div>
+                    <div className="absolute top-10 left-10 w-32 md:w-48 h-32 md:h-48 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float" />
+                    <div className="absolute bottom-20 right-10 w-48 md:w-64 h-48 md:h-64 bg-cyan-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float animation-delay-2000" />
+                </div>
+            )}
 
             <div className={clsx(
                 "relative z-10 w-full max-w-lg md:max-w-2xl flex flex-col h-full md:h-auto md:max-h-[90vh]",
                 isMobile ? "justify-between" : "justify-center p-4"
             )}>
                 <div className={clsx(
-                    "flex flex-col bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl overflow-hidden relative transition-all duration-500",
+                    "flex flex-col overflow-hidden relative transition-all duration-700",
+                    isNeon ? "bg-slate-900/60 backdrop-blur-2xl border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.15)]" : "bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl",
                     isMobile ? "flex-grow pt-safe-top m-4 rounded-[2.5rem]" : "rounded-[3rem]"
                 )}>
-                    <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+                    {!isNeon && <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>}
 
-                    <div className="p-6 md:p-10 pb-0 text-center flex flex-col items-center">
+                    <div className="p-6 md:p-10 pb-0 text-center flex flex-col items-center shrink-0">
                         <div className="w-full flex items-center justify-between mb-6 md:mb-8">
-                            <span className="text-white/80 font-bold uppercase tracking-widest text-xs bg-black/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
+                            <span className={clsx(
+                                "font-bold uppercase tracking-widest text-xs px-3 py-1 rounded-full backdrop-blur-md transition-colors duration-500",
+                                isNeon ? "text-cyan-400 border border-cyan-500/50 bg-cyan-950/50 shadow-[0_0_10px_rgba(6,182,212,0.3)]" : "text-white/80 bg-black/20 border border-white/10"
+                            )}>
                                 {step + 1} / {QUESTIONS.length}
                             </span>
-                            <div className="flex-1 ml-4 h-3 bg-black/20 rounded-full overflow-hidden border border-white/10">
+                            <div className={clsx(
+                                "flex-1 ml-4 h-3 rounded-full overflow-hidden border transition-colors duration-500",
+                                isNeon ? "bg-slate-800 border-cyan-900/50" : "bg-black/20 border-white/10"
+                            )}>
                                 <div
-                                    className="h-full bg-gradient-to-r from-yellow-300 to-pink-400 shadow-[0_0_10px_rgba(255,105,180,0.5)] transition-all duration-500 ease-out"
+                                    className={clsx(
+                                        "h-full transition-all duration-500 ease-out",
+                                        isNeon ? "bg-gradient-to-r from-cyan-600 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" : "bg-gradient-to-r from-yellow-300 to-pink-400 shadow-[0_0_10px_rgba(255,105,180,0.5)]"
+                                    )}
                                     style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }}
                                 />
                             </div>
                         </div>
 
                         <div className="relative mb-6 group">
-                            <div className="absolute inset-0 bg-pink-400 blur-xl opacity-50 animate-pulse group-hover:opacity-80 transition-opacity"></div>
-                            <div className="relative w-20 h-20 md:w-24 md:h-24 bg-gradient-to-tr from-white to-slate-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white/50 transform group-hover:scale-110 transition-transform duration-300">
-                                <Icon size={36} className="text-pink-600 md:w-10 md:h-10" />
+                            <div className={clsx(
+                                "absolute inset-0 blur-xl opacity-50 animate-pulse transition-opacity duration-700",
+                                isNeon ? "bg-cyan-500 group-hover:opacity-100" : "bg-pink-400 group-hover:opacity-80"
+                            )}></div>
+                            <div className={clsx(
+                                "relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-300",
+                                isNeon ? "bg-slate-950 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]" : "bg-gradient-to-tr from-white to-slate-200 border-4 border-white/50"
+                            )}>
+                                <Icon size={36} className={clsx("md:w-10 md:h-10 transition-colors", isNeon ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" : "text-pink-600")} />
                             </div>
                         </div>
 
-                        <h2 className="text-2xl md:text-3xl font-black text-white mb-2 leading-snug drop-shadow-md">
+                        <h2 className={clsx(
+                            "text-2xl md:text-3xl font-black mb-2 leading-snug drop-shadow-md transition-colors duration-700",
+                            isNeon ? "text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 tracking-wide" : "text-white"
+                        )}>
                             {currentQ.text}
                         </h2>
-                        {isSaving && <div className="mt-4 text-white animate-pulse">Saving Profile...</div>}
+                        {isSaving && <div className={clsx("mt-4 animate-pulse uppercase tracking-widest text-sm font-bold", isNeon ? "text-cyan-400" : "text-white")}>Saving Profile...</div>}
                     </div>
 
-                    <div className="p-6 md:p-10 space-y-3 md:space-y-4 pb-20">
+                    <div className={clsx(
+                        "p-6 md:p-10 space-y-3 md:space-y-4 pb-20 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin",
+                        isNeon ? "neon-scrollbar" : ""
+                    )}>
                         {currentQ.options.map((opt: any, i: number) => {
                             const isSelected = currentSelection.some(sel => sel.value === opt.value);
                             return (
@@ -319,24 +352,43 @@ export function PersonalityAssessment() {
                                         isSelected ? "scale-[1.02]" : "hover:scale-[1.02]"
                                     )}
                                 >
-                                    <div className="absolute inset-0 bg-black/20 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.2)] translate-y-1"></div>
                                     <div className={clsx(
-                                        "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-lg border-b-4",
-                                        isSelected 
-                                            ? "bg-pink-50 border-pink-500 ring-2 ring-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]" 
-                                            : "bg-white hover:bg-pink-50 border-slate-200"
+                                        "absolute inset-0 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.2)] translate-y-1 transition-colors duration-300",
+                                        isNeon ? "bg-black/60" : "bg-black/20"
+                                    )}></div>
+                                    <div className={clsx(
+                                        "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-lg",
+                                        isNeon ? (
+                                            isSelected
+                                                ? "bg-slate-800 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.6)]"
+                                                : "bg-slate-900/80 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800"
+                                        ) : (
+                                            isSelected 
+                                                ? "bg-pink-50 border-b-4 border-pink-500 ring-2 ring-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]" 
+                                                : "bg-white hover:bg-pink-50 border-b-4 border-slate-200"
+                                        )
                                     )}>
                                         <span className={clsx(
                                             "font-extrabold text-sm md:text-lg leading-tight text-left pr-2 transition-colors",
-                                            isSelected ? "text-pink-600" : "text-slate-800 group-hover:text-pink-600"
+                                            isNeon ? (
+                                                isSelected ? "text-cyan-300 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" : "text-slate-300 group-hover:text-cyan-100"
+                                            ) : (
+                                                isSelected ? "text-pink-600" : "text-slate-800 group-hover:text-pink-600"
+                                            )
                                         )}>
                                             {opt.text}
                                         </span>
                                         <div className={clsx(
                                             "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0",
-                                            isSelected 
-                                                ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" 
-                                                : "bg-pink-100 group-hover:bg-pink-500 group-hover:text-white"
+                                            isNeon ? (
+                                                isSelected
+                                                    ? "bg-cyan-500 text-slate-900 shadow-[0_0_10px_rgba(20,184,166,0.8)]"
+                                                    : "bg-slate-800 text-slate-500 border border-slate-600 group-hover:border-cyan-400 group-hover:text-cyan-400"
+                                            ) : (
+                                                isSelected 
+                                                    ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" 
+                                                    : "bg-pink-100 group-hover:bg-pink-500 group-hover:text-white"
+                                            )
                                         )}>
                                             {isSelected ? <Check size={16} className="md:w-5 md:h-5" /> : <ArrowRight size={16} className="md:w-5 md:h-5" />}
                                         </div>
@@ -347,15 +399,21 @@ export function PersonalityAssessment() {
                         
                         {/* Multi-Select Continue Button */}
                         {currentQ.multiSelect && (
-                            <div className="mt-8 flex justify-center">
+                            <div className="mt-8 flex justify-center pb-4">
                                 <button
                                     onClick={() => commitAnswer(currentSelection)}
                                     disabled={currentSelection.length === 0}
                                     className={clsx(
                                         "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300",
-                                        currentSelection.length > 0
-                                            ? "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] hover:scale-105 active:scale-95 cursor-pointer"
-                                            : "bg-slate-700/50 text-slate-500 border border-slate-600 cursor-not-allowed"
+                                        isNeon ? (
+                                            currentSelection.length > 0
+                                                ? "bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:scale-105 active:scale-95 hover:bg-cyan-400 cursor-pointer"
+                                                : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
+                                        ) : (
+                                            currentSelection.length > 0
+                                                ? "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] hover:scale-105 active:scale-95 cursor-pointer"
+                                                : "bg-slate-700/50 text-slate-500 border border-slate-600 cursor-not-allowed"
+                                        )
                                     )}
                                 >
                                     Continue
