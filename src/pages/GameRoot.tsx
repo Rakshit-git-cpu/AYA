@@ -9,6 +9,9 @@ import { PersonalityAssessment } from '../components/game/PersonalityAssessment'
 import type { Level } from '../types/gameTypes';
 import { MatchReport } from '../components/game/MatchReport';
 import { DnaProfile } from '../components/game/DnaProfile';
+import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
+import { calculateLevelInfo } from '../utils/levelSystem';
+import { useRef } from 'react';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
@@ -22,10 +25,20 @@ export function GameRoot() {
         syncLevels();
     }, [syncLevels]);
 
-    // NEW STATE: track the view and the currently selected age & character
     const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
+
+    // Level up tracking
+    const prevLevelRef = useRef(profile?.level || 1);
+    const [showLevelUp, setShowLevelUp] = useState(false);
+
+    useEffect(() => {
+        if (profile?.level && profile.level > prevLevelRef.current) {
+            setShowLevelUp(true);
+            prevLevelRef.current = profile.level;
+        }
+    }, [profile?.level]);
 
     if (!profile) {
         return <OnboardingWizard />;
@@ -120,6 +133,15 @@ export function GameRoot() {
                 onPlayLevel={handleLevelClick} 
                 onOpenDnaProfile={() => setView('dna')}
             />
+
+            {/* Level Up Overlay overrides all other Z-layers organically */}
+            {showLevelUp && profile && (
+                <LevelUpCelebration
+                    levelNumber={profile.level || 1}
+                    levelName={calculateLevelInfo(profile.total_xp || 0).title}
+                    onComplete={() => setShowLevelUp(false)}
+                />
+            )}
         </div>
     );
 }

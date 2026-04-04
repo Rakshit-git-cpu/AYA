@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { UserProfile, Level, Lesson, PersonalityTraits, PsychologicalProfile } from '../types/gameTypes';
 import { generateLevels } from '../utils/levelGenerator';
+import { calculateLevelInfo } from '../utils/levelSystem';
 
 interface UserState {
     profile: UserProfile | null;
@@ -13,7 +14,11 @@ interface UserState {
     setProfile: (profile: UserProfile) => void;
     unlockLevel: (levelId: string) => void;
     completeLevel: (levelId: string, stars: number) => void;
+    
+    // New Gamified XP Setup
     addXp: (amount: number) => void;
+    addSessionProgression: (sessionXp: number) => void;
+    
     syncLevels: () => void;
 
     // Personality System Actions
@@ -49,9 +54,27 @@ export const useUserStore = create<UserState>()(
             completedOnboarding: false,
             levels: [], // Start empty
             levelScores: {},
-            xp: 0,
+            xp: 0, // Legacy fallback. New stats live on profile
 
             addXp: (amount) => set((state) => ({ xp: state.xp + amount })),
+
+            addSessionProgression: (sessionXp) => set((state) => {
+                if (!state.profile) return state;
+
+                const currentXp = state.profile.total_xp || 0;
+                const newXp = currentXp + sessionXp;
+                const levelInfo = calculateLevelInfo(newXp);
+                const currentStories = state.profile.stories_completed || 0;
+
+                return {
+                    profile: {
+                        ...state.profile,
+                        total_xp: newXp,
+                        level: levelInfo.level,
+                        stories_completed: currentStories + 1
+                    }
+                };
+            }),
 
             // Default to Candy Mode
             isCandyMode: true,

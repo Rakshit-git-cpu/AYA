@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { IDOL_PROFILES } from '../../data/idolMindsets';
+import { calculateLevelInfo } from '../../utils/levelSystem';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -83,8 +84,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     const [frameStartTime, setFrameStartTime] = useState<number>(Date.now());
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
     const collectLesson = useUserStore((state) => state.collectLesson);
-    const addXp = useUserStore((state) => state.addXp); // Global XP Action
     const updateTraits = useUserStore((state) => state.updateTraits);
+    const addSessionProgression = useUserStore((state) => state.addSessionProgression);
+    const levelScores = useUserStore((state) => state.levelScores);
 
     const handleLevelComplete = (stars: number) => {
         onComplete(stars);
@@ -325,6 +327,21 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             // DEBUG: This fires even if user has no ID — confirms COMPLETE branch was reached
             console.log('[AYA DEBUG] COMPLETE branch reached. userProfile.id =', userProfile?.id, '| finalSessionChoices.length =', finalSessionChoices.length);
 
+            // Calculate XP progression mathematically
+            const isFirstTime = !levelScores[level.id];
+            let sessionTotalXp = score; // Base accumulated from choices
+            
+            sessionTotalXp += 50; // Base node finish
+            if (matchPercent > 80) sessionTotalXp += 20; // High alignment bonus
+            if (isFirstTime) sessionTotalXp += 30; // First time run
+
+            sessionTotalXp = Math.max(20, sessionTotalXp); // Safety Floor
+
+            const currentTotalXp = userProfile?.total_xp || 0;
+            const currentStories = userProfile?.stories_completed || 0;
+            const newTotalXp = currentTotalXp + sessionTotalXp;
+            const newLevelInfo = calculateLevelInfo(newTotalXp);
+
             if (userProfile?.id) {
                 try {
                     // Update the user's base personality profile with the new recalibrated traits
@@ -335,6 +352,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                             trait_analytical: recalibratedTraits.vision,
                             trait_social: recalibratedTraits.empathy,
                             trait_ambitious: recalibratedTraits.leadership,
+                            total_xp: newTotalXp,
+                            level: newLevelInfo.level,
+                            stories_completed: currentStories + 1,
                             last_updated: new Date().toISOString()
                         })
                         .eq('user_id', userProfile.id);
@@ -359,8 +379,8 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 }
             }
 
-            // Add Global XP
-            addXp(score);
+            // Play local state pushes
+            addSessionProgression(sessionTotalXp);
 
             // UPDATE TRAITS globally
             updateTraits({
@@ -371,10 +391,25 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 leadership: recalibratedTraits.leadership - quizTraits.leadership
             });
 
-            // IMPORTANT: call LAST — this unmounts ScenarioGame by switching view to 'report' in parent
-            // All async Supabase work above must be awaited before this line
-            console.log('[AYA DEBUG] All done, calling handleLevelComplete with stars:', starCount);
-            handleLevelComplete(starCount);
+            // Float the XP events visually before demounting the view!
+            triggerFloatText(`+50 XP`, 'positive');
+            
+            let delayMs = 1200;
+            if (matchPercent > 80) {
+                setTimeout(() => triggerFloatText(`+20 XP (Outstanding)`, 'positive'), 800);
+                delayMs += 800;
+            }
+            if (isFirstTime) {
+                setTimeout(() => triggerFloatText(`+30 XP (First Run)`, 'positive'), 1600);
+                delayMs += 800;
+            }
+
+            console.log('[AYA DEBUG] All done, calling handleLevelComplete with stars:', starCount, 'and session XP:', sessionTotalXp);
+            
+            // Queue transition out allowing particles to run
+            setTimeout(() => {
+                handleLevelComplete(starCount);
+            }, delayMs);
             return;
         }
 

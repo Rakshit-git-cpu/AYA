@@ -3,6 +3,7 @@ import { audioSynth } from '../../utils/audioSynth';
 import { ArrowLeft, Copy, Check, Star, Shield } from 'lucide-react';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
+import { calculateLevelInfo } from '../../utils/levelSystem';
 
 interface DnaProfileProps {
     onBack: () => void;
@@ -231,6 +232,43 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                     <NeonTraitBar label="Analytical" value={userTraits.vision} neonColor="#00f2ff" />
                     <NeonTraitBar label="Social" value={userTraits.empathy} neonColor="#00ff9d" />
                     <NeonTraitBar label="Ambitious" value={userTraits.leadership} neonColor="#ffb800" />
+                </div>
+
+                {/* Progression Hub Card */}
+                <div className="w-full bg-[#191923]/60 backdrop-blur-xl border-t border-l border-[#00ff9d]/30 border-r border-b border-[#00f2ff]/30 rounded-[2rem] p-6 sm:p-8 mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_30px_rgba(0,255,157,0.05)] transform perspective-[1000px] hover:rotate-x-1 hover:rotate-y-1 transition-transform duration-500">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-[#acaab5] mb-6">Experience Protocol</h3>
+                    
+                    <div className="flex flex-col items-center mb-6 mt-2">
+                        <div className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#00ff9d] mb-2 font-black">Level {profile?.level || 1}</div>
+                        <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00f2ff] drop-shadow-[0_0_15px_rgba(0,255,157,0.4)] text-center">
+                            {calculateLevelInfo(profile?.total_xp || 0).title}
+                        </h2>
+                    </div>
+
+                    <div className="relative w-full mb-8">
+                        <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-[#f2effb] mb-3">
+                            <span className="opacity-70">Progress Target</span>
+                            <span className="text-[#00f2ff]">{profile?.total_xp || 0} / {calculateLevelInfo(profile?.total_xp || 0).xpCeiling + 1} XP</span>
+                        </div>
+                        {/* Custom Progression Bar */}
+                        <div className="w-full h-4 rounded-full overflow-hidden bg-[#000000] border-t border-[rgba(255,255,255,0.1)] shadow-[0_4px_10px_rgba(0,0,0,0.8)_inset]">
+                            <div className="h-full flex items-center justify-end pr-1 transition-all duration-1000 ease-out bg-gradient-to-r from-[#00ff9d] to-[#00f2ff] shadow-[0_0_15px_#00f2ff,inset_0_0_5px_#00ff9d]"
+                                style={{ 
+                                    width: `${Math.min(100, Math.max(0, ((profile?.total_xp || 0) - calculateLevelInfo(profile?.total_xp || 0).xpFloor) / ((calculateLevelInfo(profile?.total_xp || 0).xpCeiling + 1) - calculateLevelInfo(profile?.total_xp || 0).xpFloor) * 100))}%` 
+                                }}>
+                                {/* Laser Head */}
+                                <div className="h-full w-1.5 bg-white blur-[1px]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm font-bold uppercase tracking-widest pt-2 border-t border-white/5">
+                        <span className="text-[#acaab5]">Stories Integrated</span>
+                        <div className="flex items-center gap-2">
+                             <span className="text-[#ff51fa] drop-shadow-[0_0_8px_#ff51fa] text-xl sm:text-2xl font-black">{profile?.stories_completed || 0}</span>
+                             <span className="text-[#acaab5] text-[10px]">Data Nodes</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Personality DNA Section */}
