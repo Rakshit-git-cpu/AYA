@@ -332,7 +332,7 @@ export function PersonalityAssessment() {
                     </div>
 
                     <div className={clsx(
-                        "p-6 md:p-10 space-y-3 md:space-y-4 pb-20 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin",
+                        "flex-1 min-h-0 p-6 md:p-10 pt-8 md:pt-8 space-y-4 md:space-y-5 pb-20 overflow-y-auto max-h-[55vh] md:max-h-[60vh] scrollbar-thin scroll-smooth",
                         isNeon ? "neon-scrollbar" : ""
                     )}>
                         {currentQ.options.map((opt: any, i: number) => {
@@ -360,7 +360,7 @@ export function PersonalityAssessment() {
                                         "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-lg",
                                         isNeon ? (
                                             isSelected
-                                                ? "bg-slate-800 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.6)]"
+                                                ? "bg-slate-800 border-[3px] border-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.8),inset_0_0_10px_rgba(34,211,238,0.3)] z-10 scale-[1.01]"
                                                 : "bg-slate-900/80 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800"
                                         ) : (
                                             isSelected 
