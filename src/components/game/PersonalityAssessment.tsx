@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
-import { ArrowRight, Flame, Briefcase, Eye, Shield, Award, Zap } from 'lucide-react';
+import { ArrowRight, Flame, Briefcase, Eye, Shield, Award, Zap, Check } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
-// ---- NEW PSYCHOLOGICAL QUESTIONS (Deep Profiling) ----
+
 const QUESTIONS = [
     {
         id: 'q1_motivation',
@@ -78,6 +78,49 @@ const QUESTIONS = [
             { text: 'The success I achieved', value: 'Success', modifiers: { discipline: 15, resilience: 10 } },
             { text: 'The kindness I gave', value: 'Kindness', modifiers: { empathy: 25, discipline: 5 } }
         ]
+    },
+    {
+        id: 'q7_interest_goal',
+        text: 'What do you want most right now? (Pick up to 2)',
+        icon: Flame,
+        dimension: 'interest_goal',
+        multiSelect: true,
+        maxOptions: 2,
+        options: [
+            { text: '💰 Money & Financial Freedom', value: 'Money & Financial Freedom', modifiers: {} },
+            { text: '🧠 Confidence & Self Belief', value: 'Confidence & Self Belief', modifiers: {} },
+            { text: '❤️ Love & Deep Connections', value: 'Love & Deep Connections', modifiers: {} },
+            { text: '🔥 Discipline & Focus', value: 'Discipline & Focus', modifiers: {} },
+            { text: '🚀 Success & Recognition', value: 'Success & Recognition', modifiers: {} }
+        ]
+    },
+    {
+        id: 'q8_interest_struggle',
+        text: 'Where do you struggle most? (Pick 1)',
+        icon: Shield,
+        dimension: 'interest_struggle',
+        multiSelect: true,
+        maxOptions: 1, // Will act as single select but utilize multiSelect's "Next" button for consistency to ensure user clicks next if they want
+        options: [
+            { text: 'Overthinking everything', value: 'Overthinking everything', modifiers: {} },
+            { text: 'Laziness & Procrastination', value: 'Laziness & Procrastination', modifiers: {} },
+            { text: 'Fear of what others think', value: 'Fear of what others think', modifiers: {} },
+            { text: 'Staying consistent', value: 'Staying consistent', modifiers: {} }
+        ]
+    },
+    {
+        id: 'q9_interest_domain',
+        text: 'What excites you more? (Pick up to 2)',
+        icon: Zap,
+        dimension: 'interest_domain',
+        multiSelect: true,
+        maxOptions: 2,
+        options: [
+            { text: '💼 Business & Entrepreneurship', value: 'Business & Entrepreneurship', modifiers: {} },
+            { text: '🎨 Creativity (Music, Art, Writing)', value: 'Creativity (Music, Art, Writing)', modifiers: {} },
+            { text: '💻 Tech & Innovation', value: 'Tech & Innovation', modifiers: {} },
+            { text: '👑 Leadership & Impact', value: 'Leadership & Impact', modifiers: {} }
+        ]
     }
 ];
 
@@ -88,8 +131,8 @@ export function PersonalityAssessment() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [answers, setAnswers] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const [currentSelection, setCurrentSelection] = useState<any[]>([]);
 
-    // Initial Base Stats
     const [traits, setTraits] = useState<PersonalityTraits>({
         discipline: 50,
         resilience: 50,
@@ -100,11 +143,7 @@ export function PersonalityAssessment() {
         vision: 50
     });
 
-    // Profile Builder State
     const [profileBuilder, setProfileBuilder] = useState<Partial<PsychologicalProfile>>({});
-
-    // Result State
-
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -112,34 +151,56 @@ export function PersonalityAssessment() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleAnswer = async (option: any) => {
+    const toggleOption = (option: any) => {
+        audioSynth.playClick();
+        const currentQ = QUESTIONS[step] as any;
+        if (currentSelection.some(o => o.value === option.value)) {
+            setCurrentSelection(currentSelection.filter(o => o.value !== option.value));
+        } else {
+            // Unselect if maxOptions is 1 (radio behavior)
+            if (currentQ.maxOptions === 1) {
+                setCurrentSelection([option]);
+                return;
+            }
+            if (currentQ.maxOptions && currentSelection.length >= currentQ.maxOptions) {
+                return;
+            }
+            setCurrentSelection([...currentSelection, option]);
+        }
+    };
+
+    const commitAnswer = async (selectedOptions: any[]) => {
         if (isSaving) return;
+        if (selectedOptions.length === 0) return;
         audioSynth.playClick();
 
-        const modifiers = option.modifiers;
+        const currentQ = QUESTIONS[step] as any;
         const newTraits = { ...traits };
 
-        // 1. Update Legacy Traits
-        (Object.keys(modifiers) as Array<keyof PersonalityTraits> | any).forEach((key: string) => {
-            const val = modifiers[key] || 0;
-            // Handle mapped keys if any remain
-            if (key === 'adaptability') {
-                newTraits.resilience = Math.max(0, Math.min(100, newTraits.resilience + (val * 0.5)));
-                newTraits.risk = Math.max(0, Math.min(100, newTraits.risk + (val * 0.5)));
-            } else if (newTraits[key as keyof PersonalityTraits] !== undefined) {
-                newTraits[key as keyof PersonalityTraits] = Math.max(0, Math.min(100, newTraits[key as keyof PersonalityTraits] + val));
-            }
+        selectedOptions.forEach(option => {
+            const modifiers = option.modifiers || {};
+            (Object.keys(modifiers) as Array<keyof PersonalityTraits> | any).forEach((key: string) => {
+                const val = modifiers[key] || 0;
+                if (key === 'adaptability') {
+                    newTraits.resilience = Math.max(0, Math.min(100, newTraits.resilience + (val * 0.5)));
+                    newTraits.risk = Math.max(0, Math.min(100, newTraits.risk + (val * 0.5)));
+                } else if (newTraits[key as keyof PersonalityTraits] !== undefined) {
+                    newTraits[key as keyof PersonalityTraits] = Math.max(0, Math.min(100, newTraits[key as keyof PersonalityTraits] + val));
+                }
+            });
         });
 
         setTraits(newTraits);
 
-        // 2. Build Deep Profile & Record Answer
-        const currentQ = QUESTIONS[step];
-        const newProfile = { ...profileBuilder, [currentQ.dimension]: option.value };
-        const newAnswers = [...answers, option.text];
+        const valueMerged = selectedOptions.map(o => o.value).join(', ');
+        const textMerged = selectedOptions.map(o => o.text).join(', ');
+
+        const newProfile = { ...profileBuilder, [currentQ.dimension]: valueMerged };
+        const newAnswers = [...answers, textMerged];
         
         setProfileBuilder(newProfile);
         setAnswers(newAnswers);
+        setCurrentSelection([]);
 
         if (step < QUESTIONS.length - 1) {
             setStep(step + 1);
@@ -147,7 +208,6 @@ export function PersonalityAssessment() {
             setIsSaving(true);
             try {
                 if (userProfile?.id) {
-                    // Save Quiz Responses
                     await supabase.from('quiz_responses').insert([{
                         user_id: userProfile.id,
                         question_1: newAnswers[0] || '',
@@ -156,16 +216,19 @@ export function PersonalityAssessment() {
                         question_4: newAnswers[3] || '',
                         question_5: newAnswers[4] || '',
                         question_6: newAnswers[5] || ''
+                        // note: q7-q9 are not in quiz_responses schema yet based on previous code. They are stored in personality_profiles.
                     }]);
 
-                    // Save Profile
                     await supabase.from('personality_profiles').insert([{
                         user_id: userProfile.id,
                         trait_risk_taker: newTraits.risk,
                         trait_creative: newTraits.creativity,
                         trait_analytical: newTraits.vision,
                         trait_social: newTraits.empathy,
-                        trait_ambitious: newTraits.leadership
+                        trait_ambitious: newTraits.leadership,
+                        interest_goal: newProfile.interest_goal || '',
+                        interest_struggle: newProfile.interest_struggle || '',
+                        interest_domain: newProfile.interest_domain || ''
                     }]);
                 }
             } catch (err) {
@@ -174,53 +237,45 @@ export function PersonalityAssessment() {
                 setIsSaving(false);
                 if (audioSynth.playLevelComplete) audioSynth.playLevelComplete();
 
-                // Finalize Profile (Fill defaults if somehow missing)
                 const finalProfile: PsychologicalProfile = {
                     motivation: (newProfile.motivation as MotivationType) || 'Stability',
                     risk: (newProfile.risk as RiskAppetite) || 'Balanced',
                     emotional: (newProfile.emotional as EmotionalStyle) || 'Resilient',
                     social: (newProfile.social as SocialRole) || 'Supporter',
                     passion: (newProfile.passion as PassionType) || 'Creative',
-                    coreValue: (newProfile.coreValue as CoreValue) || 'Success'
+                    coreValue: (newProfile.coreValue as CoreValue) || 'Success',
+                    interest_goal: newProfile.interest_goal,
+                    interest_struggle: newProfile.interest_struggle,
+                    interest_domain: newProfile.interest_domain
                 };
 
-                // IMMEDIATE COMPLETION - No Report Here
                 completeAssessment(newTraits, finalProfile);
             }
         }
     };
 
-    const currentQ = QUESTIONS[step];
-    const Icon = currentQ ? currentQ.icon : Flame; // Safety check
+    const currentQ: any = QUESTIONS[step];
+    const Icon = currentQ ? currentQ.icon : Flame;
 
-    // ---- UNIFIED CANDY THEME (Responsive) ----
     return (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden bg-slate-900">
-            {/* Immersive Background (Global) */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 animate-pulse-slow"></div>
-                {/* Floating Orbs */}
                 <div className="absolute top-10 left-10 w-32 md:w-48 h-32 md:h-48 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float" />
                 <div className="absolute bottom-20 right-10 w-48 md:w-64 h-48 md:h-64 bg-cyan-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float animation-delay-2000" />
             </div>
 
-            {/* Main Container - Responsive Width */}
             <div className={clsx(
                 "relative z-10 w-full max-w-lg md:max-w-2xl flex flex-col h-full md:h-auto md:max-h-[90vh]",
                 isMobile ? "justify-between" : "justify-center p-4"
             )}>
-
-                {/* Card Container (Desktop: Modal / Mobile: Full) */}
                 <div className={clsx(
                     "flex flex-col bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl overflow-hidden relative transition-all duration-500",
                     isMobile ? "flex-grow pt-safe-top m-4 rounded-[2.5rem]" : "rounded-[3rem]"
                 )}>
-                    {/* Gloss Effect */}
                     <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                    {/* Content Header */}
                     <div className="p-6 md:p-10 pb-0 text-center flex flex-col items-center">
-                        {/* Progress */}
                         <div className="w-full flex items-center justify-between mb-6 md:mb-8">
                             <span className="text-white/80 font-bold uppercase tracking-widest text-xs bg-black/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
                                 {step + 1} / {QUESTIONS.length}
@@ -233,7 +288,6 @@ export function PersonalityAssessment() {
                             </div>
                         </div>
 
-                        {/* Icon */}
                         <div className="relative mb-6 group">
                             <div className="absolute inset-0 bg-pink-400 blur-xl opacity-50 animate-pulse group-hover:opacity-80 transition-opacity"></div>
                             <div className="relative w-20 h-20 md:w-24 md:h-24 bg-gradient-to-tr from-white to-slate-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white/50 transform group-hover:scale-110 transition-transform duration-300">
@@ -241,35 +295,73 @@ export function PersonalityAssessment() {
                             </div>
                         </div>
 
-                        {/* Question Text */}
                         <h2 className="text-2xl md:text-3xl font-black text-white mb-2 leading-snug drop-shadow-md">
                             {currentQ.text}
                         </h2>
                         {isSaving && <div className="mt-4 text-white animate-pulse">Saving Profile...</div>}
                     </div>
 
-                    {/* Options Area */}
-                    <div className="p-6 md:p-10 space-y-3 md:space-y-4">
-                        {currentQ.options.map((opt, i) => (
-                            <button
-                                key={i}
-                                onClick={() => handleAnswer(opt)}
-                                className="group w-full relative h-[72px] md:h-[80px] rounded-2xl transition-all transform hover:scale-[1.02] active:scale-95"
-                            >
-                                {/* 3D Button Layer */}
-                                <div className="absolute inset-0 bg-black/20 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.2)] translate-y-1"></div>
-
-                                {/* Main Surface */}
-                                <div className="absolute inset-0 bg-white hover:bg-pink-50 rounded-2xl flex items-center justify-between px-6 transition-colors shadow-lg border-b-4 border-slate-200">
-                                    <span className="text-slate-800 font-extrabold text-sm md:text-lg leading-tight text-left pr-2 group-hover:text-pink-600 transition-colors">
-                                        {opt.text}
-                                    </span>
-                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pink-100 flex items-center justify-center group-hover:bg-pink-500 group-hover:text-white transition-all shrink-0">
-                                        <ArrowRight size={16} className="md:w-5 md:h-5" />
+                    <div className="p-6 md:p-10 space-y-3 md:space-y-4 pb-20">
+                        {currentQ.options.map((opt: any, i: number) => {
+                            const isSelected = currentSelection.some(sel => sel.value === opt.value);
+                            return (
+                                <button
+                                    key={i}
+                                    onClick={() => {
+                                        if (currentQ.multiSelect) {
+                                            toggleOption(opt);
+                                        } else {
+                                            commitAnswer([opt]);
+                                        }
+                                    }}
+                                    className={clsx(
+                                        "group w-full relative h-[72px] md:h-[80px] rounded-2xl transition-all transform active:scale-95",
+                                        isSelected ? "scale-[1.02]" : "hover:scale-[1.02]"
+                                    )}
+                                >
+                                    <div className="absolute inset-0 bg-black/20 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.2)] translate-y-1"></div>
+                                    <div className={clsx(
+                                        "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-lg border-b-4",
+                                        isSelected 
+                                            ? "bg-pink-50 border-pink-500 ring-2 ring-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]" 
+                                            : "bg-white hover:bg-pink-50 border-slate-200"
+                                    )}>
+                                        <span className={clsx(
+                                            "font-extrabold text-sm md:text-lg leading-tight text-left pr-2 transition-colors",
+                                            isSelected ? "text-pink-600" : "text-slate-800 group-hover:text-pink-600"
+                                        )}>
+                                            {opt.text}
+                                        </span>
+                                        <div className={clsx(
+                                            "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0",
+                                            isSelected 
+                                                ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" 
+                                                : "bg-pink-100 group-hover:bg-pink-500 group-hover:text-white"
+                                        )}>
+                                            {isSelected ? <Check size={16} className="md:w-5 md:h-5" /> : <ArrowRight size={16} className="md:w-5 md:h-5" />}
+                                        </div>
                                     </div>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            );
+                        })}
+                        
+                        {/* Multi-Select Continue Button */}
+                        {currentQ.multiSelect && (
+                            <div className="mt-8 flex justify-center">
+                                <button
+                                    onClick={() => commitAnswer(currentSelection)}
+                                    disabled={currentSelection.length === 0}
+                                    className={clsx(
+                                        "px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300",
+                                        currentSelection.length > 0
+                                            ? "bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] hover:scale-105 active:scale-95 cursor-pointer"
+                                            : "bg-slate-700/50 text-slate-500 border border-slate-600 cursor-not-allowed"
+                                    )}
+                                >
+                                    Continue
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -16,7 +16,46 @@ export function LevelMap({ onPlayLevel }: LevelMapProps) {
     const levels = useUserStore((state) => state.levels);
     const profile = useUserStore((state) => state.profile);
     const activeAge = profile?.age || 18;
-    const ageLevels = levels.filter(l => l.age === activeAge);
+    let processedLevels = levels.filter(l => l.age === activeAge);
+
+    if (profile?.psychologicalProfile) {
+        const { interest_goal = '', interest_domain = '' } = profile.psychologicalProfile as any;
+
+        let allowedNames = new Set<string>();
+        let bypassFilter = false;
+
+        const goals = interest_goal.split(',').map((s: string) => s.trim());
+        const domains = interest_domain.split(',').map((s: string) => s.trim());
+        const interests = [...goals, ...domains];
+
+        if (interests.some((i: string) => i.includes('Success') || i.includes('Leadership'))) {
+            bypassFilter = true;
+        }
+
+        if (!bypassFilter && interests.length > 0) {
+            if (interests.some((i: string) => i.includes('Money') || i.includes('Business'))) {
+                ['Bill Gates', 'Ratan Tata', 'Indra Nooyi', 'Walt Disney'].forEach(n => allowedNames.add(n));
+            }
+            if (interests.some((i: string) => i.includes('Tech'))) {
+                ['Bill Gates', 'Steve Jobs', 'Sundar Pichai'].forEach(n => allowedNames.add(n));
+            }
+            if (interests.some((i: string) => i.includes('Creativity') || i.includes('Love'))) {
+                ['Taylor Swift', 'Shah Rukh Khan', 'Frida Kahlo', 'A.R. Rahman', 'Steven Spielberg', 'J.K. Rowling', 'Mary Shelley'].forEach(n => allowedNames.add(n));
+            }
+            if (interests.some((i: string) => i.includes('Discipline'))) {
+                ['Sachin Tendulkar', 'Virat Kohli', 'Kobe Bryant', 'P.V. Sindhu', 'Arnold'].forEach(n => allowedNames.add(n));
+            }
+
+            if (allowedNames.size > 0) {
+                processedLevels = processedLevels.filter(l => {
+                    const personalityName = l.personality || '';
+                    return Array.from(allowedNames).some(name => personalityName.includes(name));
+                });
+            }
+        }
+    }
+
+    const ageLevels = processedLevels;
 
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
