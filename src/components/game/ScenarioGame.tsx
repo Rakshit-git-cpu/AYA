@@ -51,6 +51,9 @@ interface SessionChoiceData {
 
 
 export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
+    // DEBUG: Confirms this component is the active one (check console on game load)
+    console.log('[AYA DEBUG] ScenarioGame mounted for level:', level?.id, level?.personality);
+
     const [currentFrameId, setCurrentFrameId] = useState('intro');
 
     // Typewriter State (Stateless Slice Logic)
@@ -321,6 +324,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
             collectLesson(lessonData);
 
             // Supabase Tracking
+            // DEBUG: This fires even if user has no ID — confirms COMPLETE branch was reached
+            console.log('[AYA DEBUG] COMPLETE branch reached. userProfile.id =', userProfile?.id, '| finalSessionChoices.length =', finalSessionChoices.length);
+
             if (userProfile?.id) {
                 try {
                     // Update the user's base personality profile with the new recalibrated traits
@@ -367,6 +373,9 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                 leadership: recalibratedTraits.leadership - quizTraits.leadership
             });
 
+            // IMPORTANT: call LAST — this unmounts ScenarioGame by switching view to 'report' in parent
+            // All async Supabase work above must be awaited before this line
+            console.log('[AYA DEBUG] All done, calling handleLevelComplete with stars:', starCount);
             handleLevelComplete(starCount);
             return;
         }
