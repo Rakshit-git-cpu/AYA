@@ -1,9 +1,12 @@
 import { useState, useMemo } from 'react';
 import { audioSynth } from '../../utils/audioSynth';
-import { ArrowLeft, Copy, Check, Star, Shield } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList } from 'lucide-react';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 import { calculateLevelInfo } from '../../utils/levelSystem';
+import html2canvas from 'html2canvas';
+import { InstagramCard } from './InstagramCard';
+import { useRef } from 'react';
 
 interface DnaProfileProps {
     onBack: () => void;
@@ -144,12 +147,46 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     }, [userTraits]);
 
     const [copiedDNA, setCopiedDNA] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+
     const handleShareDNA = () => {
         if (!personalityDNA) return;
         const textToCopy = `My Personality DNA: I have ${personalityDNA.idol1.desc} and ${personalityDNA.idol2.desc}. Discover yours at https://aya-phi-liard.vercel.app 🧬`;
         navigator.clipboard.writeText(textToCopy);
         setCopiedDNA(true);
         setTimeout(() => setCopiedDNA(false), 2000);
+        setTimeout(() => setShowOptions(false), 2000);
+    };
+
+    const handleDownloadCard = async () => {
+        if (!cardRef.current || isGenerating) return;
+        
+        try {
+            audioSynth.playClick();
+            setIsGenerating(true);
+            
+            const canvas = await html2canvas(cardRef.current, {
+                backgroundColor: null,
+                scale: 2, // High DPI for Instagram
+                useCORS: true,
+                logging: false,
+                windowWidth: 1080,
+                windowHeight: 1080
+            });
+            
+            const link = document.createElement('a');
+            link.download = `aya-dna-${profile?.name || 'card'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            setTimeout(() => setShowOptions(false), 1000);
+        } catch (error) {
+            console.error("Failed to generate image:", error);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     // Calculate dynamic real life challenge
@@ -322,25 +359,65 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                     </p>
                 </div>
 
-                {/* Share Button CTA */}
-                <button 
-                    onClick={() => { audioSynth.playClick(); handleShareDNA(); }}
-                    className="group relative w-full sm:w-[80%] h-16 rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(0,242,255,0.3)]"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#006a70] via-[#00f1fe] to-[#005f64] opacity-80" />
-                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] group-hover:animate-[shimmer_2s_infinite]" />
-                    
-                    <span className="relative z-10 w-full h-full flex items-center justify-center gap-3 text-white font-black text-lg md:text-xl uppercase tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                        {copiedDNA ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
-                        {copiedDNA ? "Data Copied" : "Share Your DNA"}
-                    </span>
-                    <style>{`
-                        @keyframes shimmer {
-                            0% { background-position: -200% 0; }
-                            100% { background-position: 200% 0; }
-                        }
-                    `}</style>
-                </button>
+                {/* Share Dropdown / Dual Actions */}
+                <div className="w-full sm:w-[80%] flex flex-col gap-4">
+                    {!showOptions ? (
+                        <button 
+                            onClick={() => { audioSynth.playClick(); setShowOptions(true); }}
+                            className="group relative w-full h-16 rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(0,242,255,0.3)]"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#006a70] via-[#00f1fe] to-[#005f64] opacity-80" />
+                            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] group-hover:animate-[shimmer_2s_infinite]" />
+                            
+                            <span className="relative z-10 w-full h-full flex items-center justify-center gap-3 text-white font-black text-lg md:text-xl uppercase tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                <Copy className="w-6 h-6" />
+                                SHARE YOUR DNA
+                            </span>
+                            <style>{`
+                                @keyframes shimmer {
+                                    0% { background-position: -200% 0; }
+                                    100% { background-position: 200% 0; }
+                                }
+                            `}</style>
+                        </button>
+                    ) : (
+                        <div className="flex flex-col sm:flex-row gap-4 w-full animate-fade-in-up">
+                            {/* Copy Text Action */}
+                            <button 
+                                onClick={() => { audioSynth.playClick(); handleShareDNA(); }}
+                                className="flex-1 flex items-center justify-center gap-3 h-14 rounded-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] hover:bg-[#191923] hover:border-[#00f2ff]/50 transition-all shadow-[0_0_15px_rgba(0,242,255,0)] hover:shadow-[0_0_15px_rgba(0,242,255,0.2)] text-[#f2effb]"
+                            >
+                                {copiedDNA ? <Check className="w-5 h-5 text-[#4ade80]" /> : <ClipboardList className="w-5 h-5" />}
+                                <span className="font-space uppercase font-bold tracking-widest text-[12px] sm:text-sm">
+                                    {copiedDNA ? "COPIED!" : "COPY TEXT"}
+                                </span>
+                            </button>
+
+                            {/* Download Card Action */}
+                            <button 
+                                onClick={handleDownloadCard}
+                                disabled={isGenerating}
+                                className="flex-1 flex items-center justify-center gap-3 h-14 rounded-full bg-gradient-to-r from-[#d575ff]/20 to-[#99f7ff]/20 border border-[rgba(0,242,255,0.3)] hover:from-[#d575ff]/40 hover:to-[#99f7ff]/40 transition-all shadow-[0_0_15px_rgba(0,242,255,0.1)] hover:shadow-[0_0_20px_rgba(213,117,255,0.4)] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Download className={`w-5 h-5 ${isGenerating ? 'animate-bounce' : ''}`} />
+                                <span className="font-space uppercase font-bold tracking-widest text-[12px] sm:text-sm">
+                                    {isGenerating ? "GENERATING..." : "DOWNLOAD CARD"}
+                                </span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* HIDDEN OFF-SCREEN INSTAGRAM CARD */}
+                <div className="absolute top-[-9999px] left-[-9999px]">
+                    <InstagramCard
+                        ref={cardRef}
+                        profile={profile}
+                        personalityDNA={personalityDNA}
+                        dynamicProfileTag={dynamicProfileTag}
+                        levelName={calculateLevelInfo(profile?.total_xp || 0).title}
+                    />
+                </div>
 
             </main>
         </div>
