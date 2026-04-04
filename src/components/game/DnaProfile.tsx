@@ -146,6 +146,18 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     else if (struggleStr.includes('Fear of what others think')) realLifeChallenge = "Share one honest opinion with someone today.";
     else if (struggleStr.includes('Staying consistent')) realLifeChallenge = "Set one non-negotiable daily habit starting tonight.";
 
+    const dynamicProfileTag = useMemo(() => {
+        const traits = [
+            { name: "BORN LEADER", value: userTraits.leadership || 0 },
+            { name: "CREATIVE SOUL", value: userTraits.creativity || 0 },
+            { name: "STRATEGIC MIND", value: userTraits.vision || 0 },
+            { name: "PEOPLE'S CHAMPION", value: userTraits.empathy || 0 },
+            { name: "BOLD MAVERICK", value: userTraits.risk || 0 }
+        ];
+        traits.sort((a, b) => b.value - a.value);
+        return traits[0].name;
+    }, [userTraits]);
+
     return (
         <div className="fixed inset-0 z-[100] w-full h-full bg-[#0d0d16] font-sans text-[#f2effb] overflow-y-auto overflow-x-hidden pt-safe-top pb-24 selection:bg-[#99f7ff] selection:text-[#004145]">
             
@@ -194,7 +206,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                 {/* Profile Badge */}
                 <div className="mb-10 px-6 py-2 rounded-full border-2 border-[rgba(153,247,255,0.3)] bg-[rgba(0,85,90,0.3)] shadow-[0_0_20px_rgba(0,242,255,0.2)_inset,0_0_20px_rgba(0,242,255,0.2)] backdrop-blur-md flex items-center gap-2">
                     <Shield size={16} className="text-[#99f7ff] animate-pulse" />
-                    <span className="text-xs font-black uppercase tracking-widest text-[#99f7ff]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Elite Operative</span>
+                    <span className="text-xs font-black uppercase tracking-widest text-[#99f7ff]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{dynamicProfileTag}</span>
                 </div>
 
                 {/* Trait Bars Card (Glassmorphism + Neon Border) */}
