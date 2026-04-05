@@ -48,7 +48,8 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
   const welcomeWords = "Your journey begins now.".split(" ");
 
   return (
-    <div className="w-full h-screen bg-[#0d0d16] text-[#f2effb] overflow-hidden relative font-['Space_Grotesk',sans-serif] perspective-[2000px]">
+    <div className="w-full h-screen bg-[#0d0d16] text-[#f2effb] overflow-y-auto relative font-['Space_Grotesk',sans-serif] perspective-[2000px] [-webkit-overflow-scrolling:touch]" style={{scrollbarWidth:'none', msOverflowStyle:'none'}} >
+      <style>{`::-webkit-scrollbar { display: none; }`}</style>
       
       {/* Universal Scene Elements */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -106,22 +107,20 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
          </AnimatePresence>
       </div>
 
-      {/* Top Navigation */}
-      <div className="absolute top-6 left-0 w-full px-8 z-50 flex justify-between items-center">
-        {slide > 1 && slide < 4 && (
-           <button onClick={prevSlide} className="text-[#acaab5] hover:text-[#99f7ff] transition-colors text-sm uppercase tracking-widest font-bold">
-               ← Back
-           </button>
-        )}
-        {(slide === 1 || slide === 2) && (
-           <button onClick={() => onComplete()} className="ml-auto text-[#acaab5] hover:text-[#99f7ff] transition-colors text-sm uppercase tracking-widest font-bold">
-               Skip
-           </button>
-        )}
-      </div>
+      {/* Top Navigation — FIXED */}
+      {slide > 1 && slide < 4 && (
+        <button onClick={prevSlide} className="fixed top-6 left-6 z-[200] text-[#acaab5] hover:text-[#99f7ff] transition-colors text-sm uppercase tracking-widest font-bold">
+            ← Back
+        </button>
+      )}
+      {(slide === 1 || slide === 2) && (
+        <button onClick={() => onComplete()} className="fixed top-6 right-6 z-[200] text-[#acaab5] hover:text-[#99f7ff] transition-colors text-sm uppercase tracking-widest font-bold">
+            Skip
+        </button>
+      )}
 
-      {/* Main Slide Content */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center px-4 md:px-6 py-16">
+      {/* Main Slide Content — Scrollable inner wrapper */}
+      <div className="relative z-10 w-full min-h-screen flex items-start justify-center px-4 md:px-6 pt-20 pb-28">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: The Hook */}
           {slide === 1 && (
@@ -152,25 +151,25 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               <div className="space-y-10 [transform-style:preserve-3d]">
                  <motion.p 
                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                   className="text-3xl md:text-5xl font-light text-white/80"
+                   className="text-xl md:text-3xl font-light text-white/80"
                  >
                     "At 20, <span className="font-bold text-[#99f7ff] drop-shadow-[0_0_15px_rgba(153,247,255,0.8)]">Kobe Bryant</span> was already training at 4AM."
                  </motion.p>
                  <motion.p 
                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-                   className="text-2xl md:text-4xl font-light text-white/80"
+                   className="text-lg md:text-2xl font-light text-white/80"
                  >
                     "At 19, <span className="font-bold text-[#d575ff] drop-shadow-[0_0_15px_rgba(213,117,255,0.8)]">Shah Rukh Khan</span> was performing in Delhi theatres."
                  </motion.p>
                  <motion.h1 
                    initial={{ opacity: 0, scale: 0.9, z: 150 }} animate={{ opacity: 1, scale: 1, z: 0 }} transition={{ delay: 1.2, duration: 1 }}
-                   className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-white to-[#ffaa00] drop-shadow-[0_0_30px_rgba(255,215,0,0.5)] mt-16 mb-4"
+                   className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-white to-[#ffaa00] drop-shadow-[0_0_30px_rgba(255,215,0,0.5)] mt-8 mb-4"
                  >
                     What were YOU meant to become?
                  </motion.h1>
                  <motion.p 
                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
-                   className="text-[#acaab5] text-2xl font-['Manrope',sans-serif] uppercase tracking-widest mt-6"
+                   className="text-[#acaab5] text-base md:text-xl font-['Manrope',sans-serif] uppercase tracking-widest mt-4"
                  >
                     Find out by stepping into their shoes.
                  </motion.p>
@@ -178,7 +177,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                  <motion.button
                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.2 }}
                    onClick={nextSlide}
-                   className="mt-20 px-16 py-6 bg-transparent border-2 border-[#00f1fe] text-[#99f7ff] rounded-full text-2xl font-black uppercase tracking-wider relative overflow-hidden group transition-all"
+                   className="mt-10 px-10 py-5 bg-transparent border-2 border-[#00f1fe] text-[#99f7ff] rounded-full text-xl font-black uppercase tracking-wider relative overflow-hidden group transition-all"
                  >
                    <motion.div 
                        className="absolute inset-0 bg-[#00f1fe] opacity-20"
@@ -336,6 +335,19 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+      {/* Fixed bottom progress dots */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3">
+        {[1, 2, 3, 4].map((s) => (
+          <div
+            key={s}
+            className={`rounded-full transition-all duration-300 ${
+              s === slide
+                ? 'w-6 h-2 bg-[#00f1fe] shadow-[0_0_10px_#00f1fe]'
+                : 'w-2 h-2 bg-[#2b2b38] hover:bg-[#4b4b58]'
+            }`}
+          />
+        ))}
       </div>
 
     </div>
