@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
 import { supabase } from '../../utils/supabase';
-import { Brain, Gamepad2, Dna, ChevronRight, Check, User } from 'lucide-react';
+import { Brain, Gamepad2, Dna, ChevronRight, Check } from 'lucide-react';
 
 const STRUGGLES = [
   { id: 'heartbreak', label: 'Heartbreak & Relationships', icon: '💔' },
@@ -135,7 +135,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
             >
               {/* Blurred Silhouettes */}
               <div className="absolute inset-0 z-[-1] pointer-events-none flex items-center justify-center">
-                 {[1,2,3].map((s, i) => (
+                 {[1,2,3].map((_, i) => (
                      <motion.div
                        key={`sil-${i}`}
                        className="absolute w-48 h-64 bg-black rounded-[40px] opacity-40 blur-[20px] mix-blend-overlay border border-[#00f1fe]"

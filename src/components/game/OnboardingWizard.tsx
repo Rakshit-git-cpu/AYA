@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
-import { Check, Loader2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 
