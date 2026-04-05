@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
+import { CinematicOnboarding } from '../components/game/CinematicOnboarding';
 import { LevelMap } from '../components/game/LevelMap';
 import { CharacterSelection } from '../components/game/CharacterSelection';
 import { ScenarioGame } from '../components/game/ScenarioGame';
@@ -32,6 +33,7 @@ export function GameRoot() {
     // Level up tracking
     const prevLevelRef = useRef(profile?.level || 1);
     const [showLevelUp, setShowLevelUp] = useState(false);
+    const [onboardingComplete, setOnboardingComplete] = useState(false);
 
     useEffect(() => {
         if (profile?.level && profile.level > prevLevelRef.current) {
@@ -42,6 +44,14 @@ export function GameRoot() {
 
     if (!profile) {
         return <OnboardingWizard />;
+    }
+
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding') === 'true';
+    if (!hasSeenOnboarding && !onboardingComplete) {
+        return <CinematicOnboarding onComplete={() => {
+            localStorage.setItem('hasSeenOnboarding', 'true');
+            setOnboardingComplete(true);
+        }} />;
     }
 
     if (!profile.assessmentCompleted) {

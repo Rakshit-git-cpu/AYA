@@ -62,6 +62,7 @@ export function OnboardingWizard() {
 
                     baseProfile.traits = loadedTraits as any;
                     baseProfile.assessmentCompleted = true;
+                    localStorage.setItem('hasSeenOnboarding', 'true'); // Bypass new onboarding
                     setProfile(baseProfile);
                     
                     completeAssessment(loadedTraits as any, {
@@ -73,6 +74,7 @@ export function OnboardingWizard() {
                         coreValue: 'Success'
                     });
                 } else {
+                    localStorage.setItem('hasSeenOnboarding', 'true'); // They exist but no profile yet? Treat as returning.
                     setProfile(baseProfile);
                 }
             } else {
