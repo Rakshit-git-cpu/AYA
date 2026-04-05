@@ -121,7 +121,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
       </div>
 
       {/* Main Slide Content */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center p-6">
+      <div className="relative z-10 w-full h-full flex items-center justify-center px-4 md:px-6 py-16">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: The Hook */}
           {slide === 1 && (
@@ -131,7 +131,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
               exit={{ opacity: 0, x: -100, rotateY: -15 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center max-w-5xl"
+              className="text-center w-full max-w-[680px] mx-auto px-4 md:px-0"
             >
               {/* Blurred Silhouettes */}
               <div className="absolute inset-0 z-[-1] pointer-events-none flex items-center justify-center">
@@ -199,7 +199,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               key="slide2"
               initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.6 }}
-              className="max-w-5xl w-full"
+              className="w-full max-w-[680px] mx-auto px-4 md:px-0"
             >
               <h2 className="text-5xl md:text-7xl font-black text-center mb-20 text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">How AYA Works</h2>
               <div className="space-y-8 [transform-style:preserve-3d]">
@@ -240,12 +240,12 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               key="slide3"
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }}
               transition={{ duration: 0.6 }}
-              className="max-w-6xl w-full text-center"
+              className="w-full max-w-[680px] mx-auto px-4 md:px-0 text-center"
             >
               <h2 className="text-5xl md:text-6xl font-black mb-6 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">What's on your mind lately?</h2>
               <p className="text-2xl text-[#acaab5] mb-16 font-['Manrope']">We'll suggest the perfect story for you today</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 [transform-style:preserve-3d]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 [transform-style:preserve-3d]">
                  {STRUGGLES.map((strug, idx) => (
                     <motion.button
                       key={strug.id}
@@ -287,7 +287,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               key="slide4"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
-              className="text-center w-full"
+              className="w-full max-w-[680px] mx-auto px-4 md:px-0 text-center"
             >
               <div className="relative">
                  {/* Rotating Aurora Core */}
