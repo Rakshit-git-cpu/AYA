@@ -3,6 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { ArrowRight, Flame, Briefcase, Eye, Shield, Award, Zap, Check } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
 
@@ -256,25 +257,40 @@ export function PersonalityAssessment() {
 
     const currentQ: any = QUESTIONS[step];
     const Icon = currentQ ? currentQ.icon : Flame;
-    const isNeon = step >= 6; // Dark Neon theme applied to Q7, Q8, Q9
+    const isNeon = true; // Dark Neon theme applied to ALL questions
 
     return (
         <div className={clsx("fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden transition-colors duration-1000", isNeon ? "bg-slate-950" : "bg-slate-900")}>
             
             {/* Background Layer */}
-            {isNeon ? (
-                <div className="absolute inset-0 bg-slate-950 transition-opacity duration-1000">
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 animate-pulse-slow"></div>
-                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-cyan-500 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-float" />
-                    <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-float animation-delay-2000" />
-                </div>
-            ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy transition-opacity duration-1000">
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 animate-pulse-slow"></div>
-                    <div className="absolute top-10 left-10 w-32 md:w-48 h-32 md:h-48 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float" />
-                    <div className="absolute bottom-20 right-10 w-48 md:w-64 h-48 md:h-64 bg-cyan-400 rounded-full mix-blend-overlay filter blur-3xl opacity-60 animate-float animation-delay-2000" />
-                </div>
-            )}
+            <div className="absolute inset-0 bg-[#0d0d16] pointer-events-none transition-opacity duration-1000 z-0">
+                {/* Diagonal Light Rays */}
+                <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_30%,rgba(0,241,254,0.03)_40%,rgba(0,241,254,0.08)_50%,transparent_60%)] MixBlendMode-screen" />
+                <div className="absolute inset-0 bg-[linear-gradient(-45deg,transparent_40%,rgba(213,117,255,0.05)_50%,transparent_60%)] MixBlendMode-screen" />
+                
+                {/* Floating Particles */}
+                {Array.from({ length: 30 }).map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-[#00f1fe] rounded-full drop-shadow-[0_0_5px_#00f1fe]"
+                        style={{ filter: 'blur(1px)' }}
+                        initial={{
+                            x: Math.random() * window.innerWidth,
+                            y: Math.random() * window.innerHeight,
+                            opacity: Math.random() * 0.5 + 0.1
+                        }}
+                        animate={{
+                            y: [null, Math.random() * window.innerHeight],
+                            opacity: [0.1, 0.6, 0.1]
+                        }}
+                        transition={{
+                            duration: Math.random() * 8 + 8,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }}
+                    />
+                ))}
+            </div>
 
             <div className={clsx(
                 "relative z-10 w-full max-w-lg md:max-w-2xl flex flex-col h-full md:h-auto md:max-h-[90vh]",
