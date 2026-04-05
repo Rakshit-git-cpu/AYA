@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
-import { ArrowRight, Flame, Briefcase, Eye, Shield, Award, Zap, Check } from 'lucide-react';
+import { Flame, Briefcase, Eye, Shield, Award, Zap, Check } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
 
@@ -101,7 +101,7 @@ const QUESTIONS = [
         icon: Shield,
         dimension: 'interest_struggle',
         multiSelect: true,
-        maxOptions: 1, // Will act as single select but utilize multiSelect's "Next" button for consistency to ensure user clicks next if they want
+        maxOptions: 1, 
         options: [
             { text: 'Overthinking everything', value: 'Overthinking everything', modifiers: {} },
             { text: 'Laziness & Procrastination', value: 'Laziness & Procrastination', modifiers: {} },
@@ -125,6 +125,9 @@ const QUESTIONS = [
     }
 ];
 
+// Helper to generate some shapes
+const SHAPES = ['triangle', 'hexagon', 'diamond'];
+
 export function PersonalityAssessment() {
     const [step, setStep] = useState(0);
     const completeAssessment = useUserStore(state => state.completeAssessment);
@@ -135,13 +138,7 @@ export function PersonalityAssessment() {
     const [currentSelection, setCurrentSelection] = useState<any[]>([]);
 
     const [traits, setTraits] = useState<PersonalityTraits>({
-        discipline: 50,
-        resilience: 50,
-        risk: 50,
-        leadership: 50,
-        creativity: 50,
-        empathy: 50,
-        vision: 50
+        discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50
     });
 
     const [profileBuilder, setProfileBuilder] = useState<Partial<PsychologicalProfile>>({});
@@ -158,8 +155,7 @@ export function PersonalityAssessment() {
         if (currentSelection.some(o => o.value === option.value)) {
             setCurrentSelection(currentSelection.filter(o => o.value !== option.value));
         } else {
-            // Unselect if maxOptions is 1 (radio behavior)
-            if (currentQ.maxOptions === 1) {
+            if (currentQ.maxOptions === 1 || !currentQ.multiSelect) {
                 setCurrentSelection([option]);
                 return;
             }
@@ -217,7 +213,6 @@ export function PersonalityAssessment() {
                         question_4: newAnswers[3] || '',
                         question_5: newAnswers[4] || '',
                         question_6: newAnswers[5] || ''
-                        // note: q7-q9 are not in quiz_responses schema yet based on previous code. They are stored in personality_profiles.
                     }]);
 
                     await supabase.from('personality_profiles').insert([{
@@ -257,196 +252,262 @@ export function PersonalityAssessment() {
 
     const currentQ: any = QUESTIONS[step];
     const Icon = currentQ ? currentQ.icon : Flame;
-    const isNeon = true; // Dark Neon theme applied to ALL questions
+
+    const isViolet = step < 6;
+    const isCyan = step >= 6;
 
     return (
-        <div className={clsx("fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden transition-colors duration-1000", isNeon ? "bg-slate-950" : "bg-slate-900")}>
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center font-sans overflow-hidden transition-colors duration-1000 bg-[#0d0d16]">
             
             {/* Background Layer */}
-            <div className="absolute inset-0 bg-[#0d0d16] pointer-events-none transition-opacity duration-1000 z-0">
-                {/* Diagonal Light Rays */}
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_30%,rgba(0,241,254,0.03)_40%,rgba(0,241,254,0.08)_50%,transparent_60%)] MixBlendMode-screen" />
-                <div className="absolute inset-0 bg-[linear-gradient(-45deg,transparent_40%,rgba(213,117,255,0.05)_50%,transparent_60%)] MixBlendMode-screen" />
+            <div className={`absolute inset-0 bg-[#0d0d16] pointer-events-none transition-opacity duration-1000 z-0`}>
+                <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)] z-20 pointer-events-none" />
                 
-                {/* Floating Particles */}
-                {Array.from({ length: 30 }).map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-1 h-1 bg-[#00f1fe] rounded-full drop-shadow-[0_0_5px_#00f1fe]"
-                        style={{ filter: 'blur(1px)' }}
-                        initial={{
-                            x: Math.random() * window.innerWidth,
-                            y: Math.random() * window.innerHeight,
-                            opacity: Math.random() * 0.5 + 0.1
-                        }}
-                        animate={{
-                            y: [null, Math.random() * window.innerHeight],
-                            opacity: [0.1, 0.6, 0.1]
-                        }}
-                        transition={{
-                            duration: Math.random() * 8 + 8,
-                            repeat: Infinity,
-                            ease: "linear"
-                        }}
-                    />
-                ))}
+                {isViolet && (
+                    <>
+                        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_30%,rgba(147,51,234,0.06)_40%,rgba(147,51,234,0.12)_50%,transparent_60%)] MixBlendMode-screen" />
+                        <div className="absolute inset-0 bg-[linear-gradient(-35deg,transparent_30%,rgba(168,85,247,0.08)_40%,transparent_50%)] MixBlendMode-screen" />
+                        
+                        <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] opacity-30 MixBlendMode-screen" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(147, 51, 234, 0.4) 0%, transparent 50%)' }} />
+                        
+                        {/* 3D Floating Geometry Array */}
+                        {Array.from({ length: 15 }).map((_, i) => (
+                            <motion.div
+                                key={`geo-${i}`}
+                                className="absolute MixBlendMode-screen opacity-20 border border-purple-500 rounded-sm"
+                                style={{ 
+                                    width: Math.random() * 50 + 20, 
+                                    height: Math.random() * 50 + 20,
+                                    clipPath: SHAPES[i%3] === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : SHAPES[i%3] === 'diamond' ? 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' : 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' 
+                                }}
+                                initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, rotateZ: Math.random() * 360, rotateX: Math.random() * 360, rotateY: Math.random() * 360 }}
+                                animate={{ y: [null, Math.random() * window.innerHeight], rotateZ: '+=180', rotateY: '+=180' }}
+                                transition={{ duration: Math.random() * 20 + 20, repeat: Infinity, ease: 'linear' }}
+                            />
+                        ))}
+
+                        {/* Parallax Particles */}
+                        {Array.from({ length: 40 }).map((_, i) => (
+                            <motion.div
+                                key={`p-${i}`}
+                                className="absolute rounded-full bg-[#a855f7] drop-shadow-[0_0_5px_#a855f7]"
+                                style={{ 
+                                    width: i % 3 === 0 ? 3 : 1.5, 
+                                    height: i % 3 === 0 ? 3 : 1.5, 
+                                    filter: `blur(${i % 3 === 0 ? 0 : 2}px)` 
+                                }}
+                                initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, opacity: Math.random() * 0.5 + 0.1 }}
+                                animate={{ y: [null, Math.random() * window.innerHeight - 500], opacity: [0.1, 0.8, 0.1] }}
+                                transition={{ duration: (i % 3 === 0 ? 10 : 20) + Math.random() * 5, repeat: Infinity, ease: "linear" }}
+                            />
+                        ))}
+
+                        {/* Large Background Silhouette varying by step */}
+                        <motion.div
+                            key={`sil-${step}`}
+                            initial={{ opacity: 0, scale: 0.8, x: -50 }}
+                            animate={{ opacity: 0.15, scale: 1, x: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 1.5 }}
+                            className="absolute top-10 right-10 w-96 h-96 bg-[#9333ea] rounded-[40px] blur-[60px] mix-blend-overlay border-[4px] border-[#d8b4fe]"
+                            style={{ 
+                                clipPath: step % 2 === 0 ? 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)' : 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+                                borderRadius: `${(step * 10) + 10}%`
+                            }}
+                        />
+                    </>
+                )}
+
+                {isCyan && (
+                     <>
+                        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_30%,rgba(0,241,254,0.03)_40%,rgba(0,241,254,0.08)_50%,transparent_60%)] MixBlendMode-screen" />
+                        <div className="absolute inset-0 bg-[linear-gradient(-45deg,transparent_40%,rgba(213,117,255,0.05)_50%,transparent_60%)] MixBlendMode-screen" />
+                        {Array.from({ length: 30 }).map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute w-1 h-1 bg-[#00f1fe] rounded-full drop-shadow-[0_0_5px_#00f1fe]"
+                                style={{ filter: 'blur(1px)' }}
+                                initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, opacity: Math.random() * 0.5 + 0.1 }}
+                                animate={{ y: [null, Math.random() * window.innerHeight], opacity: [0.1, 0.6, 0.1] }}
+                                transition={{ duration: Math.random() * 8 + 8, repeat: Infinity, ease: "linear" }}
+                            />
+                        ))}
+                    </>
+                )}
             </div>
 
             <div className={clsx(
                 "relative z-10 w-full max-w-lg md:max-w-2xl flex flex-col h-full md:h-auto md:max-h-[90vh]",
-                isMobile ? "justify-between" : "justify-center p-4"
+                isMobile ? "justify-between" : "justify-center p-4",
+                "perspective-1000"
             )}>
-                <div className={clsx(
-                    "flex flex-col overflow-hidden relative transition-all duration-700",
-                    isNeon ? "bg-slate-900/60 backdrop-blur-2xl border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.15)] md:h-[85vh]" : "bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl",
-                    isMobile ? "flex-grow pt-safe-top m-4 rounded-[2.5rem]" : "rounded-[3rem]"
-                )}>
-                    {!isNeon && <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>}
-
+                <motion.div 
+                    key={`card-${step}`}
+                    initial={{ opacity: 0, y: 50, rotateX: 10 }}
+                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                    transition={{ duration: 0.6, type: "spring", damping: 20 }}
+                    className={clsx(
+                        "flex flex-col overflow-hidden relative transition-all duration-700 backdrop-blur-2xl bg-[#13131c]/80 shadow-2xl",
+                        isViolet ? "border border-[#9333ea]/50 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_40px_rgba(147,51,234,0.4)] md:h-[85vh]" : "border border-[#00f1fe]/30 shadow-[0_0_40px_rgba(0,241,254,0.15)] md:h-[85vh]",
+                        isMobile ? "flex-grow pt-safe-top m-4 rounded-[2.5rem]" : "rounded-[3rem]"
+                    )}
+                >
                     <div className="p-6 md:p-10 pb-0 text-center flex flex-col items-center shrink-0">
+                        {/* Progress Header */}
                         <div className="w-full flex items-center justify-between mb-6 md:mb-8">
                             <span className={clsx(
-                                "font-bold uppercase tracking-widest text-xs px-3 py-1 rounded-full backdrop-blur-md transition-colors duration-500",
-                                isNeon ? "text-cyan-400 border border-cyan-500/50 bg-cyan-950/50 shadow-[0_0_10px_rgba(6,182,212,0.3)]" : "text-white/80 bg-black/20 border border-white/10"
+                                "font-bold uppercase tracking-widest text-xs px-3 py-1 rounded-full backdrop-blur-md transition-colors duration-500 border shadow-lg",
+                                isViolet ? "text-[#e9d5ff] border-[#a855f7] bg-[#581c87]/50 shadow-[0_0_15px_rgba(168,85,247,0.5)]" : "text-[#99f7ff] border-[#00f1fe]/50 bg-[#004145]/50 shadow-[0_0_10px_rgba(0,241,254,0.3)]"
                             )}>
                                 {step + 1} / {QUESTIONS.length}
                             </span>
-                            <div className={clsx(
-                                "flex-1 ml-4 h-3 rounded-full overflow-hidden border transition-colors duration-500",
-                                isNeon ? "bg-slate-800 border-cyan-900/50" : "bg-black/20 border-white/10"
-                            )}>
-                                <div
+                            <div className="flex-1 ml-4 h-3 rounded-full overflow-hidden border bg-[#191923] border-white/10 relative">
+                                <motion.div
                                     className={clsx(
-                                        "h-full transition-all duration-500 ease-out",
-                                        isNeon ? "bg-gradient-to-r from-cyan-600 to-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" : "bg-gradient-to-r from-yellow-300 to-pink-400 shadow-[0_0_10px_rgba(255,105,180,0.5)]"
+                                        "absolute top-0 left-0 h-full transition-all duration-500 ease-out",
+                                        isViolet ? "bg-gradient-to-r from-[#7e22ce] to-[#c084fc] shadow-[0_0_20px_rgba(192,132,252,0.8)]" : "bg-gradient-to-r from-[#00b4d8] to-[#00f1fe] shadow-[0_0_15px_rgba(0,241,254,0.8)]"
                                     )}
-                                    style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }}
                                 />
                             </div>
                         </div>
 
+                        {/* Icon Badge */}
                         <div className="relative mb-6 group">
                             <div className={clsx(
-                                "absolute inset-0 blur-xl opacity-50 animate-pulse transition-opacity duration-700",
-                                isNeon ? "bg-cyan-500 group-hover:opacity-100" : "bg-pink-400 group-hover:opacity-80"
+                                "absolute inset-0 blur-xl opacity-60 animate-pulse transition-opacity duration-700 rounded-full",
+                                isViolet ? "bg-[#c084fc]" : "bg-[#00f1fe]"
                             )}></div>
                             <div className={clsx(
-                                "relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-300",
-                                isNeon ? "bg-slate-950 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]" : "bg-gradient-to-tr from-white to-slate-200 border-4 border-white/50"
+                                "relative w-24 h-24 rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-4 z-10",
+                                isViolet ? "bg-[#3b0764] border-[#9333ea] shadow-[0_0_30px_rgba(147,51,234,0.6)]" : "bg-slate-950 border-[#00f1fe] shadow-[0_0_20px_rgba(0,241,254,0.4)]"
                             )}>
-                                <Icon size={36} className={clsx("md:w-10 md:h-10 transition-colors", isNeon ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" : "text-pink-600")} />
+                                <Icon size={40} className={clsx(
+                                    "transition-colors", 
+                                    isViolet ? "text-[#e9d5ff] drop-shadow-[0_0_10px_#e9d5ff]" : "text-[#00f1fe] drop-shadow-[0_0_8px_rgba(0,241,254,0.8)]"
+                                )} />
+                                {/* Rotating Ring */}
+                                {isViolet && (
+                                    <motion.div 
+                                        className="absolute inset-[-8px] border border-[#d8b4fe]/30 rounded-full border-t-[#d8b4fe]"
+                                        animate={{ rotateZ: 360 }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                                    />
+                                )}
                             </div>
                         </div>
 
-                        <h2 className={clsx(
-                            "text-2xl md:text-3xl font-black mb-2 leading-snug drop-shadow-md transition-colors duration-700",
-                            isNeon ? "text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 tracking-wide" : "text-white"
-                        )}>
-                            {currentQ.text}
+                        <h2 className="text-2xl md:text-3xl font-black mb-2 leading-snug drop-shadow-md text-white">
+                            <span className={clsx("drop-shadow-lg", isViolet ? "drop-shadow-[0_0_10px_rgba(168,85,247,0.8)] text-[#faf5ff]" : "text-[#f2effb]")}>
+                                {currentQ.text}
+                            </span>
                         </h2>
-                        {isSaving && <div className={clsx("mt-4 animate-pulse uppercase tracking-widest text-sm font-bold", isNeon ? "text-cyan-400" : "text-white")}>Saving Profile...</div>}
+                        {isSaving && <div className={clsx("mt-4 animate-pulse uppercase tracking-widest text-sm font-bold", isViolet ? "text-[#c084fc]" : "text-[#00f1fe]")}>Saving Profile...</div>}
                     </div>
 
-                    <div className={clsx(
-                        "flex-1 min-h-0 px-6 md:px-10 pb-8 pt-4 space-y-3 md:space-y-4 overflow-y-auto scrollbar-thin scroll-smooth",
-                        isNeon ? "neon-scrollbar" : ""
-                    )}>
-                        {currentQ.options.map((opt: any, i: number) => {
-                            const isSelected = currentSelection.some(sel => sel.value === opt.value);
-                            return (
-                                <button
-                                    key={i}
-                                    onClick={() => {
-                                        if (currentQ.multiSelect) {
-                                            toggleOption(opt);
-                                        } else if (isNeon) {
-                                            setCurrentSelection([opt]);
-                                        } else {
-                                            commitAnswer([opt]);
-                                        }
-                                    }}
-                                    className={clsx(
-                                        "group w-full relative h-[72px] md:h-[80px] rounded-2xl transition-all transform active:scale-95",
-                                        isSelected ? "scale-[1.02]" : "hover:scale-[1.02]"
-                                    )}
-                                >
-                                    <div className={clsx(
-                                        "absolute inset-0 rounded-2xl shadow-[0_4px_0_rgba(0,0,0,0.2)] translate-y-1 transition-colors duration-300",
-                                        isNeon ? "bg-black/60" : "bg-black/20"
-                                    )}></div>
-                                    <div className={clsx(
-                                        "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-lg",
-                                        isNeon ? (
-                                            isSelected
-                                                ? "bg-slate-800 border-[3px] border-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.8),inset_0_0_10px_rgba(34,211,238,0.3)] z-10 scale-[1.01]"
-                                                : "bg-slate-900/80 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800"
-                                        ) : (
-                                            isSelected 
-                                                ? "bg-pink-50 border-b-4 border-pink-500 ring-2 ring-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]" 
-                                                : "bg-white hover:bg-pink-50 border-b-4 border-slate-200"
-                                        )
-                                    )}>
-                                        <span className={clsx(
-                                            "font-extrabold text-sm md:text-lg leading-tight text-left pr-2 transition-colors",
-                                            isNeon ? (
-                                                isSelected ? "text-cyan-300 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" : "text-slate-300 group-hover:text-cyan-100"
+                    <div className="flex-1 min-h-0 px-6 md:px-10 pb-8 pt-4 space-y-4 overflow-y-auto scrollbar-thin scroll-smooth [transform-style:preserve-3d]">
+                        <AnimatePresence>
+                            {currentQ.options.map((opt: any, i: number) => {
+                                const isSelected = currentSelection.some(sel => sel.value === opt.value);
+                                return (
+                                    <motion.button
+                                        key={`${step}-${i}`}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.1, type: "spring", stiffness: 300, damping: 20 }}
+                                        whileHover={{ y: -8, z: 20 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => {
+                                            if (currentQ.multiSelect || isViolet || isCyan) {
+                                                toggleOption(opt);
+                                            } else {
+                                                commitAnswer([opt]);
+                                            }
+                                        }}
+                                        className={clsx(
+                                            "group w-full relative h-[72px] md:h-[80px] rounded-2xl transition-all transform flex items-center",
+                                            isSelected ? "scale-[1.03] z-20" : ""
+                                        )}
+                                    >
+                                        <div className={clsx(
+                                            "absolute inset-0 rounded-2xl flex items-center justify-between px-6 transition-all shadow-xl overflow-hidden backdrop-blur-md",
+                                            isViolet ? (
+                                                isSelected
+                                                    ? "bg-[#3b0764] border-2 border-[#d8b4fe] shadow-[0_0_30px_rgba(168,85,247,0.8),0_15px_30px_rgba(0,0,0,0.8)]"
+                                                    : "bg-[#1f1f2a]/80 border border-[#4c1d95] hover:border-[#a855f7] hover:shadow-[0_15px_30px_rgba(147,51,234,0.3)]"
                                             ) : (
-                                                isSelected ? "text-pink-600" : "text-slate-800 group-hover:text-pink-600"
+                                                isSelected
+                                                    ? "bg-slate-800 border-[3px] border-[#00f1fe] shadow-[0_0_30px_rgba(0,241,254,0.8),inset_0_0_10px_rgba(0,241,254,0.3)]"
+                                                    : "bg-slate-900/80 border border-slate-700 hover:border-[#00f1fe]/50 hover:bg-slate-800"
                                             )
                                         )}>
-                                            {opt.text}
-                                        </span>
-                                        {isNeon ? (
-                                            isSelected && (
-                                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0 bg-cyan-400 text-slate-900 shadow-[0_0_15px_rgba(34,211,238,1)]">
-                                                    <Check size={20} className="md:w-6 md:h-6 stroke-[3]" />
-                                                </div>
-                                            )
-                                        ) : (
-                                            <div className={clsx(
-                                                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0",
-                                                isSelected 
-                                                    ? "bg-pink-500 text-white shadow-md shadow-pink-500/30" 
-                                                    : "bg-pink-100 group-hover:bg-pink-500 group-hover:text-white"
+                                            {/* Accent Line */}
+                                            {isViolet && !isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#7e22ce] opacity-50 group-hover:opacity-100 group-hover:bg-[#c084fc] transition-colors" />}
+
+                                            <span className={clsx(
+                                                "font-extrabold text-sm md:text-lg leading-tight text-left pr-2 transition-colors relative z-10",
+                                                isViolet ? (
+                                                    isSelected ? "text-[#faf5ff] drop-shadow-[0_0_8px_#c084fc]" : "text-[#acaab5] group-hover:text-[#e9d5ff]"
+                                                ) : (
+                                                    isSelected ? "text-[#99f7ff] drop-shadow-[0_0_5px_rgba(0,241,254,0.8)]" : "text-slate-300 group-hover:text-[#ccfbfb]"
+                                                )
                                             )}>
-                                                {isSelected ? <Check size={16} className="md:w-5 md:h-5" /> : <ArrowRight size={16} className="md:w-5 md:h-5" />}
-                                            </div>
-                                        )}
-                                    </div>
-                                </button>
-                            );
-                        })}
+                                                {opt.text}
+                                            </span>
+                                            
+                                            {isSelected && (
+                                                <motion.div 
+                                                    initial={{ scale: 0, rotate: -90 }}
+                                                    animate={{ scale: 1, rotate: 0 }}
+                                                    className={clsx(
+                                                        "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shrink-0 z-10",
+                                                        isViolet ? "bg-[#c084fc] text-[#3b0764] shadow-[0_0_20px_#c084fc]" : "bg-[#00f1fe] text-slate-900 shadow-[0_0_15px_rgba(0,241,254,1)]"
+                                                    )}
+                                                >
+                                                    <Check size={20} className="md:w-6 md:h-6 stroke-[3]" />
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    </motion.button>
+                                );
+                            })}
+                        </AnimatePresence>
                     </div>
 
                     {/* Fixed Footer for Continue Button */}
-                    {isNeon ? (
-                        <div className="shrink-0 w-full px-6 md:px-10 pb-6 md:pb-8 pt-4 border-t border-cyan-900/30 bg-slate-900/80 backdrop-blur-md">
-                            <button
-                                onClick={() => commitAnswer(currentSelection)}
-                                disabled={currentSelection.length === 0}
+                    <AnimatePresence>
+                        {currentSelection.length > 0 && (
+                            <motion.div 
+                                initial={{ y: 100, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: 100, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                 className={clsx(
-                                    "w-full py-4 md:py-5 rounded-2xl font-black uppercase tracking-widest text-sm md:text-base transition-all duration-300 transform",
-                                    currentSelection.length > 0
-                                        ? "bg-cyan-500 text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.7)] hover:bg-cyan-400 hover:shadow-[0_0_35px_rgba(34,211,238,0.9)] active:scale-95 cursor-pointer"
-                                        : "bg-slate-800 text-slate-500 border border-slate-700 opacity-60 cursor-not-allowed"
+                                    "shrink-0 w-full px-6 md:px-10 pb-6 md:pb-8 pt-4 border-t backdrop-blur-3xl z-50",
+                                    isViolet ? "border-[#9333ea]/30 bg-[#1e1b4b]/90" : "border-[#00f1fe]/30 bg-[#082f49]/90"
                                 )}
                             >
-                                Continue &rarr;
-                            </button>
-                        </div>
-                    ) : (
-                        currentQ.multiSelect && currentSelection.length > 0 && (
-                            <div className="shrink-0 flex items-center justify-center px-6 pb-8 md:pb-10 pt-2 animate-[float-score_0.3s_ease-out_forwards]">
                                 <button
                                     onClick={() => commitAnswer(currentSelection)}
-                                    className="px-8 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer bg-yellow-400 text-yellow-900 border-2 border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)]"
+                                    className={clsx(
+                                        "w-full py-5 rounded-2xl font-black uppercase tracking-widest text-lg transition-all duration-300 transform relative overflow-hidden group",
+                                        isViolet 
+                                            ? "bg-gradient-to-r from-[#9333ea] to-[#c084fc] text-white shadow-[0_0_30px_rgba(168,85,247,0.8)] hover:brightness-110 active:scale-95 cursor-pointer"
+                                            : "bg-[#00f1fe] text-[#004145] shadow-[0_0_25px_rgba(0,241,254,0.7)] hover:bg-[#99f7ff] active:scale-95 cursor-pointer"
+                                    )}
                                 >
-                                    Continue &rarr;
+                                    <motion.div 
+                                        className="absolute inset-0 bg-white/20"
+                                        animate={{ x: ['-100%', '100%'] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                                    />
+                                    NEXT &rarr;
                                 </button>
-                            </div>
-                        )
-                    )}
-                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
             </div>
         </div>
     );

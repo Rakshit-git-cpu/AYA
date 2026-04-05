@@ -48,6 +48,7 @@ export function GameRoot() {
 
     const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding') === 'true';
     if (!hasSeenOnboarding && !onboardingComplete) {
+        console.log('showing onboarding')
         return <CinematicOnboarding onComplete={() => {
             localStorage.setItem('hasSeenOnboarding', 'true');
             setOnboardingComplete(true);
