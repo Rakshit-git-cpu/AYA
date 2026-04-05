@@ -46,11 +46,10 @@ export function GameRoot() {
         return <OnboardingWizard />;
     }
 
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding') === 'true';
-    if (!hasSeenOnboarding && !onboardingComplete) {
+    // Always show cinematic onboarding before the quiz (not persisted — shows every new journey)
+    if (!profile.assessmentCompleted && !onboardingComplete) {
         console.log('showing onboarding')
         return <CinematicOnboarding onComplete={() => {
-            localStorage.setItem('hasSeenOnboarding', 'true');
             setOnboardingComplete(true);
         }} />;
     }
