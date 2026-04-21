@@ -235,9 +235,9 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
             <div className="relative z-20 flex items-center justify-between p-6 w-full max-w-4xl mx-auto">
                 <button 
                     onClick={() => { audioSynth.playClick(); onBack(); }}
-                    className="p-3 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-full border border-[rgba(255,255,255,0.1)] transition-colors shadow-[0_0_15px_rgba(0,242,255,0.1)] text-[#99f7ff]"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#0d0d16]/80 hover:bg-[#1a1a24] backdrop-blur-md rounded-full border border-[#00f2ff]/30 transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,242,255,0.2)] text-[#00f2ff] font-bold tracking-widest text-sm uppercase"
                 >
-                    <ArrowLeft size={24} />
+                    <ArrowLeft size={18} className="drop-shadow-md" /> BACK
                 </button>
             </div>
 

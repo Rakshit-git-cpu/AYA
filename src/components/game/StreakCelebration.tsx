@@ -17,13 +17,16 @@ export const StreakCelebration: React.FC<StreakCelebrationProps> = ({ streak, xp
         // Auto dismiss
         const timer = setTimeout(() => {
             onComplete();
-        }, 4000);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [onComplete]);
 
     return (
-        <div className="fixed inset-0 z-[250] flex items-center justify-center bg-black/90 backdrop-blur-md overflow-hidden select-none">
+        <div 
+            className="fixed inset-0 z-[250] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md overflow-hidden select-none cursor-pointer"
+            onClick={onComplete}
+        >
             {/* Celebration Particles FX */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 {Array.from({ length: 30 }).map((_, i) => (
@@ -80,6 +83,14 @@ export const StreakCelebration: React.FC<StreakCelebrationProps> = ({ streak, xp
                             +{xpEarned} XP
                         </span>
                     </div>
+                </div>
+                <div className="mt-12 opacity-90 hover:opacity-100 transition-opacity animate-fade-in-up" style={{ animationDelay: '1s' }}>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onComplete(); }}
+                        className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold tracking-widest shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:scale-105 active:scale-95 transition-transform"
+                    >
+                        CONTINUE &rarr;
+                    </button>
                 </div>
 
             </motion.div>
