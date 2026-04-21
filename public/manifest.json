@@ -1,0 +1,47 @@
+{
+  "id": "/",
+  "name": "At Your Age",
+  "short_name": "AYA",
+  "description": "Discover who you were meant to become",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d16",
+  "theme_color": "#0d0d17",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AYA - Discover who you were meant to become"
+    },
+    {
+      "src": "/icons/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "AYA - Interactive Story Mode"
+    }
+  ]
+}

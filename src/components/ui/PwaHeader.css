@@ -1,0 +1,574 @@
+/* ============================================================
+   PwaHeader.css — Vanta Chrome Neon-Noir Title Bar
+   Premium dark glassmorphic header with neon accents,
+   floating geometry, animated orbs, and parallax effects.
+   ============================================================ */
+
+/* --- Imports --- */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* --- Design Tokens --- */
+:root {
+  --pwa-h: 42px;
+  --void-deep: #0a0a14;
+  --void-base: #0d0d17;
+  --void-mid: #12121d;
+  --void-surface: #1a1a2e;
+  --neon-pink: #ff2d7b;
+  --neon-pink-soft: #ffb1c1;
+  --neon-blue: #00d4ff;
+  --neon-blue-soft: #a2e7ff;
+  --neon-violet: #8b5cf6;
+  --neon-violet-soft: #d0bcff;
+  --chrome-light: #e4e1f0;
+  --chrome-dim: #958ea0;
+  --ghost-border: rgba(73, 68, 84, 0.15);
+}
+
+/* ===========================
+   MAIN HEADER
+   =========================== */
+.pwa-header {
+  position: relative;
+  z-index: 9999;
+  width: 100%;
+  height: var(--pwa-h);
+  min-height: var(--pwa-h);
+  max-height: var(--pwa-h);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  flex-shrink: 0;
+
+  /* Fade-in animation */
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pwa-header--loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===========================
+   BACKGROUND LAYERS
+   =========================== */
+
+/* Layer 1: Deep gradient base */
+.pwa-header__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--void-deep) 0%,
+    var(--void-base) 30%,
+    #0e1028 60%,
+    var(--void-mid) 100%
+  );
+  z-index: 0;
+}
+
+/* Layer 2: Glassmorphism overlay */
+.pwa-header__glass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.04) 0%,
+    rgba(0, 212, 255, 0.03) 50%,
+    rgba(255, 45, 123, 0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  z-index: 1;
+}
+
+/* Layer 3: Subtle noise texture (CSS only) */
+.pwa-header__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ===========================
+   NEON EDGE LIGHTING (bottom)
+   =========================== */
+.pwa-header__edge-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 10;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--neon-pink) 15%,
+    var(--neon-violet) 35%,
+    var(--neon-blue) 55%,
+    var(--neon-violet) 75%,
+    var(--neon-pink) 90%,
+    transparent 100%
+  );
+  opacity: 0.7;
+  /* Soft glow bleed */
+  box-shadow:
+    0 0 8px rgba(255, 45, 123, 0.3),
+    0 0 16px rgba(139, 92, 246, 0.2),
+    0 0 24px rgba(0, 212, 255, 0.15);
+  animation: edge-shimmer 6s ease-in-out infinite alternate;
+}
+
+@keyframes edge-shimmer {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.55; }
+}
+
+/* ===========================
+   FLOATING GEOMETRIC SHAPES
+   =========================== */
+.pwa-header__geo {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  animation: geo-fade-in 1.2s ease-out forwards;
+}
+
+.pwa-header--loaded .pwa-header__geo { opacity: 1; }
+
+/* Diamond - top-left */
+.pwa-header__geo--1 {
+  left: 16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--neon-pink);
+  transform: translateY(-50%) rotate(45deg)
+             translate(
+               calc((var(--mx, 0.5) - 0.5) * 4px),
+               calc((var(--my, 0.5) - 0.5) * 2px)
+             );
+  box-shadow: 0 0 6px var(--neon-pink), 0 0 12px rgba(255, 45, 123, 0.4);
+  animation: geo-pulse 4s ease-in-out infinite, geo-fade-in 1.2s ease-out forwards;
+  animation-delay: 0.2s;
+  opacity: 0.6;
+}
+
+/* Triangle - top-left area */
+.pwa-header__geo--2 {
+  left: 32px;
+  top: 8px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid var(--neon-blue);
+  filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.5));
+  transform: translate(
+    calc((var(--mx, 0.5) - 0.5) * -3px),
+    calc((var(--my, 0.5) - 0.5) * -2px)
+  );
+  animation: geo-float 5s ease-in-out infinite, geo-fade-in 1.2s ease-out forwards;
+  animation-delay: 0.5s;
+  opacity: 0.5;
+}
+
+/* Small circle - right side */
+.pwa-header__geo--3 {
+  right: 160px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--neon-violet);
+  box-shadow: 0 0 6px var(--neon-violet), 0 0 10px rgba(139, 92, 246, 0.3);
+  transform: translateY(-50%) translate(
+    calc((var(--mx, 0.5) - 0.5) * 6px),
+    calc((var(--my, 0.5) - 0.5) * 3px)
+  );
+  animation: geo-pulse 3.5s ease-in-out infinite, geo-fade-in 1.2s ease-out forwards;
+  animation-delay: 0.8s;
+  opacity: 0.5;
+}
+
+/* Hexagonal dot - far right */
+.pwa-header__geo--4 {
+  right: 185px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: var(--neon-blue);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 0 4px rgba(0, 212, 255, 0.4);
+  transform: translate(
+    calc((var(--mx, 0.5) - 0.5) * -5px),
+    calc((var(--my, 0.5) - 0.5) * 2px)
+  );
+  animation: geo-float 6s ease-in-out infinite reverse, geo-fade-in 1.2s ease-out forwards;
+  animation-delay: 1s;
+  opacity: 0.4;
+}
+
+@keyframes geo-pulse {
+  0%, 100% { opacity: 0.4; transform: translateY(-50%) rotate(45deg) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-50%) rotate(45deg) scale(1.15); }
+}
+
+@keyframes geo-float {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; transform: translateY(-2px); }
+}
+
+@keyframes geo-fade-in {
+  from { opacity: 0; }
+  to { opacity: 0.6; }
+}
+
+/* ===========================
+   ANIMATED ORBS
+   =========================== */
+.pwa-header__orb {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  filter: blur(12px);
+  mix-blend-mode: screen;
+}
+
+.pwa-header__orb--pink {
+  width: 60px;
+  height: 60px;
+  left: 5%;
+  top: -20px;
+  background: radial-gradient(circle, rgba(255, 45, 123, 0.15) 0%, transparent 70%);
+  animation: orb-drift-1 8s ease-in-out infinite;
+  transform: translate(
+    calc((var(--mx, 0.5) - 0.5) * 12px),
+    calc((var(--my, 0.5) - 0.5) * 6px)
+  );
+}
+
+.pwa-header__orb--blue {
+  width: 50px;
+  height: 50px;
+  right: 20%;
+  top: -15px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.12) 0%, transparent 70%);
+  animation: orb-drift-2 10s ease-in-out infinite;
+  transform: translate(
+    calc((var(--mx, 0.5) - 0.5) * -8px),
+    calc((var(--my, 0.5) - 0.5) * 5px)
+  );
+}
+
+.pwa-header__orb--violet {
+  width: 70px;
+  height: 70px;
+  left: 40%;
+  top: -25px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  animation: orb-drift-3 12s ease-in-out infinite;
+  transform: translate(
+    calc((var(--mx, 0.5) - 0.5) * 10px),
+    calc((var(--my, 0.5) - 0.5) * -4px)
+  );
+}
+
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(8px, 4px); }
+  66% { transform: translate(-4px, -2px); }
+}
+
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  40% { transform: translate(-6px, 3px); }
+  70% { transform: translate(5px, -4px); }
+}
+
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(7px, -3px); }
+}
+
+/* ===========================
+   DRAGGABLE TITLE BAR REGION
+   =========================== */
+.pwa-header__drag-region {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  z-index: 5;
+  -webkit-app-region: drag;
+  app-region: drag;
+  padding-left: 14px;
+}
+
+/* ===========================
+   BRANDING / LOGO
+   =========================== */
+.pwa-header__brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Layered depth panel behind logo */
+.pwa-header__brand-depth {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(100% + 12px);
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.06) 0%,
+    rgba(0, 212, 255, 0.04) 50%,
+    rgba(255, 45, 123, 0.06) 100%
+  );
+  border: 1px solid var(--ghost-border);
+  pointer-events: none;
+}
+
+/* Logo text */
+.pwa-header__logo {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  position: relative;
+  margin: 0;
+  padding: 0 8px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.pwa-header__logo-at {
+  color: var(--chrome-light);
+  text-shadow:
+    0 0 8px rgba(228, 225, 240, 0.3),
+    0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.pwa-header__logo-space {
+  color: var(--chrome-dim);
+  font-weight: 500;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.pwa-header__logo-age {
+  background: linear-gradient(135deg, var(--neon-pink) 0%, #ff6ba8 40%, var(--neon-violet) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  filter: drop-shadow(0 0 4px rgba(255, 45, 123, 0.4));
+  /* 3D extrusion depth */
+  text-shadow: none;
+  position: relative;
+}
+
+/* 3D extrusion pseudo-element for "AGE" */
+.pwa-header__logo-age::after {
+  content: 'AGE';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  background: linear-gradient(135deg, rgba(255, 45, 123, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ===========================
+   WINDOW CONTROLS
+   =========================== */
+.pwa-header__controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 100%;
+  z-index: 5;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Holographic glow behind controls */
+.pwa-header__controls-holo {
+  position: absolute;
+  inset: 4px -4px;
+  border-radius: 10px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 92, 246, 0.06) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Individual control button */
+.pwa-header__ctrl {
+  position: relative;
+  z-index: 1;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  background: rgba(228, 225, 240, 0.08);
+  color: var(--chrome-dim);
+  outline: none;
+}
+
+.pwa-header__ctrl svg {
+  width: 7px;
+  height: 7px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pwa-header__ctrl:hover svg,
+.pwa-header__controls:hover .pwa-header__ctrl svg {
+  opacity: 1;
+}
+
+/* Minimize */
+.pwa-header__ctrl--min {
+  background: rgba(255, 189, 46, 0.12);
+}
+.pwa-header__ctrl--min:hover {
+  background: rgba(255, 189, 46, 0.85);
+  color: #000;
+  box-shadow: 0 0 8px rgba(255, 189, 46, 0.4), 0 0 16px rgba(255, 189, 46, 0.15);
+  transform: scale(1.15);
+}
+
+/* Maximize */
+.pwa-header__ctrl--max {
+  background: rgba(50, 215, 75, 0.12);
+}
+.pwa-header__ctrl--max:hover {
+  background: rgba(50, 215, 75, 0.85);
+  color: #000;
+  box-shadow: 0 0 8px rgba(50, 215, 75, 0.4), 0 0 16px rgba(50, 215, 75, 0.15);
+  transform: scale(1.15);
+}
+
+/* Close */
+.pwa-header__ctrl--close {
+  background: rgba(255, 69, 58, 0.12);
+}
+.pwa-header__ctrl--close:hover {
+  background: rgba(255, 69, 58, 0.85);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(255, 69, 58, 0.4), 0 0 16px rgba(255, 69, 58, 0.15);
+  transform: scale(1.15);
+}
+
+/* Focus visible for accessibility */
+.pwa-header__ctrl:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 2px;
+}
+
+/* ===========================
+   PARALLAX ON MOUSE MOVE
+   
+   The --mx and --my custom properties
+   are set by the React component and
+   drive subtle transforms on child
+   elements via CSS calc().
+   =========================== */
+
+/* Orbs respond to mouse via inline style vars already, 
+   but we also shift the background gradient subtly */
+.pwa-header__glass {
+  background-position: calc(var(--mx, 0.5) * 100%) calc(var(--my, 0.5) * 100%);
+  background-size: 200% 200%;
+}
+
+/* ===========================
+   REDUCED MOTION
+   =========================== */
+@media (prefers-reduced-motion: reduce) {
+  .pwa-header__orb,
+  .pwa-header__geo {
+    animation: none !important;
+  }
+  .pwa-header__edge-glow {
+    animation: none !important;
+    opacity: 0.6;
+  }
+  .pwa-header {
+    transition: none;
+  }
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+/* On mobile / small screens, simplify */
+@media (max-width: 600px) {
+  .pwa-header {
+    --pwa-h: 36px;
+  }
+  .pwa-header__geo,
+  .pwa-header__orb {
+    display: none;
+  }
+  .pwa-header__controls {
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .pwa-header__logo {
+    font-size: 11px;
+  }
+}
+
+/* Hide custom window controls on non-standalone (browser) mode
+   since the browser provides its own */
+@media not all and (display-mode: standalone) {
+  .pwa-header__controls {
+    /* Still show on desktop browser for visual consistency,
+       but can be hidden if desired: */
+    /* display: none; */
+  }
+}
+
+/* When running in standalone PWA mode */
+@media (display-mode: standalone) {
+  .pwa-header {
+    /* Ensure it feels native */
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+}
