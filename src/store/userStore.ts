@@ -80,8 +80,8 @@ export const useUserStore = create<UserState>()(
                 };
             }),
 
-            // Default to Candy Mode
-            isCandyMode: true,
+            // Default to Dark Mode
+            isCandyMode: false,
             toggleCandyMode: () => set((state) => ({ isCandyMode: !state.isCandyMode })),
 
             // Audio Defaults
