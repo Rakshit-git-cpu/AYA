@@ -163,8 +163,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
             {/* Daily Challenge Button (Top Center below Navbar) */}
-            <div className="absolute top-20 left-0 w-full flex justify-center z-[100] pointer-events-none md:top-24 mt-2">
-                <div className="relative group">
+            <div className="absolute top-[70px] left-0 w-full flex justify-center z-[100] pointer-events-none px-2">
+                <div className="relative group w-full max-w-[280px]">
                     {/* Glowing pulse behind button */}
                     {!profile?.daily_challenge_completed && (
                         <div className="absolute -inset-3 bg-gradient-to-r from-orange-600/60 to-red-600/60 blur-xl rounded-full animate-ping pointer-events-none" style={{ animationDuration: '3s' }} />
@@ -176,21 +176,21 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         }}
                         disabled={profile?.daily_challenge_completed}
                         className={clsx(
-                            "pointer-events-auto relative px-8 py-3 md:px-10 md:py-4 rounded-full flex flex-col items-center justify-center gap-1.5 transition-all duration-300",
+                            "pointer-events-auto relative w-full py-2 md:py-3 rounded-full flex flex-row items-center justify-center gap-2 transition-all duration-300",
                             profile?.daily_challenge_completed 
                                 ? "bg-slate-800 border border-slate-700 text-slate-400 opacity-90 cursor-default" 
-                                : "bg-gradient-to-b from-orange-600 to-red-600 shadow-[0_0_30px_rgba(249,115,22,0.8)] border border-orange-400/50 hover:shadow-[0_0_40px_rgba(249,115,22,1)] hover:scale-105 active:scale-95 ring-[3px] ring-orange-500/50 ring-offset-2 ring-offset-slate-900"
+                                : "bg-gradient-to-r from-orange-600 to-red-600 shadow-[0_0_20px_rgba(249,115,22,0.6)] border border-orange-400/50 hover:shadow-[0_0_30px_rgba(249,115,22,0.8)] hover:scale-105 active:scale-95 ring-[2px] ring-orange-500/50 ring-offset-2 ring-offset-slate-900"
                         )}
                     >
-                        <div className="flex items-center gap-2 md:gap-3">
-                            <span className={clsx("text-xl md:text-3xl", profile?.daily_challenge_completed ? "grayscale opacity-50" : "animate-bounce")}>🔥</span>
-                            <span className="text-sm md:text-lg font-black uppercase text-white tracking-widest drop-shadow-md">
+                        <span className={clsx("text-lg md:text-xl", profile?.daily_challenge_completed ? "grayscale opacity-50" : "animate-bounce")}>🔥</span>
+                        <div className="flex flex-col items-start leading-tight">
+                            <span className="text-[11px] md:text-xs font-black uppercase text-white tracking-widest drop-shadow-md">
                                 {profile?.daily_challenge_completed ? "COMPLETED" : "TODAY'S CHALLENGE"}
                             </span>
+                            <span className={clsx("text-[9px] font-bold tracking-widest uppercase", profile?.daily_challenge_completed ? "text-slate-500" : "text-yellow-300 drop-shadow-[0_0_5px_rgba(253,224,71,0.8)]")}>
+                                {profile?.current_streak || 0} DAY STREAK
+                            </span>
                         </div>
-                        <span className={clsx("text-xs md:text-sm font-black tracking-widest uppercase", profile?.daily_challenge_completed ? "text-slate-500" : "text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]")}>
-                            🔥 {profile?.current_streak || 0} DAY STREAK
-                        </span>
                     </button>
                 </div>
             </div>

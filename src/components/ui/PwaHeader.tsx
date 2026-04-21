@@ -32,31 +32,31 @@ export const PwaHeader: FC = () => {
             </div>
 
             {/* Stats Section */}
-            <div className="flex items-center justify-end gap-2 sm:gap-4 overflow-hidden pr-2">
+            <div className="flex items-center justify-end gap-1.5 sm:gap-4 overflow-hidden pr-1">
                 <div className={clsx(
-                    "hidden sm:flex items-center gap-2",
+                    "flex items-center gap-1 sm:gap-2 truncate",
                     isCandyMode ? "text-slate-700" : "text-[#f2effb]"
                 )}>
-                    <span className="font-bold uppercase tracking-widest text-xs truncate max-w-[100px] lg:max-w-xs block">
+                    <span className="font-bold uppercase tracking-wider text-[10px] sm:text-xs truncate max-w-[50px] sm:max-w-[100px]">
                         {profile.name || "GUEST"}
                     </span>
-                    <span className="text-slate-500 text-[10px] sm:text-xs mx-1">•</span>
+                    <span className="text-slate-500 text-[8px] sm:text-xs">•</span>
                     <span className={clsx(
-                        "text-xs font-bold uppercase tracking-wider truncate max-w-[150px] lg:max-w-xs",
+                        "text-[9px] sm:text-xs font-bold uppercase tracking-wider truncate max-w-[90px] sm:max-w-[150px]",
                         isCandyMode ? "text-pink-600" : "text-slate-300"
                     )}>
-                        Level {profile.level || 1} — {levelInfo.title}
+                        Lvl {profile.level || 1} <span className="hidden sm:inline">— {levelInfo.title}</span>
                     </span>
-                    <span className="text-slate-500 text-[10px] sm:text-xs mx-1">•</span>
+                    <span className="text-slate-500 text-[10px] sm:text-xs mx-0.5 sm:mx-1">•</span>
                 </div>
                 
                 {/* Mobile visible fallback and persistent XP */}
                 <div className={clsx(
-                    "flex items-center gap-1.5 font-bold whitespace-nowrap",
+                    "flex items-center gap-1 font-bold whitespace-nowrap",
                     isCandyMode ? "text-amber-600" : "text-amber-400 drop-shadow-md"
                 )}>
-                    <span>⭐</span>
-                    <span className="text-sm border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                    <span className="text-xs sm:text-sm">⭐</span>
+                    <span className="text-[10px] sm:text-sm border border-amber-500/30 bg-amber-500/10 px-1.5 sm:px-2 py-0.5 rounded-md">
                         {profile.total_xp || 0} XP
                     </span>
                 </div>

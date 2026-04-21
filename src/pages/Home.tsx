@@ -1,17 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { Gamepad2, Film, Users, ChevronRight } from 'lucide-react';
+import { Gamepad2, ChevronRight } from 'lucide-react';
 
 export function HomePage() {
     const navigate = useNavigate();
 
     return (
         <div className="h-full p-6 flex flex-col pt-12">
-            <header className="mb-8">
-                <h1 className="text-4xl font-black italic tracking-tighter mb-2">
-                    AT YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-500">AGE</span>
-                </h1>
-                <p className="text-slate-400">Welcome back. functionality loading...</p>
-            </header>
+
 
             <div className="space-y-4 flex-1">
                 <FeatureCard
@@ -22,23 +17,7 @@ export function HomePage() {
                     onClick={() => navigate('/game')}
                 />
 
-                <FeatureCard
-                    title="Watch Reels"
-                    subtitle="Short form video content"
-                    icon={Film}
-                    color="bg-gradient-to-r from-violet-600 to-purple-600"
-                    onClick={() => navigate('/reels')}
-                    status="Coming Soon"
-                />
 
-                <FeatureCard
-                    title="Social Hub"
-                    subtitle="Connect with the community"
-                    icon={Users}
-                    color="bg-gradient-to-r from-cyan-600 to-blue-600"
-                    onClick={() => navigate('/social')}
-                    status="Coming Soon"
-                />
             </div>
         </div>
     );
