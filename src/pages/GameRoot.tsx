@@ -11,6 +11,7 @@ import type { Level } from '../types/gameTypes';
 import { MatchReport } from '../components/game/MatchReport';
 import { DnaProfile } from '../components/game/DnaProfile';
 import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
+import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 import { useRef } from 'react';
 
@@ -41,6 +42,9 @@ export function GameRoot() {
             prevLevelRef.current = profile.level;
         }
     }, [profile?.level]);
+
+    // Streak tracking
+    const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
 
     if (!profile) {
         return <OnboardingWizard />;
@@ -118,6 +122,9 @@ export function GameRoot() {
                         setActiveLevel(null);
                         setView('map');
                     }}
+                    onDailyChallengeComplete={(data) => {
+                        setStreakData(data);
+                    }}
                 />
             )}
 
@@ -150,6 +157,16 @@ export function GameRoot() {
                     levelNumber={profile.level || 1}
                     levelName={calculateLevelInfo(profile.total_xp || 0).title}
                     onComplete={() => setShowLevelUp(false)}
+                />
+            )}
+
+            {/* Streak Celebration */}
+            {streakData && (
+                <StreakCelebration
+                    streak={streakData.newStreak}
+                    xpEarned={streakData.xpEarned}
+                    isMilestone={streakData.isMilestone}
+                    onComplete={() => setStreakData(null)}
                 />
             )}
         </div>

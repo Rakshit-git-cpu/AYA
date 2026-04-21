@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { audioSynth } from '../../utils/audioSynth';
-import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList, Flame } from 'lucide-react';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 import { calculateLevelInfo } from '../../utils/levelSystem';
@@ -310,6 +310,55 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                         <div className="flex items-center gap-2">
                              <span className="text-[#ff51fa] drop-shadow-[0_0_8px_#ff51fa] text-xl sm:text-2xl font-black">{profile?.stories_completed || 0}</span>
                              <span className="text-[#acaab5] text-[10px]">Data Nodes</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Streak Protocol Card */}
+                <div className="w-full bg-[#191923]/60 backdrop-blur-xl border-t border-l border-[#ff51fa]/30 border-r border-b border-[#fe3c3c]/30 rounded-[2rem] p-6 sm:p-8 mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_30px_rgba(255,81,250,0.05)] transform perspective-[1000px] hover:rotate-x-1 hover:rotate-y-1 transition-transform duration-500">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-[#acaab5] mb-6 flex items-center gap-2">
+                        <Flame size={16} className="text-[#ff51fa]" /> Streak Protocol
+                    </h3>
+                    
+                    <div className="flex justify-around items-center mb-8">
+                        {/* Current */}
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] sm:text-xs uppercase tracking-widest text-[#acaab5] font-bold mb-2">Current Streak</span>
+                            <div className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#ff51fa] to-[#fe3c3c] drop-shadow-[0_0_15px_rgba(254,60,60,0.6)] font-black">
+                                🔥 {profile?.current_streak || 0}
+                            </div>
+                        </div>
+                        {/* Longest */}
+                        <div className="flex flex-col items-center border-l border-white/10 pl-6 sm:pl-12">
+                            <span className="text-[10px] sm:text-xs uppercase tracking-widest text-[#acaab5] font-bold mb-2">Longest</span>
+                            <div className="text-2xl text-slate-300 font-black">
+                                ⭐ {profile?.longest_streak || 0}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 7 Day Calendar Dots */}
+                    <div className="w-full pt-6 border-t border-white/10">
+                        <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold block mb-4 text-center">7-Day Consistency Tracker</span>
+                        <div className="flex justify-between">
+                            {[0,1,2,3,4,5,6].map((dayOffset) => {
+                                const streak = profile?.current_streak || 0;
+                                const isFilled = (streak > 0) && (dayOffset < (streak === 0 ? 0 : ((streak - 1) % 7) + 1));
+                                const isToday = dayOffset === ((streak === 0 ? 0 : ((streak - 1) % 7)));
+                                
+                                return (
+                                    <div key={dayOffset} className="flex flex-col items-center gap-2">
+                                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500
+                                            ${isFilled 
+                                                ? 'bg-gradient-to-br from-[#ff51fa] to-[#fe3c3c] border-transparent shadow-[0_0_15px_rgba(255,81,250,0.6)]' 
+                                                : 'bg-black/50 border-[#484751]'}
+                                        `}>
+                                            {isFilled && <Check size={14} className="text-white drop-shadow-md" />}
+                                        </div>
+                                        {isToday && <span className="w-1.5 h-1.5 rounded-full bg-[#ff51fa] shadow-[0_0_8px_#ff51fa]"></span>}
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

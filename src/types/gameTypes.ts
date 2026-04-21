@@ -53,6 +53,13 @@ export interface UserProfile {
     total_xp?: number;
     level?: number;
     stories_completed?: number;
+
+    // Daily Challenge & Streak System (Stored in `users` table usually)
+    current_streak?: number;
+    longest_streak?: number;
+    last_active_date?: string; // ISO Date String
+    daily_challenge_completed?: boolean;
+    daily_challenge_personality?: string;
 }
 
 export interface Lesson {

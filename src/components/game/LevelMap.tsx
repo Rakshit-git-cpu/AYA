@@ -1,12 +1,14 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
 import { audioSynth } from '../../utils/audioSynth';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
+import { DailyChallengeModal, MoodArchetype } from './DailyChallengeModal';
+import { DailyChallengeReveal } from './DailyChallengeReveal';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -60,10 +62,19 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
 
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
+    
+    // Streaks
+    const checkStreak = useUserStore((state) => state.checkStreak);
+    
+    useEffect(() => {
+        checkStreak(); // evaluate streaks on mount
+    }, [checkStreak]);
 
-    // Settings State
+    // Modals
     const [showSettings, setShowSettings] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
+    const [showChallengeModal, setShowChallengeModal] = useState(false);
+    const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
     // Mobile Detection
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -168,6 +179,35 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                 </div>
             </div>
 
+            {/* Daily Challenge Button (Top Center below Logo) */}
+            <div className="absolute top-32 left-0 w-full flex justify-center z-40 pointer-events-none mt-2 md:top-28">
+                <button
+                    onClick={() => {
+                        audioSynth.playClick();
+                        setShowChallengeModal(true);
+                    }}
+                    disabled={profile?.daily_challenge_completed}
+                    className={clsx(
+                        "pointer-events-auto relative group px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-3 transition-all duration-300",
+                        profile?.daily_challenge_completed 
+                            ? "bg-slate-800/80 border border-slate-700 text-slate-400 opacity-90 cursor-default" 
+                            : "bg-gradient-to-r from-orange-600 to-red-600 shadow-[0_0_20px_rgba(249,115,22,0.5)] border border-orange-400/50 hover:shadow-[0_0_30px_rgba(249,115,22,0.8)] hover:scale-105 active:scale-95 animate-pulse-slow"
+                    )}
+                >
+                    <div className="flex items-center gap-2">
+                        <span className={clsx("text-lg", profile?.daily_challenge_completed ? "grayscale opacity-50" : "animate-bounce")}>🔥</span>
+                        <div className="flex flex-col items-start leading-none">
+                            <span className="text-[10px] md:text-xs font-black uppercase text-white tracking-widest">
+                                {profile?.daily_challenge_completed ? "COMPLETED" : "TODAY'S CHALLENGE"}
+                            </span>
+                            <span className={clsx("text-[9px] md:text-[10px] font-bold", profile?.daily_challenge_completed ? "text-slate-500" : "text-amber-300")}>
+                                🔥 {profile?.current_streak || 0} Day Streak
+                            </span>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
             {/* Settings & Theme Buttons */}
             <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex flex-col gap-2 pt-safe-top">
                 <button
@@ -259,6 +299,26 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             {/* Modals (Fixed Overlay) */}
             {showJournal && <LessonJournal onClose={() => setShowJournal(false)} />}
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+            {showChallengeModal && (
+                <DailyChallengeModal 
+                    isOpen={showChallengeModal} 
+                    onClose={() => setShowChallengeModal(false)}
+                    onStartChallenge={(mood) => {
+                        setShowChallengeModal(false);
+                        setChallengeMood(mood);
+                    }}
+                />
+            )}
+            {challengeMood && (
+                <DailyChallengeReveal
+                    mood={challengeMood}
+                    onClose={() => setChallengeMood(null)}
+                    onComplete={(level) => {
+                        setChallengeMood(null);
+                        onPlayLevel(level);
+                    }}
+                />
+            )}
 
             {/* Audio Controller (Invisible) */}
             <AudioController />
