@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Level } from '../../types/gameTypes';
+import type { Level } from '../../types/gameTypes';
 import { audioSynth } from '../../utils/audioSynth';
 import { useUserStore } from '../../store/userStore';
 

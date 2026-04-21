@@ -139,8 +139,6 @@ export const useUserStore = create<UserState>()(
                 if (!state.profile) return state;
 
                 const now = new Date();
-                const todayStr = now.toISOString().split('T')[0];
-                
                 let lastActiveStr = state.profile.last_active_date;
                 let current = state.profile.current_streak || 0;
                 let completedToday = state.profile.daily_challenge_completed || false;

@@ -7,7 +7,8 @@ import { AudioController } from '../shared/AudioController';
 import { audioSynth } from '../../utils/audioSynth';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
-import { DailyChallengeModal, MoodArchetype } from './DailyChallengeModal';
+import { DailyChallengeModal } from './DailyChallengeModal';
+import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 
 interface LevelMapProps {
@@ -161,26 +162,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden select-none">
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
-            {/* Header - Optimized for Mobile Safe Area */}
-            <div className="absolute top-0 left-0 w-full pt-safe-top z-40 pointer-events-none flex justify-center perspective-text">
-                <div className="relative group cursor-default pointer-events-auto filter drop-shadow-[0_5px_5px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 ease-spring mt-16 md:mt-4">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-pink-500/0 via-pink-500/20 to-purple-500/0 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <h1 className={clsx(
-                        "text-4xl md:text-5xl font-black md:text-transparent md:bg-clip-text tracking-blacker font-comic transform -rotate-2 group-hover:rotate-0 transition-transform stroke-text text-center leading-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]",
-                        isCandyMode
-                            ? "text-white md:bg-gradient-to-b md:from-white md:to-pink-100/90"
-                            : "text-amber-400 md:bg-gradient-to-b md:from-amber-200 md:to-amber-500"
-                    )}>
-                        AT YOUR AGE
-                    </h1>
-                    {/* Decorative Elements */}
-                    <span className="absolute -top-3 -right-6 text-2xl animate-sparkle hidden md:block">✨</span>
-                    <span className="absolute -bottom-2 -left-6 text-2xl animate-spin-slow opacity-80 hidden md:block">⚙️</span>
-                </div>
-            </div>
-
-            {/* Daily Challenge Button (Top Center below Logo) */}
-            <div className="absolute top-32 left-0 w-full flex justify-center z-40 pointer-events-none mt-2 md:top-28">
+            {/* Daily Challenge Button (Top Center below Navbar) */}
+            <div className="absolute top-20 left-0 w-full flex justify-center z-[60] pointer-events-none md:top-24">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
@@ -209,16 +192,16 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             </div>
 
             {/* Settings & Theme Buttons */}
-            <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex flex-col gap-2 pt-safe-top">
+            <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[60] flex flex-col gap-2">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
                         setShowSettings(true);
                     }}
-                    className="w-12 h-12 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
+                    className="w-10 h-10 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
                     aria-label="Settings"
                 >
-                    <Settings size={24} className="md:w-5 md:h-5" />
+                    <Settings size={20} className="md:w-5 md:h-5" />
                 </button>
                 <button
                     onClick={() => {
@@ -226,19 +209,19 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         toggleCandyMode();
                     }}
                     className={clsx(
-                        "w-12 h-12 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
+                        "w-10 h-10 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
                         isCandyMode
                             ? "bg-amber-400/20 hover:bg-amber-400/40 border-amber-300/50"
                             : "bg-indigo-500/20 hover:bg-indigo-500/40 border-indigo-400/50"
                     )}
                     aria-label="Toggle Theme"
                 >
-                    {isCandyMode ? <Sun size={24} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={24} className="md:w-5 md:h-5 text-indigo-300" />}
+                    {isCandyMode ? <Sun size={20} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={20} className="md:w-5 md:h-5 text-indigo-300" />}
                 </button>
             </div>
 
             {/* Journal Toggle Button - Compact Mobile Layout */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50 animate-fade-in-delayed pt-safe-top flex flex-col gap-2 items-end">
+            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[60] animate-fade-in-delayed flex flex-col gap-2 items-end">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
