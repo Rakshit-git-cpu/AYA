@@ -1,12 +1,15 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
 import { audioSynth } from '../../utils/audioSynth';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
+import { DailyChallengeModal } from './DailyChallengeModal';
+import type { MoodArchetype } from './DailyChallengeModal';
+import { DailyChallengeReveal } from './DailyChallengeReveal';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -60,10 +63,19 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
 
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
+    
+    // Streaks
+    const checkStreak = useUserStore((state) => state.checkStreak);
+    
+    useEffect(() => {
+        checkStreak(); // evaluate streaks on mount
+    }, [checkStreak]);
 
-    // Settings State
+    // Modals
     const [showSettings, setShowSettings] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
+    const [showChallengeModal, setShowChallengeModal] = useState(false);
+    const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
     // Mobile Detection
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -150,35 +162,50 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden select-none">
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
-            {/* Header - Optimized for Mobile Safe Area */}
-            <div className="absolute top-0 left-0 w-full pt-safe-top z-40 pointer-events-none flex justify-center perspective-text">
-                <div className="relative group cursor-default pointer-events-auto filter drop-shadow-[0_5px_5px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-300 ease-spring mt-16 md:mt-4">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-pink-500/0 via-pink-500/20 to-purple-500/0 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <h1 className={clsx(
-                        "text-4xl md:text-5xl font-black md:text-transparent md:bg-clip-text tracking-blacker font-comic transform -rotate-2 group-hover:rotate-0 transition-transform stroke-text text-center leading-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]",
-                        isCandyMode
-                            ? "text-white md:bg-gradient-to-b md:from-white md:to-pink-100/90"
-                            : "text-amber-400 md:bg-gradient-to-b md:from-amber-200 md:to-amber-500"
-                    )}>
-                        AT YOUR AGE
-                    </h1>
-                    {/* Decorative Elements */}
-                    <span className="absolute -top-3 -right-6 text-2xl animate-sparkle hidden md:block">✨</span>
-                    <span className="absolute -bottom-2 -left-6 text-2xl animate-spin-slow opacity-80 hidden md:block">⚙️</span>
+            {/* Daily Challenge Button (Top Center below Navbar) */}
+            <div className="absolute top-[70px] left-0 w-full flex justify-center z-[100] pointer-events-none px-2">
+                <div className="relative group w-full max-w-[250px]">
+                    {/* Glowing pulse behind button */}
+                    {!profile?.daily_challenge_completed && (
+                        <div className="absolute -inset-1 bg-orange-500/20 blur-md rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
+                    )}
+                    <button
+                        onClick={() => {
+                            audioSynth.playClick();
+                            setShowChallengeModal(true);
+                        }}
+                        disabled={profile?.daily_challenge_completed}
+                        className={clsx(
+                            "pointer-events-auto relative w-full py-2.5 px-4 rounded-full flex flex-row items-center justify-center gap-3 transition-all duration-500",
+                            profile?.daily_challenge_completed 
+                                ? "bg-[rgba(15,20,30,0.8)] border border-slate-700 text-slate-500 opacity-90 cursor-default backdrop-blur-md" 
+                                : "bg-[rgba(15,20,30,0.9)] backdrop-blur-md border border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:shadow-[0_0_25px_rgba(249,115,22,0.6)] hover:bg-[rgba(25,30,40,0.9)] hover:border-orange-400 hover:scale-105 active:scale-95"
+                        )}
+                    >
+                        <span className={clsx("text-lg", profile?.daily_challenge_completed ? "grayscale opacity-30" : "drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]")}>🔥</span>
+                        <div className="flex flex-col items-start leading-tight">
+                            <span className={clsx("text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em]", profile?.daily_challenge_completed ? "text-slate-500" : "text-white drop-shadow-md")}>
+                                {profile?.daily_challenge_completed ? "COMPLETED" : "TODAY'S CHALLENGE"}
+                            </span>
+                            <span className={clsx("text-[9px] font-bold tracking-widest uppercase", profile?.daily_challenge_completed ? "text-slate-600" : "text-orange-400 drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]")}>
+                                {profile?.current_streak || 0} DAY STREAK
+                            </span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
             {/* Settings & Theme Buttons */}
-            <div className="absolute top-4 left-4 md:top-6 md:left-6 z-50 flex flex-col gap-2 pt-safe-top">
+            <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[100] flex flex-col gap-2">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
                         setShowSettings(true);
                     }}
-                    className="w-12 h-12 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
+                    className="w-8 h-8 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
                     aria-label="Settings"
                 >
-                    <Settings size={24} className="md:w-5 md:h-5" />
+                    <Settings size={18} className="md:w-5 md:h-5" />
                 </button>
                 <button
                     onClick={() => {
@@ -186,36 +213,36 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         toggleCandyMode();
                     }}
                     className={clsx(
-                        "w-12 h-12 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
+                        "w-8 h-8 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
                         isCandyMode
                             ? "bg-amber-400/20 hover:bg-amber-400/40 border-amber-300/50"
                             : "bg-indigo-500/20 hover:bg-indigo-500/40 border-indigo-400/50"
                     )}
                     aria-label="Toggle Theme"
                 >
-                    {isCandyMode ? <Sun size={24} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={24} className="md:w-5 md:h-5 text-indigo-300" />}
+                    {isCandyMode ? <Sun size={18} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={18} className="md:w-5 md:h-5 text-indigo-300" />}
                 </button>
             </div>
 
             {/* Journal Toggle Button - Compact Mobile Layout */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50 animate-fade-in-delayed pt-safe-top flex flex-col gap-2 items-end">
+            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] animate-fade-in-delayed flex flex-col gap-2 items-end">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
                         setShowJournal(true);
                     }}
                     className={clsx(
-                        "group flex items-center gap-2 md:gap-3 pr-4 md:pr-6 pl-2 py-1.5 md:py-2 rounded-full shadow-2xl transition-all border-2",
+                        "group flex items-center gap-1.5 md:gap-3 pr-3 md:pr-6 pl-1.5 py-1 md:py-2 rounded-full shadow-2xl transition-all border-2",
                         isCandyMode
                             ? "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95"
                             : "bg-slate-900 border-amber-600/50 hover:border-amber-400 hover:scale-105 active:scale-95"
                     )}
                 >
                     <div className={clsx(
-                        "text-white p-1.5 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform",
+                        "text-white p-1 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform",
                         isCandyMode ? "bg-pink-500" : "bg-gradient-to-br from-amber-400 to-amber-600"
                     )}>
-                        <BookOpen size={16} className="stroke-[3] md:w-5 md:h-5" />
+                        <BookOpen size={14} className="stroke-[3] md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col items-start leading-none">
                         <span className={clsx(
@@ -237,14 +264,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         onOpenDnaProfile();
                     }}
                     className={clsx(
-                        "group flex items-center gap-2 pr-3 md:pr-4 pl-2 py-1.5 border-2 hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
+                        "group flex items-center gap-1.5 pr-2 md:pr-4 pl-1.5 py-1 md:py-1.5 border hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
                         isCandyMode
                             ? "bg-purple-900/40 border-purple-400/50 backdrop-blur-md"
                             : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md"
                     )}
                 >
                     <div className={clsx(
-                        "text-sm font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white border border-white/20",
+                        "text-xs font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white border border-white/20",
                         isCandyMode ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-gradient-to-r from-[#00f2ff] to-[#d575ff]"
                     )}>
                         🧬
@@ -259,6 +286,26 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             {/* Modals (Fixed Overlay) */}
             {showJournal && <LessonJournal onClose={() => setShowJournal(false)} />}
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+            {showChallengeModal && (
+                <DailyChallengeModal 
+                    isOpen={showChallengeModal} 
+                    onClose={() => setShowChallengeModal(false)}
+                    onStartChallenge={(mood) => {
+                        setShowChallengeModal(false);
+                        setChallengeMood(mood);
+                    }}
+                />
+            )}
+            {challengeMood && (
+                <DailyChallengeReveal
+                    mood={challengeMood}
+                    onClose={() => setChallengeMood(null)}
+                    onComplete={(level) => {
+                        setChallengeMood(null);
+                        onPlayLevel(level);
+                    }}
+                />
+            )}
 
             {/* Audio Controller (Invisible) */}
             <AudioController />

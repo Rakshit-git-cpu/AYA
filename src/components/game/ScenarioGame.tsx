@@ -21,6 +21,7 @@ interface ScenarioGameProps {
     level: Level;
     onComplete: (stars: number) => void;
     onBack: () => void;
+    onDailyChallengeComplete?: (streakData: { xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean }) => void;
 }
 
 // Choice Interface
@@ -51,7 +52,7 @@ interface SessionChoiceData {
 // SCENARIO_DATA Removed - Using STORY_DATABASE from data/scenarios
 
 
-export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
+export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComplete }: ScenarioGameProps) {
     // DEBUG: Confirms this component is the active one (check console on game load)
     console.log('[AYA DEBUG] ScenarioGame mounted for level:', level?.id, level?.personality);
     // BUILD MARKER: If this timestamp matches deployment time, the new code is live
@@ -89,6 +90,7 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
     const collectLesson = useUserStore((state) => state.collectLesson);
     const updateTraits = useUserStore((state) => state.updateTraits);
     const addSessionProgression = useUserStore((state) => state.addSessionProgression);
+    const completeDailyChallenge = useUserStore((state) => state.completeDailyChallenge);
     const levelScores = useUserStore((state) => state.levelScores);
 
     const handleLevelComplete = (stars: number) => {
@@ -380,6 +382,27 @@ export function ScenarioGame({ level, onComplete, onBack }: ScenarioGameProps) {
                             last_updated: new Date().toISOString()
                         })
                         .eq('user_id', userProfile.id);
+
+                    // Daily Challenge Update to users table
+                    // We also run the local `completeDailyChallenge()` right after this to track locally and get results
+                    const streakResult = completeDailyChallenge();
+                    
+                    if (streakResult && streakResult.newStreak > streakResult.oldStreak) {
+                        try {
+                            await supabase.from('users').update({
+                                current_streak: streakResult.newStreak,
+                                longest_streak: Math.max(userProfile.longest_streak || 0, streakResult.newStreak),
+                                last_active_date: new Date().toISOString().split('T')[0],
+                                daily_challenge_completed: true
+                            }).eq('id', userProfile.id);
+                        } catch (e) {
+                            console.error("Streak save error", e);
+                        }
+                        
+                        if (onDailyChallengeComplete) {
+                            onDailyChallengeComplete(streakResult);
+                        }
+                    }
 
                     // Safely serialize for Supabase JSONB — ensures no TypeScript fields are silently dropped
                     const serializedChoices = JSON.parse(JSON.stringify(finalSessionChoices)) as SessionChoiceData[];
