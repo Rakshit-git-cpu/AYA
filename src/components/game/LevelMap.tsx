@@ -163,45 +163,49 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
             {/* Daily Challenge Button (Top Center below Navbar) */}
-            <div className="absolute top-20 left-0 w-full flex justify-center z-[60] pointer-events-none md:top-24">
-                <button
-                    onClick={() => {
-                        audioSynth.playClick();
-                        setShowChallengeModal(true);
-                    }}
-                    disabled={profile?.daily_challenge_completed}
-                    className={clsx(
-                        "pointer-events-auto relative group px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-3 transition-all duration-300",
-                        profile?.daily_challenge_completed 
-                            ? "bg-slate-800/80 border border-slate-700 text-slate-400 opacity-90 cursor-default" 
-                            : "bg-gradient-to-r from-orange-600 to-red-600 shadow-[0_0_20px_rgba(249,115,22,0.5)] border border-orange-400/50 hover:shadow-[0_0_30px_rgba(249,115,22,0.8)] hover:scale-105 active:scale-95 animate-pulse-slow"
+            <div className="absolute top-20 left-0 w-full flex justify-center z-[100] pointer-events-none md:top-24 mt-2">
+                <div className="relative group">
+                    {/* Glowing pulse behind button */}
+                    {!profile?.daily_challenge_completed && (
+                        <div className="absolute -inset-3 bg-gradient-to-r from-orange-600/60 to-red-600/60 blur-xl rounded-full animate-ping pointer-events-none" style={{ animationDuration: '3s' }} />
                     )}
-                >
-                    <div className="flex items-center gap-2">
-                        <span className={clsx("text-lg", profile?.daily_challenge_completed ? "grayscale opacity-50" : "animate-bounce")}>🔥</span>
-                        <div className="flex flex-col items-start leading-none">
-                            <span className="text-[10px] md:text-xs font-black uppercase text-white tracking-widest">
+                    <button
+                        onClick={() => {
+                            audioSynth.playClick();
+                            setShowChallengeModal(true);
+                        }}
+                        disabled={profile?.daily_challenge_completed}
+                        className={clsx(
+                            "pointer-events-auto relative px-8 py-3 md:px-10 md:py-4 rounded-full flex flex-col items-center justify-center gap-1.5 transition-all duration-300",
+                            profile?.daily_challenge_completed 
+                                ? "bg-slate-800 border border-slate-700 text-slate-400 opacity-90 cursor-default" 
+                                : "bg-gradient-to-b from-orange-600 to-red-600 shadow-[0_0_30px_rgba(249,115,22,0.8)] border border-orange-400/50 hover:shadow-[0_0_40px_rgba(249,115,22,1)] hover:scale-105 active:scale-95 ring-[3px] ring-orange-500/50 ring-offset-2 ring-offset-slate-900"
+                        )}
+                    >
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <span className={clsx("text-xl md:text-3xl", profile?.daily_challenge_completed ? "grayscale opacity-50" : "animate-bounce")}>🔥</span>
+                            <span className="text-sm md:text-lg font-black uppercase text-white tracking-widest drop-shadow-md">
                                 {profile?.daily_challenge_completed ? "COMPLETED" : "TODAY'S CHALLENGE"}
                             </span>
-                            <span className={clsx("text-[9px] md:text-[10px] font-bold", profile?.daily_challenge_completed ? "text-slate-500" : "text-amber-300")}>
-                                🔥 {profile?.current_streak || 0} Day Streak
-                            </span>
                         </div>
-                    </div>
-                </button>
+                        <span className={clsx("text-xs md:text-sm font-black tracking-widest uppercase", profile?.daily_challenge_completed ? "text-slate-500" : "text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]")}>
+                            🔥 {profile?.current_streak || 0} DAY STREAK
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* Settings & Theme Buttons */}
-            <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[60] flex flex-col gap-2">
+            <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[100] flex flex-col gap-2">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
                         setShowSettings(true);
                     }}
-                    className="w-10 h-10 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
+                    className="w-8 h-8 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
                     aria-label="Settings"
                 >
-                    <Settings size={20} className="md:w-5 md:h-5" />
+                    <Settings size={18} className="md:w-5 md:h-5" />
                 </button>
                 <button
                     onClick={() => {
@@ -209,36 +213,36 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         toggleCandyMode();
                     }}
                     className={clsx(
-                        "w-10 h-10 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
+                        "w-8 h-8 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
                         isCandyMode
                             ? "bg-amber-400/20 hover:bg-amber-400/40 border-amber-300/50"
                             : "bg-indigo-500/20 hover:bg-indigo-500/40 border-indigo-400/50"
                     )}
                     aria-label="Toggle Theme"
                 >
-                    {isCandyMode ? <Sun size={20} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={20} className="md:w-5 md:h-5 text-indigo-300" />}
+                    {isCandyMode ? <Sun size={18} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={18} className="md:w-5 md:h-5 text-indigo-300" />}
                 </button>
             </div>
 
             {/* Journal Toggle Button - Compact Mobile Layout */}
-            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[60] animate-fade-in-delayed flex flex-col gap-2 items-end">
+            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] animate-fade-in-delayed flex flex-col gap-2 items-end">
                 <button
                     onClick={() => {
                         audioSynth.playClick();
                         setShowJournal(true);
                     }}
                     className={clsx(
-                        "group flex items-center gap-2 md:gap-3 pr-4 md:pr-6 pl-2 py-1.5 md:py-2 rounded-full shadow-2xl transition-all border-2",
+                        "group flex items-center gap-1.5 md:gap-3 pr-3 md:pr-6 pl-1.5 py-1 md:py-2 rounded-full shadow-2xl transition-all border-2",
                         isCandyMode
                             ? "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95"
                             : "bg-slate-900 border-amber-600/50 hover:border-amber-400 hover:scale-105 active:scale-95"
                     )}
                 >
                     <div className={clsx(
-                        "text-white p-1.5 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform",
+                        "text-white p-1 md:p-2 rounded-full shadow-md group-hover:rotate-12 transition-transform",
                         isCandyMode ? "bg-pink-500" : "bg-gradient-to-br from-amber-400 to-amber-600"
                     )}>
-                        <BookOpen size={16} className="stroke-[3] md:w-5 md:h-5" />
+                        <BookOpen size={14} className="stroke-[3] md:w-5 md:h-5" />
                     </div>
                     <div className="flex flex-col items-start leading-none">
                         <span className={clsx(
@@ -260,14 +264,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         onOpenDnaProfile();
                     }}
                     className={clsx(
-                        "group flex items-center gap-2 pr-3 md:pr-4 pl-2 py-1.5 border-2 hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
+                        "group flex items-center gap-1.5 pr-2 md:pr-4 pl-1.5 py-1 md:py-1.5 border hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
                         isCandyMode
                             ? "bg-purple-900/40 border-purple-400/50 backdrop-blur-md"
                             : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md"
                     )}
                 >
                     <div className={clsx(
-                        "text-sm font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white border border-white/20",
+                        "text-xs font-black rounded-full flex items-center justify-center p-1 drop-shadow-md text-white border border-white/20",
                         isCandyMode ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-gradient-to-r from-[#00f2ff] to-[#d575ff]"
                     )}>
                         🧬

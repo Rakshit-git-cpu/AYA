@@ -40,9 +40,24 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
                 className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-2xl px-4 py-8"
                 onClick={onClose}
             >
-                {/* Cinematic Background Glows */}
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
+                {/* Cinematic Background Glows & Particles */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/30 rounded-full blur-[120px]" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/30 rounded-full blur-[120px]" />
+                    {Array.from({ length: 30 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-1 h-1 bg-white rounded-full animate-ping"
+                            style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                opacity: Math.random() * 0.7 + 0.1,
+                                animationDuration: `${Math.random() * 3 + 2}s`,
+                                animationDelay: `${Math.random() * 2}s`
+                            }}
+                        />
+                    ))}
+                </div>
 
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -73,18 +88,16 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.1 * idx }}
                                     onClick={() => setSelectedMood(mood.id)}
-                                    className={`relative h-40 flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 group
+                                    className={`relative flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-500 group overflow-hidden
                                         ${isSelected 
-                                            ? `bg-slate-800 border-[2px] border-white ring-4 ring-white/10 shadow-[0_0_30px_rgba(255,255,255,0.15)] -translate-y-2` 
-                                            : `bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/80 hover:-translate-y-1 hover:border-slate-600`
+                                            ? `bg-slate-800/90 border-2 border-white ring-4 ring-white/20 shadow-[0_0_50px_rgba(255,255,255,0.4)] -translate-y-4 scale-105 z-10` 
+                                            : `bg-slate-800/40 backdrop-blur-md border border-slate-700/50 hover:bg-slate-800/90 hover:-translate-y-3 hover:scale-105 hover:rotate-1 hover:shadow-2xl hover:border-white/30 hover:z-10`
                                         }
                                     `}
-                                    style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+                                    style={{ transformStyle: 'preserve-3d', perspective: '1000px', minHeight: '180px' }}
                                 >
                                     {/* Neon Glow underlay when selected */}
-                                    {isSelected && (
-                                        <div className={`absolute -inset-1 rounded-2xl bg-gradient-to-r ${mood.color} opacity-20 blur-xl pointer-events-none`} />
-                                    )}
+                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${mood.color} opacity-0 transition-opacity duration-500 ${isSelected ? 'opacity-30 blur-2xl' : 'group-hover:opacity-10 blur-xl'} pointer-events-none`} />
                                     
                                     <div className={`relative z-10 w-16 h-16 mb-4 rounded-full flex items-center justify-center bg-gradient-to-br ${mood.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                         {mood.icon}
@@ -97,27 +110,25 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
                         })}
                     </div>
 
-                    {/* Call to Action */}
-                    <div className="flex justify-center">
-                        <AnimatePresence mode="popLayout">
-                            {selectedMood ? (
-                                <motion.button
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => onStartChallenge(selectedMood)}
-                                    className="relative group px-12 py-5 rounded-full bg-gradient-to-r from-orange-500 to-rose-600 text-white font-black text-xl tracking-widest uppercase overflow-hidden shadow-[0_0_40px_rgba(249,115,22,0.4)]"
-                                >
-                                    <span className="relative z-10">START MY CHALLENGE →</span>
-                                    {/* Shimmer sweep */}
-                                    <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite] skew-x-[-20deg]" />
-                                </motion.button>
-                            ) : (
-                                <div className="h-[68px]" /> // Spacer to hold height
+                    {/* Call to Action - Always Rendered */}
+                    <div className="flex justify-center mt-6">
+                        <button
+                            disabled={!selectedMood}
+                            onClick={() => selectedMood && onStartChallenge(selectedMood)}
+                            className={`relative group px-12 py-5 rounded-full font-black text-xl tracking-widest uppercase overflow-hidden transition-all duration-500
+                                ${selectedMood 
+                                    ? 'bg-gradient-to-r from-orange-500 to-rose-600 text-white shadow-[0_0_40px_rgba(249,115,22,0.6)] hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(249,115,22,0.8)] cursor-pointer' 
+                                    : 'bg-slate-800 border-2 border-slate-700 text-slate-500 cursor-not-allowed opacity-80'
+                                }`}
+                        >
+                            <span className="relative z-10 transition-colors duration-300">
+                                {selectedMood ? 'START MY CHALLENGE →' : 'SELECT A FOCUS'}
+                            </span>
+                            {/* Shimmer sweep */}
+                            {selectedMood && (
+                                <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_infinite] skew-x-[-20deg]" />
                             )}
-                        </AnimatePresence>
+                        </button>
                     </div>
 
                     {/* Close x */}
