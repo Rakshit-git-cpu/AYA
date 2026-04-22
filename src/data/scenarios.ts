@@ -2649,7 +2649,7 @@ export const STORY_DATABASE: Record<string, any> = {
         frames: [
             {
                 id: 'intro',
-                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                bg: '/assets/bg_srk_age17.jpg',
                 portrait: '/assets/portrait-srk-17.png.jpg',
                 text: "It's 1982. You are 17. Your father just passed away. Your family has very little money. Your theatre teacher says you have a rare gift. Your mother needs you to focus on studies. Your friends are all preparing for engineering exams.",
                 choices: [
@@ -2678,7 +2678,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_a',
-                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                bg: '/assets/bg_srk_age17.jpg',
                 portrait: '/assets/portrait-srk-17.png.jpg',
                 text: "You study hard, but the stage calls to you every night. A year passes and you feel hollow despite your grades. SRK chose differently — he studied hard AND trained under Barry John at Theatre Action Group, performing late into the nights.",
                 choices: [
@@ -2693,7 +2693,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_c',
-                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                bg: '/assets/bg_srk_age17.jpg',
                 portrait: '/assets/portrait-srk-17.png.jpg',
                 text: "Your mother listens. She can't promise support but she doesn't forbid it either. SRK went further — he committed to both fully, neither asking permission nor abandoning responsibility.",
                 choices: [
@@ -2726,7 +2726,7 @@ export const STORY_DATABASE: Record<string, any> = {
         frames: [
             {
                 id: 'intro',
-                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                bg: '/assets/bg_srk_age19b.jpg',
                 portrait: '/assets/portrait-srk-19.png.jpg',
                 text: "It's 1984. You are 19. You've been performing with Theatre Action Group for 2 years. Doordarshan has noticed you. Mumbai is calling. But your mother is unwell. Your sister depends on you. You have no contacts in Mumbai, no money saved, no place to stay.",
                 choices: [
@@ -2755,7 +2755,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_a',
-                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                bg: '/assets/bg_srk_age19b.jpg',
                 portrait: '/assets/portrait-srk-19.png.jpg',
                 text: "You stay. You take every Delhi opportunity — Doordarshan, theatre, TV serials. Years later, when you finally move, you carry no guilt — only foundation. This is exactly what SRK did.",
                 choices: [
@@ -2770,7 +2770,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_b',
-                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                bg: '/assets/bg_srk_age19b.jpg',
                 portrait: '/assets/portrait-srk-19.png.jpg',
                 text: "Mumbai is harder than you imagined. No contacts, no money, and the guilt of leaving your family weighs heavy. SRK waited until he was truly ready — he only moved to Mumbai after his mother passed away in 1991 at age 25.",
                 choices: [
@@ -2803,7 +2803,7 @@ export const STORY_DATABASE: Record<string, any> = {
         frames: [
             {
                 id: 'intro',
-                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                bg: '/assets/bg_srk_age21.jpg',
                 portrait: '/assets/portrait-srk-21.png.jpg',
                 text: "It's 1986. You are 21. A director offers you a villain role — dark, menacing, psychologically complex. Everyone advises against it. 'First impressions matter. If audiences see you as evil, they'll never love you as a hero.' Another director is offering you a safe romantic lead.",
                 choices: [
@@ -2832,7 +2832,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_a',
-                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                bg: '/assets/bg_srk_age21.jpg',
                 portrait: '/assets/portrait-srk-21.png.jpg',
                 text: "The romantic lead role is forgettable. You are likeable but unmemorable. SRK's villain roles in Darr and Baazigar made him a superstar — not his hero roles. Complex characters reveal true talent.",
                 choices: [
@@ -2847,7 +2847,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_c',
-                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                bg: '/assets/bg_srk_age21.jpg',
                 portrait: '/assets/portrait-srk-21.png.jpg',
                 text: "Two weeks later, the villain director has moved on — he found someone willing to commit. The window closed while you were thinking. SRK always said: when the right material finds you, you know it in your gut.",
                 choices: [
@@ -2880,7 +2880,7 @@ export const STORY_DATABASE: Record<string, any> = {
         frames: [
             {
                 id: 'intro',
-                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                bg: '/assets/bg_srk_age23.jpg',
                 portrait: '/assets/portrait-srk-23.png.jpg',
                 text: "It's 1988. You are 23. You've been with Gauri for 3 years. Both families have objections. Mumbai producers are interested — this is the moment you've waited for. Gauri says she'll wait but she's scared. Some people say focus on career first, relationships later.",
                 choices: [
@@ -2909,7 +2909,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_a',
-                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                bg: '/assets/bg_srk_age23.jpg',
                 portrait: '/assets/portrait-srk-23.png.jpg',
                 text: "You reach Mumbai. Career is moving. But the loneliness is louder than the applause. You miss Gauri. SRK went to Mumbai AND fought for Gauri — they married in 1991 against family resistance. He refused to choose between love and ambition.",
                 choices: [
@@ -2924,7 +2924,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_c',
-                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                bg: '/assets/bg_srk_age23.jpg',
                 portrait: '/assets/portrait-srk-23.png.jpg',
                 text: "A year passes. The producer who was interested has moved on. The window was real and it closed. SRK learned that the best move is often the bold one — take the opportunity and take the person you love, together.",
                 choices: [
@@ -2957,7 +2957,7 @@ export const STORY_DATABASE: Record<string, any> = {
         frames: [
             {
                 id: 'intro',
-                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                bg: '/assets/bg_srk_age25.jpg',
                 portrait: '/assets/portrait-srk-25.png.jpg',
                 text: "It's 1990. You are 25. You moved to Mumbai. Bollywood is not opening its doors. You've been rejected from multiple films. Money is running out. A producer offers you a supporting role in a big film — good pay but not the lead. Another option: a small independent film where you're the lead but no guarantee of release.",
                 choices: [
@@ -2986,7 +2986,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_a',
-                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                bg: '/assets/bg_srk_age25.jpg',
                 portrait: '/assets/portrait-srk-25.png.jpg',
                 text: "The big film releases. You're barely noticed in the background. The money helped, but you're no closer to being a lead. SRK took Deewana (1992) as a lead — it released and made him a star overnight. He bet on himself when no one else would.",
                 choices: [
@@ -3001,7 +3001,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'choice_c',
-                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                bg: '/assets/bg_srk_age25.jpg',
                 portrait: '/assets/portrait-srk-25.png.jpg',
                 text: "Months pass. Savings run out. You have to leave Mumbai and go back to Delhi. The independent film got made — without you. SRK took Deewana as a calculated bet and it changed everything. Staying in the game matters.",
                 choices: [
