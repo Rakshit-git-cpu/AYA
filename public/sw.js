@@ -37,3 +37,39 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+// Push Notification Support
+self.addEventListener('push', function(event) {
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { title: 'AYA Notification', body: event.data.text() };
+    }
+  }
+
+  const options = {
+    body: data.body || 'Your daily challenge is ready!',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    vibrate: [100, 50, 100],
+    data: { url: data.url || '/' },
+    actions: [
+      { action: 'open', title: '🔥 Start Challenge' },
+      { action: 'close', title: 'Later' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'AYA', options)
+  );
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  if (event.action === 'open' || !event.action) {
+    event.waitUntil(clients.openWindow(event.data.url || '/'));
+  }
+});
+

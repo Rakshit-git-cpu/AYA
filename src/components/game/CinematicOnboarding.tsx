@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
 import { supabase } from '../../utils/supabase';
 import { Brain, Gamepad2, Dna, ChevronRight, Check } from 'lucide-react';
+import { NotificationPrompt } from '../ui/NotificationPrompt';
+import { subscribeUserToPush } from '../../utils/pushNotifications';
+
 
 const STRUGGLES = [
   { id: 'heartbreak', label: 'Heartbreak & Relationships', icon: '💔' },
@@ -18,6 +21,8 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
   const [slide, setSlide] = useState(1);
   const [selectedStruggle, setSelectedStruggle] = useState<typeof STRUGGLES[0] | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
 
   const nextSlide = () => setSlide((prev) => Math.min(prev + 1, 4));
   const prevSlide = () => setSlide((prev) => Math.max(prev - 1, 1));
@@ -39,11 +44,23 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
       setIsSaving(false);
       nextSlide();
     } else if (slide === 4) {
-      onComplete();
+      setShowNotificationPrompt(true);
     } else {
       nextSlide();
     }
   };
+
+  const onAcceptNotifications = async () => {
+    await subscribeUserToPush();
+    setShowNotificationPrompt(false);
+    onComplete();
+  };
+
+  const onDeclineNotifications = () => {
+    setShowNotificationPrompt(false);
+    onComplete();
+  };
+
 
   const welcomeWords = "Your journey begins now.".split(" ");
 
@@ -350,6 +367,12 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
         ))}
       </div>
 
+      <NotificationPrompt 
+        isOpen={showNotificationPrompt}
+        onAccept={onAcceptNotifications}
+        onDecline={onDeclineNotifications}
+      />
     </div>
   );
 }
+

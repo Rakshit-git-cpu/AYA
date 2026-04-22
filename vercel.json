@@ -15,6 +15,12 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!manifest\\.json|sw\\.js|icons/).*)", "destination": "/" }
-  ]
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/((?!api/|manifest\\.json|sw\\.js|icons/).*)", "destination": "/" }
+  ],
+  "crons": [{
+    "path": "/api/send-notifications",
+    "schedule": "30 3 * * *"
+  }]
 }
+
