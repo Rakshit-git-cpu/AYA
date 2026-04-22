@@ -119,8 +119,8 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
         </button>
       )}
 
-      {/* Main Slide Content — Scrollable inner wrapper */}
-      <div className="relative z-10 w-full min-h-screen flex items-start justify-center px-4 md:px-6 pt-20 pb-28">
+      {/* Main Slide Content — Scrollable inner wrapper with header clearance */}
+      <div className="relative z-10 w-full min-h-screen flex items-start justify-center px-4 md:px-6 pt-28 sm:pt-32 pb-28">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: The Hook */}
           {slide === 1 && (
@@ -148,7 +148,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                  ))}
               </div>
 
-              <div className="space-y-10 [transform-style:preserve-3d]">
+              <div className="space-y-6 sm:space-y-10 [transform-style:preserve-3d]">
                  <motion.p 
                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                    className="text-lg sm:text-3xl font-light text-white/80"
@@ -163,7 +163,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                  </motion.p>
                  <motion.h1 
                    initial={{ opacity: 0, scale: 0.9, z: 150 }} animate={{ opacity: 1, scale: 1, z: 0 }} transition={{ delay: 1.2, duration: 1 }}
-                   className="text-3xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-white to-[#ffaa00] drop-shadow-[0_0_30px_rgba(255,215,0,0.5)] mt-8 mb-4"
+                   className="text-2xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-white to-[#ffaa00] drop-shadow-[0_0_30px_rgba(255,215,0,0.5)] mt-8 mb-4"
                  >
                     What were YOU meant to become?
                  </motion.h1>
@@ -186,7 +186,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                    />
                    <span className="relative z-10 flex items-center gap-3 drop-shadow-[0_0_10px_rgba(0,241,254,0.8)] text-lg sm:text-xl">
                        LET'S FIND OUT <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
-                   </span>
+                    </span>
                  </motion.button>
               </div>
             </motion.div>
@@ -200,7 +200,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               transition={{ duration: 0.6 }}
               className="w-full max-w-[680px] mx-auto px-4 md:px-0"
             >
-              <h2 className="text-4xl sm:text-7xl font-black text-center mb-12 sm:mb-20 text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">How AYA Works</h2>
+              <h2 className="text-3xl sm:text-7xl font-black text-center mb-10 sm:mb-20 text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">How AYA Works</h2>
               <div className="space-y-8 [transform-style:preserve-3d]">
                  {[
                    { icon: Brain, title: "Answer 9 quick questions", desc: "We build your psychological personality profile.", color: '#99f7ff', rawColor: '0, 241, 254' },
@@ -241,8 +241,8 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
               transition={{ duration: 0.6 }}
               className="w-full max-w-[680px] mx-auto px-4 md:px-0 text-center"
             >
-              <h2 className="text-4xl sm:text-6xl font-black mb-6 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">What's on your mind lately?</h2>
-              <p className="text-lg sm:text-2xl text-[#acaab5] mb-12 sm:mb-16 font-['Manrope']">We'll suggest the perfect story for you today</p>
+              <h2 className="text-3xl sm:text-6xl font-black mb-6 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">What's on your mind lately?</h2>
+              <p className="text-lg sm:text-2xl text-[#acaab5] mb-8 sm:mb-16 font-['Manrope']">We'll suggest the perfect story for you today</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 [transform-style:preserve-3d]">
                  {STRUGGLES.map((strug, idx) => (
@@ -304,7 +304,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                           initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                           transition={{ delay: 0.5 + (i * 0.2), duration: 0.8 }}
-                          className="text-5xl sm:text-7xl md:text-9xl font-black"
+                          className="text-4xl sm:text-7xl md:text-9xl font-black"
                         >
                             {word}
                         </motion.h1>
@@ -315,11 +315,11 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2 }}
                    className="space-y-6 mb-24 relative z-10 flex flex-col items-center"
                  >
-                    <p className="text-2xl sm:text-4xl text-[#99f7ff] font-light">Welcome, <span className="font-bold text-white drop-shadow-[0_0_15px_#ffffff]">{profile?.name || 'Traveler'}</span></p>
+                    <p className="text-lg sm:text-4xl text-[#99f7ff] font-light">Welcome, <span className="font-bold text-white drop-shadow-[0_0_15px_#ffffff]">{profile?.name || 'Traveler'}</span></p>
                     {selectedStruggle && (
-                      <div className="flex items-center gap-4 bg-[#1f1f2a]/80 backdrop-blur-xl px-8 py-4 rounded-full border border-[#2b2b38] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                          <span className="text-3xl drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{selectedStruggle.icon}</span>
-                          <p className="text-lg sm:text-2xl text-[#acaab5] font-['Manrope']">Today's focus: <span className="text-[#d575ff] font-bold drop-shadow-[0_0_10px_rgba(213,117,255,0.8)]">{selectedStruggle.label}</span></p>
+                      <div className="flex items-center gap-3 sm:gap-4 bg-[#1f1f2a]/80 backdrop-blur-xl px-6 py-3 sm:px-8 sm:py-4 rounded-full border border-[#2b2b38] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                          <span className="text-2xl sm:text-3xl drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{selectedStruggle.icon}</span>
+                          <p className="text-base sm:text-2xl text-[#acaab5] font-['Manrope']">Today's focus: <span className="text-[#d575ff] font-bold drop-shadow-[0_0_10px_rgba(213,117,255,0.8)]">{selectedStruggle.label}</span></p>
                       </div>
                     )}
                  </motion.div>
@@ -327,7 +327,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                  <motion.button
                    initial={{ opacity: 0, scale: 0.5, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ delay: 3, type: "spring", damping: 10 }}
                    onClick={handleFinish}
-                   className="px-12 py-6 sm:px-20 sm:py-8 bg-[#00f1fe] text-[#004145] rounded-full text-xl sm:text-3xl font-black uppercase tracking-wider hover:bg-[#99f7ff] hover:scale-110 transition-all shadow-[0_0_60px_rgba(0,241,254,0.8)] relative z-10"
+                   className="px-10 py-5 sm:px-20 sm:py-8 bg-[#00f1fe] text-[#004145] rounded-full text-lg sm:text-3xl font-black uppercase tracking-wider hover:bg-[#99f7ff] hover:scale-110 transition-all shadow-[0_0_60px_rgba(0,241,254,0.8)] relative z-10"
                  >
                    ENTER THE MAP ⚡
                  </motion.button>
