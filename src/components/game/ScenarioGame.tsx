@@ -509,6 +509,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     src={frame.bg}
                     alt="Scenario Scene"
                     onLoad={() => setIsBgLoaded(true)}
+                    onError={() => setIsBgLoaded(true)}
                     className={clsx(
                         "w-full h-full transition-opacity duration-1000",
                         !isBgLoaded ? "opacity-0" : "opacity-100",

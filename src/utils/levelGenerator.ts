@@ -16,7 +16,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'DUAL COMMITMENT — sometimes the answer isn\'t either/or, it\'s both, and harder.',
-            avatarUrl: '/assets/portrait-srk-17.png.jpg', scenarioId: 'lvl_age_17_srk',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_17_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
         },
         // Age 17: P.V. Sindhu
@@ -168,7 +168,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'TIMING IS STRATEGY — ambition without roots collapses.',
-            avatarUrl: '/assets/portrait-srk-19.png.jpg', scenarioId: 'lvl_age_19_srk_2',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_19_srk_2',
             idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
         },
         // Age 20: Kobe
@@ -296,7 +296,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'COMPLEXITY OVER COMFORT — playing safe builds a career, playing true builds a legend.',
-            avatarUrl: '/assets/portrait-srk-21.png.jpg', scenarioId: 'lvl_age_21_srk',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_21_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 95, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
         },
         // Age 21
@@ -328,7 +328,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'LOVE IS NOT A DISTRACTION — the right relationship makes you MORE yourself, not less.',
-            avatarUrl: '/assets/portrait-srk-23.png.jpg', scenarioId: 'lvl_age_23_srk',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_23_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 100, vision: 85 }
         },
         {
@@ -360,7 +360,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'BET ON YOURSELF — when you know what you came for, don\'t settle for anything less.',
-            avatarUrl: '/assets/portrait-srk-25.png.jpg', scenarioId: 'lvl_age_25_srk',
+            avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_25_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 98, leadership: 90, creativity: 98, empathy: 95, vision: 90 }
         },
         {
