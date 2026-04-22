@@ -55,6 +55,10 @@ export const StreakCelebration: React.FC<StreakCelebrationProps> = ({ streak, xp
                 exit={{ scale: 1.5, opacity: 0, filter: "blur(10px)" }}
                 transition={{ type: "spring", damping: 12, stiffness: 100 }}
                 className="relative flex flex-col items-center z-10"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onComplete();
+                }}
             >
                 <motion.div
                     animate={{ rotate: 360 }}

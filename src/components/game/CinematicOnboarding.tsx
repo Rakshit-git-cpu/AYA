@@ -137,7 +137,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
       )}
 
       {/* Main Slide Content — Scrollable inner wrapper with header clearance */}
-      <div className="relative z-10 w-full min-h-screen flex items-start justify-center px-4 md:px-6 pt-28 sm:pt-32 pb-28">
+      <div className="relative z-10 w-full min-h-screen flex flex-col items-start justify-center px-4 md:px-6 pt-28 sm:pt-32 pb-28">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: The Hook */}
           {slide === 1 && (
@@ -321,7 +321,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                           initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                           transition={{ delay: 0.5 + (i * 0.2), duration: 0.8 }}
-                          className="text-4xl sm:text-7xl md:text-9xl font-black"
+                          className="text-3xl sm:text-7xl md:text-9xl font-black"
                         >
                             {word}
                         </motion.h1>
@@ -344,7 +344,7 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                  <motion.button
                    initial={{ opacity: 0, scale: 0.5, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ delay: 3, type: "spring", damping: 10 }}
                    onClick={handleFinish}
-                   className="px-10 py-5 sm:px-20 sm:py-8 bg-[#00f1fe] text-[#004145] rounded-full text-lg sm:text-3xl font-black uppercase tracking-wider hover:bg-[#99f7ff] hover:scale-110 transition-all shadow-[0_0_60px_rgba(0,241,254,0.8)] relative z-10"
+                   className="px-8 py-4 sm:px-20 sm:py-8 bg-[#00f1fe] text-[#004145] rounded-full text-base sm:text-3xl font-black uppercase tracking-wider hover:bg-[#99f7ff] hover:scale-110 transition-all shadow-[0_0_60px_rgba(0,241,254,0.8)] relative z-10 flex flex-col items-center"
                  >
                    ENTER THE MAP ⚡
                  </motion.button>
@@ -354,19 +354,6 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
         </AnimatePresence>
 
 
-        {/* Progress dots - moved inside scrollable area at bottom */}
-        <div className="flex items-center justify-center gap-3 mt-12 mb-4">
-          {[1, 2, 3, 4].map((s) => (
-            <div
-              key={s}
-              className={`rounded-full transition-all duration-300 ${
-                s === slide
-                  ? 'w-6 h-2 bg-[#00f1fe] shadow-[0_0_10px_#00f1fe]'
-                  : 'w-2 h-2 bg-[#2b2b38] hover:bg-[#4b4b58]'
-              }`}
-            />
-          ))}
-        </div>
       </div>
 
 

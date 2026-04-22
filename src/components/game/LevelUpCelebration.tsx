@@ -15,7 +15,7 @@ export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelNam
         // Assuming audioSynth.playHover or a specific playSuccess could be used
         audioSynth.playHover();
         
-        // Auto dismiss after 3 seconds
+        // Auto dismiss after 3.5 seconds
         const timer = setTimeout(() => {
             onComplete();
         }, 3500);
@@ -36,7 +36,7 @@ export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelNam
                         initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
                         animate={{ 
                             opacity: 0, 
-                            scale: Math.random() * 2 + 1,
+                            scale: Math.random() * 2 + 1.5,
                             x: (Math.random() - 0.5) * window.innerWidth * 0.8,
                             y: (Math.random() - 0.5) * window.innerHeight * 0.8
                         }}
@@ -56,6 +56,10 @@ export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelNam
                 exit={{ scale: 1.5, opacity: 0, filter: "blur(10px)" }}
                 transition={{ type: "spring", damping: 12, stiffness: 100 }}
                 className="relative flex flex-col items-center z-10"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onComplete();
+                }}
             >
                 <motion.div
                     animate={{ rotate: 360 }}
