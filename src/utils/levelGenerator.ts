@@ -8,6 +8,17 @@ export function generateLevels(_age: number): Level[] {
 
     // Master List of ALL Levels
     const levels: Omit<Level, 'status' | 'isLocked' | 'stars'>[] = [
+        // Age 17: Shah Rukh Khan
+        {
+            id: 'lvl_17_srk', title: 'The Stage or The Books', description: 'At 17, SRK faces an impossible choice — grieve, study, or chase the stage.',
+            requiredStars: 0, year: 1982, age: 17, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A grieving 17-year-old with a rare theatrical gift, torn between financial duty and a burning passion for the stage.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'DUAL COMMITMENT — sometimes the answer isn\'t either/or, it\'s both, and harder.',
+            avatarUrl: '/assets/portrait-srk-17.png.jpg', scenarioId: 'lvl_age_17_srk',
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+        },
         // Age 17: P.V. Sindhu
         {
             id: 'lvl_17_sindhu', title: 'The Olympic Prelude', description: 'At 17, Sindhu faced the seemingly invincible Olympic gold medalist.',
@@ -149,6 +160,17 @@ export function generateLevels(_age: number): Level[] {
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_19_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
         },
+        // Age 19: Shah Rukh Khan (Story 2)
+        {
+            id: 'lvl_19_srk_2', title: 'Leave Delhi or Stay', description: 'At 19, SRK must choose between family duty and the pull of Mumbai.',
+            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A rising theatre star whose family needs him in Delhi while Mumbai beckons with opportunity.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'TIMING IS STRATEGY — ambition without roots collapses.',
+            avatarUrl: '/assets/portrait-srk-19.png.jpg', scenarioId: 'lvl_age_19_srk_2',
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+        },
         // Age 20: Kobe
         {
             id: 'lvl_20_kobe',
@@ -266,6 +288,17 @@ export function generateLevels(_age: number): Level[] {
             avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_20',
             idolTraits: { discipline: 92, resilience: 85, risk: 90, leadership: 95, creativity: 85, empathy: 70, vision: 98 }
         },
+        // Age 21: Shah Rukh Khan
+        {
+            id: 'lvl_21_srk', title: 'The Role That Could Destroy You', description: 'At 21, SRK faces a villain role that could define or end his career.',
+            requiredStars: 0, year: 1986, age: 21, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A young performer offered a psychologically complex villain role that everyone warns against.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'COMPLEXITY OVER COMFORT — playing safe builds a career, playing true builds a legend.',
+            avatarUrl: '/assets/portrait-srk-21.png.jpg', scenarioId: 'lvl_age_21_srk',
+            idolTraits: { discipline: 85, resilience: 100, risk: 95, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+        },
         // Age 21
         {
             id: 'lvl_21', title: 'The Rebel', description: 'At 21, Steve started a company in a garage with no money.',
@@ -287,6 +320,17 @@ export function generateLevels(_age: number): Level[] {
             avatarUrl: '/assets/avatar_walt_disney.png', scenarioId: 'lvl_age_22',
             idolTraits: { discipline: 85, resilience: 95, risk: 90, leadership: 85, creativity: 100, empathy: 85, vision: 100 }
         },
+        // Age 23: Shah Rukh Khan
+        {
+            id: 'lvl_23_srk', title: 'Gauri or Career', description: 'At 23, SRK must choose between love and the career opportunity of a lifetime.',
+            requiredStars: 0, year: 1988, age: 23, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A young actor in love, facing family resistance, while Mumbai\'s Bollywood doors are finally opening.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'LOVE IS NOT A DISTRACTION — the right relationship makes you MORE yourself, not less.',
+            avatarUrl: '/assets/portrait-srk-23.png.jpg', scenarioId: 'lvl_age_23_srk',
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 100, vision: 85 }
+        },
         {
             id: 'lvl_23', title: 'The Voice', description: 'At 23, Oprah was fired for being too emotional. It was a gift.',
             requiredStars: 15, year: 1977, age: 23, theme: 'Media', archetype: 'The Voice', personality: 'Oprah Winfrey',
@@ -307,6 +351,17 @@ export function generateLevels(_age: number): Level[] {
             lesson: 'SACRIFICE of the good (fun) for the great (legacy).',
             avatarUrl: '/assets/avatar_tina_dabi.png', scenarioId: 'scenario_upsc_tina_college',
             idolTraits: { discipline: 98, resilience: 95, risk: 60, leadership: 85, creativity: 65, empathy: 80, vision: 90 }
+        },
+        // Age 25: Shah Rukh Khan
+        {
+            id: 'lvl_25_srk', title: 'Mumbai Is Eating Me Alive', description: 'At 25, SRK is running out of money in Mumbai. One bet could change everything.',
+            requiredStars: 0, year: 1990, age: 25, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            bio: 'A struggling actor in Mumbai with dwindling funds and one last high-stakes decision to make.',
+            fame: 'The King of Bollywood. Global Icon.',
+            achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
+            lesson: 'BET ON YOURSELF — when you know what you came for, don\'t settle for anything less.',
+            avatarUrl: '/assets/portrait-srk-25.png.jpg', scenarioId: 'lvl_age_25_srk',
+            idolTraits: { discipline: 85, resilience: 100, risk: 98, leadership: 90, creativity: 98, empathy: 95, vision: 90 }
         },
         {
             id: 'lvl_25', title: 'The Storyteller', description: 'At 25, J.K. Rowling got the idea for Harry Potter on a delayed train.',

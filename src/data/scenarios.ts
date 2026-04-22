@@ -2640,6 +2640,391 @@ export const STORY_DATABASE: Record<string, any> = {
                 ]
             }
         ]
+    },
+
+    // AGE 17: Shah Rukh Khan — "The Stage or The Books"
+    'lvl_age_17_srk': {
+        title: "The Stage or The Books",
+        source: "Source: Theatre Action Group (TAG) Delhi, 1982",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                portrait: '/assets/portrait-srk-17.png.jpg',
+                text: "It's 1982. You are 17. Your father just passed away. Your family has very little money. Your theatre teacher says you have a rare gift. Your mother needs you to focus on studies. Your friends are all preparing for engineering exams.",
+                choices: [
+                    {
+                        text: "Focus entirely on studies — get a stable career first, theatre can wait.",
+                        next: 'choice_a',
+                        score: -5,
+                        feedbackTitle: "Security Over Passion",
+                        feedback: "You chose security. SRK understood that feeling — he had real financial pressure. But he knew security without passion is just survival. What dream are you delaying for safety?"
+                    },
+                    {
+                        text: "Do both — studies by day, theatre rehearsals by night, sleep less.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "DUAL COMMITMENT",
+                        feedback: "You think like SRK. You refused to choose. This path is exhausting but it keeps both fires alive. The question is — can you sustain it?"
+                    },
+                    {
+                        text: "Tell your mother honestly that theatre is your calling and ask for her support.",
+                        next: 'choice_c',
+                        score: 5,
+                        feedbackTitle: "Brave Honesty",
+                        feedback: "You chose honesty. SRK eventually had that conversation too. Telling the people you love what you truly want takes more courage than talent."
+                    }
+                ]
+            },
+            {
+                id: 'choice_a',
+                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                portrait: '/assets/portrait-srk-17.png.jpg',
+                text: "You study hard, but the stage calls to you every night. A year passes and you feel hollow despite your grades. SRK chose differently — he studied hard AND trained under Barry John at Theatre Action Group, performing late into the nights.",
+                choices: [
+                    {
+                        text: "Find the courage to do both — studies by day, theatre by night.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Reclaiming Both Dreams",
+                        feedback: "The world will always ask you to choose. SRK refused. He held two dreams at once and slept less so both could survive."
+                    }
+                ]
+            },
+            {
+                id: 'choice_c',
+                bg: '/assets/bg-srk-delhi-school-1982.png.jpg',
+                portrait: '/assets/portrait-srk-17.png.jpg',
+                text: "Your mother listens. She can't promise support but she doesn't forbid it either. SRK went further — he committed to both fully, neither asking permission nor abandoning responsibility.",
+                choices: [
+                    {
+                        text: "Commit to both — prove your dedication through action, not words.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Action Over Words",
+                        feedback: "True commitment shows in what you do, not what you say. SRK didn't wait for permission — he acted."
+                    }
+                ]
+            },
+            {
+                id: 'lesson',
+                bg: '/assets/portrait-srk-17.png.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "DUAL COMMITMENT. The world will always ask you to choose. SRK refused. He held two dreams at once and slept less so both could survive. Sometimes the answer isn't either/or — it's both, and harder.",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 10, feedbackTitle: "The Stage and The Books", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 19 (story 2): Shah Rukh Khan — "Leave Delhi or Stay"
+    'lvl_age_19_srk_2': {
+        title: "Leave Delhi or Stay",
+        source: "Source: Shah Rukh Khan's Delhi years, 1984",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                portrait: '/assets/portrait-srk-19.png.jpg',
+                text: "It's 1984. You are 19. You've been performing with Theatre Action Group for 2 years. Doordarshan has noticed you. Mumbai is calling. But your mother is unwell. Your sister depends on you. You have no contacts in Mumbai, no money saved, no place to stay.",
+                choices: [
+                    {
+                        text: "Stay in Delhi — family comes first, Mumbai can wait.",
+                        next: 'choice_a',
+                        score: 10,
+                        feedbackTitle: "Family Before Fame",
+                        feedback: "You and SRK made the same call. Family before fame. Some people see this as sacrifice — SRK saw it as foundation. Everything he built in Mumbai, he built on a clear conscience."
+                    },
+                    {
+                        text: "Go to Mumbai immediately — opportunities don't wait for perfect timing.",
+                        next: 'choice_b',
+                        score: -5,
+                        feedbackTitle: "Fire Without Roots",
+                        feedback: "You have fire. SRK had it too. But he learned that burning bridges behind you means you have nowhere to rest when Mumbai gets hard. Did you think about what you'd be leaving behind?"
+                    },
+                    {
+                        text: "Take the Doordarshan role in Delhi first, save money, then go to Mumbai in 2 years with a plan.",
+                        next: 'lesson',
+                        score: 8,
+                        feedbackTitle: "TIMING IS STRATEGY",
+                        feedback: "Strategic. SRK eventually did something similar — he built his base, saved his energy, and moved when the time was right. Planning isn't fear — it's respect for the journey."
+                    }
+                ]
+            },
+            {
+                id: 'choice_a',
+                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                portrait: '/assets/portrait-srk-19.png.jpg',
+                text: "You stay. You take every Delhi opportunity — Doordarshan, theatre, TV serials. Years later, when you finally move, you carry no guilt — only foundation. This is exactly what SRK did.",
+                choices: [
+                    {
+                        text: "Continue building your base in Delhi until the time is truly right.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Roots Before Wings",
+                        feedback: "Ambition without roots collapses. SRK stayed not because he was afraid — but because he understood that leaving at the wrong time creates guilt that haunts your best work."
+                    }
+                ]
+            },
+            {
+                id: 'choice_b',
+                bg: '/assets/bg-srk-delhi-home-1984.png.jpg',
+                portrait: '/assets/portrait-srk-19.png.jpg',
+                text: "Mumbai is harder than you imagined. No contacts, no money, and the guilt of leaving your family weighs heavy. SRK waited until he was truly ready — he only moved to Mumbai after his mother passed away in 1991 at age 25.",
+                choices: [
+                    {
+                        text: "Go back to Delhi and build your foundation properly before the next attempt.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Wisdom Over Impatience",
+                        feedback: "Going back isn't failure — it's strategy. SRK went when he was truly ready, and that made all the difference."
+                    }
+                ]
+            },
+            {
+                id: 'lesson',
+                bg: '/assets/portrait-srk-19.png.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "TIMING IS STRATEGY. Ambition without roots collapses. SRK stayed not because he was afraid — but because he understood that leaving at the wrong time creates guilt that haunts your best work. He went when he was truly ready.",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 10, feedbackTitle: "The Right Time", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 21: Shah Rukh Khan — "The Role That Could Destroy You"
+    'lvl_age_21_srk': {
+        title: "The Role That Could Destroy You",
+        source: "Source: Shah Rukh Khan's Delhi theatre years, 1986",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                portrait: '/assets/portrait-srk-21.png.jpg',
+                text: "It's 1986. You are 21. A director offers you a villain role — dark, menacing, psychologically complex. Everyone advises against it. 'First impressions matter. If audiences see you as evil, they'll never love you as a hero.' Another director is offering you a safe romantic lead.",
+                choices: [
+                    {
+                        text: "Take the romantic lead — build a lovable image first.",
+                        next: 'choice_a',
+                        score: -5,
+                        feedbackTitle: "Image Over Instinct",
+                        feedback: "You chose image over instinct. Safe choices compound into a safe life. SRK proved that the roles that scare you are often the ones that define you."
+                    },
+                    {
+                        text: "Take the villain role — great writing always wins.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "COMPLEXITY OVER COMFORT",
+                        feedback: "You think like SRK. You trusted the writing over the fear. Great material is rare — when you find it, you hold on."
+                    },
+                    {
+                        text: "Ask both directors for 2 weeks to decide and research both characters deeply.",
+                        next: 'choice_c',
+                        score: 5,
+                        feedbackTitle: "The Analyst",
+                        feedback: "You're thorough. SRK was impulsive but deeply instinctive. Sometimes thinking too long kills the feeling that made the opportunity exciting in the first place."
+                    }
+                ]
+            },
+            {
+                id: 'choice_a',
+                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                portrait: '/assets/portrait-srk-21.png.jpg',
+                text: "The romantic lead role is forgettable. You are likeable but unmemorable. SRK's villain roles in Darr and Baazigar made him a superstar — not his hero roles. Complex characters reveal true talent.",
+                choices: [
+                    {
+                        text: "Go back and take the villain role — trust the writing, not the image.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Trusting the Craft",
+                        feedback: "Playing safe builds a career. Playing true builds a legend. SRK understood that audiences don't just want to love you — they want to be surprised by you."
+                    }
+                ]
+            },
+            {
+                id: 'choice_c',
+                bg: '/assets/bg-srk-theatre-stage-1986.png.jpg',
+                portrait: '/assets/portrait-srk-21.png.jpg',
+                text: "Two weeks later, the villain director has moved on — he found someone willing to commit. The window closed while you were thinking. SRK always said: when the right material finds you, you know it in your gut.",
+                choices: [
+                    {
+                        text: "Learn from this — next time, trust your gut faster.",
+                        next: 'lesson',
+                        score: 8,
+                        feedbackTitle: "The Cost of Hesitation",
+                        feedback: "Analysis has its place. But the best opportunities carry a feeling — and that feeling doesn't wait for spreadsheets."
+                    }
+                ]
+            },
+            {
+                id: 'lesson',
+                bg: '/assets/portrait-srk-21.png.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "COMPLEXITY OVER COMFORT. Playing safe builds a career. Playing true builds a legend. SRK understood that audiences don't just want to love you — they want to be surprised by you.",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 10, feedbackTitle: "The Brave Choice", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 23: Shah Rukh Khan — "Gauri or Career"
+    'lvl_age_23_srk': {
+        title: "Gauri or Career",
+        source: "Source: Shah Rukh Khan's personal life, Delhi 1988",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                portrait: '/assets/portrait-srk-23.png.jpg',
+                text: "It's 1988. You are 23. You've been with Gauri for 3 years. Both families have objections. Mumbai producers are interested — this is the moment you've waited for. Gauri says she'll wait but she's scared. Some people say focus on career first, relationships later.",
+                choices: [
+                    {
+                        text: "Go to Mumbai alone — focus on career, let the relationship find its natural path.",
+                        next: 'choice_a',
+                        score: -5,
+                        feedbackTitle: "Ambition Alone",
+                        feedback: "You chose ambition. SRK understood that pull. But he also knew that achieving everything alone feels hollow. Who will you share it with when you get there?"
+                    },
+                    {
+                        text: "Ask Gauri to come with you to Mumbai — figure it out together.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "LOVE IS NOT A DISTRACTION",
+                        feedback: "You chose together. SRK and Gauri figured it out in real time — messy, uncertain, but real. The best partnerships are built in chaos, not comfort."
+                    },
+                    {
+                        text: "Stay in Delhi one more year — stabilize the relationship first, then go together.",
+                        next: 'choice_c',
+                        score: 5,
+                        feedbackTitle: "Patient Planning",
+                        feedback: "You chose patience. Sometimes that's wisdom. But SRK learned that waiting for perfect conditions means waiting forever. Life doesn't pause for you to feel ready."
+                    }
+                ]
+            },
+            {
+                id: 'choice_a',
+                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                portrait: '/assets/portrait-srk-23.png.jpg',
+                text: "You reach Mumbai. Career is moving. But the loneliness is louder than the applause. You miss Gauri. SRK went to Mumbai AND fought for Gauri — they married in 1991 against family resistance. He refused to choose between love and ambition.",
+                choices: [
+                    {
+                        text: "Fight for her. Ask Gauri to join you in Mumbai.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "Love as Foundation",
+                        feedback: "The right relationship doesn't slow you down — it becomes your foundation. SRK proved it."
+                    }
+                ]
+            },
+            {
+                id: 'choice_c',
+                bg: '/assets/bg-srk-delhi-street-1988.png.jpg',
+                portrait: '/assets/portrait-srk-23.png.jpg',
+                text: "A year passes. The producer who was interested has moved on. The window was real and it closed. SRK learned that the best move is often the bold one — take the opportunity and take the person you love, together.",
+                choices: [
+                    {
+                        text: "Commit fully — take the leap to Mumbai with Gauri now.",
+                        next: 'lesson',
+                        score: 8,
+                        feedbackTitle: "Together Is Stronger",
+                        feedback: "The world tells young people to choose between love and success. SRK proved the right relationship makes you MORE yourself, not less."
+                    }
+                ]
+            },
+            {
+                id: 'lesson',
+                bg: '/assets/portrait-srk-23.png.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "LOVE IS NOT A DISTRACTION. The world tells young people to choose between love and success. SRK proved that the right relationship doesn't slow you down — it becomes your foundation. Choose people who make you MORE yourself, not less.",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 10, feedbackTitle: "Love and Ambition", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 25: Shah Rukh Khan — "Mumbai Is Eating Me Alive"
+    'lvl_age_25_srk': {
+        title: "Mumbai Is Eating Me Alive",
+        source: "Source: Shah Rukh Khan's early Mumbai years, 1990",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                portrait: '/assets/portrait-srk-25.png.jpg',
+                text: "It's 1990. You are 25. You moved to Mumbai. Bollywood is not opening its doors. You've been rejected from multiple films. Money is running out. A producer offers you a supporting role in a big film — good pay but not the lead. Another option: a small independent film where you're the lead but no guarantee of release.",
+                choices: [
+                    {
+                        text: "Take the supporting role — money in hand, big film exposure.",
+                        next: 'choice_a',
+                        score: -5,
+                        feedbackTitle: "Safe But Small",
+                        feedback: "You chose security. SRK almost did too. But he asked himself — if this film releases and I'm in the background, will I be proud? The answer was no."
+                    },
+                    {
+                        text: "Take the independent lead — better to be the hero of a small story than a footnote in a big one.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "BET ON YOURSELF",
+                        feedback: "You think exactly like SRK. He bet on himself with Deewana and won everything. The lead role in a small film is worth more than a cameo in a blockbuster."
+                    },
+                    {
+                        text: "Reject both and keep auditioning for lead roles in mainstream films.",
+                        next: 'choice_c',
+                        score: -5,
+                        feedbackTitle: "Standards Without Strategy",
+                        feedback: "You have standards. SRK respected that impulse. But he also knew that zero income kills dreams faster than bad roles. Sometimes you take the step that keeps you in the game."
+                    }
+                ]
+            },
+            {
+                id: 'choice_a',
+                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                portrait: '/assets/portrait-srk-25.png.jpg',
+                text: "The big film releases. You're barely noticed in the background. The money helped, but you're no closer to being a lead. SRK took Deewana (1992) as a lead — it released and made him a star overnight. He bet on himself when no one else would.",
+                choices: [
+                    {
+                        text: "Take the independent lead role — bet on yourself now.",
+                        next: 'lesson',
+                        score: 10,
+                        feedbackTitle: "The Lead or Nothing",
+                        feedback: "There will always be a safe option that almost feels right. SRK understood that almost right is completely wrong. When you know what you came for — don't settle."
+                    }
+                ]
+            },
+            {
+                id: 'choice_c',
+                bg: '/assets/bg-srk-mumbai-apartment-1990.png.jpg',
+                portrait: '/assets/portrait-srk-25.png.jpg',
+                text: "Months pass. Savings run out. You have to leave Mumbai and go back to Delhi. The independent film got made — without you. SRK took Deewana as a calculated bet and it changed everything. Staying in the game matters.",
+                choices: [
+                    {
+                        text: "Return to Mumbai with a new strategy — take the next lead role available.",
+                        next: 'lesson',
+                        score: 8,
+                        feedbackTitle: "Learning from the Fall",
+                        feedback: "Sometimes you take the step that keeps you in the game. Zero income kills dreams faster than bad roles."
+                    }
+                ]
+            },
+            {
+                id: 'lesson',
+                bg: '/assets/portrait-srk-25.png.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "BET ON YOURSELF. There will always be a safe option that almost feels right. SRK understood that almost right is completely wrong. When you know what you came for — don't settle for anything less.",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 10, feedbackTitle: "The King of Bollywood", feedback: "" }
+                ]
+            }
+        ]
     }
 
 };
