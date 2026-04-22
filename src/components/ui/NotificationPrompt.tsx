@@ -26,9 +26,10 @@ export function NotificationPrompt({ isOpen, onAccept, onDecline }: Notification
                     <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/10 blur-[80px] rounded-full" />
 
                     <div className="relative z-10 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-[#00f2ff] to-[#d575ff] rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,242,255,0.4)] animate-pulse">
-                            <Bell size={40} className="text-white fill-white/20" />
+                        <div className="w-20 h-20 bg-[#0d0d16] border-2 border-[#00f2ff] rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(0,242,255,0.4)] animate-pulse">
+                            <Bell size={40} className="text-[#00f2ff] fill-[#00f2ff]/20 drop-shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
                         </div>
+
 
                         <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wider text-white mb-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                             Never miss your <span className="text-[#00f2ff]">daily streak</span> 🔥
