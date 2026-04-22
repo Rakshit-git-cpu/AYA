@@ -1,5 +1,5 @@
-import React from 'react';
 import { Bell, X, Sparkles } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { audioSynth } from '../../utils/audioSynth';
 
