@@ -2708,7 +2708,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'lesson',
-                bg: '/assets/portrait-srk-17.png.jpg',
+                bg: '/assets/bg_srk_age17.jpg',
                 bgSize: 'object-contain',
                 bgPosition: 'object-center bg-black',
                 text: "DUAL COMMITMENT. The world will always ask you to choose. SRK refused. He held two dreams at once and slept less so both could survive. Sometimes the answer isn't either/or — it's both, and harder.",
@@ -2785,7 +2785,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'lesson',
-                bg: '/assets/portrait-srk-19.png.jpg',
+                bg: '/assets/bg_srk_age19b.jpg',
                 bgSize: 'object-contain',
                 bgPosition: 'object-center bg-black',
                 text: "TIMING IS STRATEGY. Ambition without roots collapses. SRK stayed not because he was afraid — but because he understood that leaving at the wrong time creates guilt that haunts your best work. He went when he was truly ready.",
@@ -2862,7 +2862,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'lesson',
-                bg: '/assets/portrait-srk-21.png.jpg',
+                bg: '/assets/bg_srk_age21.jpg',
                 bgSize: 'object-contain',
                 bgPosition: 'object-center bg-black',
                 text: "COMPLEXITY OVER COMFORT. Playing safe builds a career. Playing true builds a legend. SRK understood that audiences don't just want to love you — they want to be surprised by you.",
@@ -2939,7 +2939,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'lesson',
-                bg: '/assets/portrait-srk-23.png.jpg',
+                bg: '/assets/bg_srk_age23.jpg',
                 bgSize: 'object-contain',
                 bgPosition: 'object-center bg-black',
                 text: "LOVE IS NOT A DISTRACTION. The world tells young people to choose between love and success. SRK proved that the right relationship doesn't slow you down — it becomes your foundation. Choose people who make you MORE yourself, not less.",
@@ -3016,7 +3016,7 @@ export const STORY_DATABASE: Record<string, any> = {
             },
             {
                 id: 'lesson',
-                bg: '/assets/portrait-srk-25.png.jpg',
+                bg: '/assets/bg_srk_age25.jpg',
                 bgSize: 'object-contain',
                 bgPosition: 'object-center bg-black',
                 text: "BET ON YOURSELF. There will always be a safe option that almost feels right. SRK understood that almost right is completely wrong. When you know what you came for — don't settle for anything less.",

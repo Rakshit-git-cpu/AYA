@@ -18,6 +18,7 @@ interface UserState {
     // New Gamified XP Setup
     addXp: (amount: number) => void;
     addSessionProgression: (sessionXp: number) => void;
+    updateXpLocally: (amount: number) => void;
     
     syncLevels: () => void;
 
@@ -76,6 +77,19 @@ export const useUserStore = create<UserState>()(
                         total_xp: newXp,
                         level: levelInfo.level,
                         stories_completed: currentStories + 1
+                    }
+                };
+            }),
+
+            updateXpLocally: (amount) => set((state) => {
+                if (!state.profile) return state;
+                const newXp = (state.profile.total_xp || 0) + amount;
+                const levelInfo = calculateLevelInfo(newXp);
+                return {
+                    profile: {
+                        ...state.profile,
+                        total_xp: newXp,
+                        level: levelInfo.level
                     }
                 };
             }),

@@ -90,6 +90,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     const collectLesson = useUserStore((state) => state.collectLesson);
     const updateTraits = useUserStore((state) => state.updateTraits);
     const addSessionProgression = useUserStore((state) => state.addSessionProgression);
+    const updateXpLocally = useUserStore((state) => state.updateXpLocally);
     const completeDailyChallenge = useUserStore((state) => state.completeDailyChallenge);
     const levelScores = useUserStore((state) => state.levelScores);
 
@@ -436,7 +437,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             }
 
             // Play local state pushes
-            addSessionProgression(sessionTotalXp);
+            // Pass 0 as XP since we've been updating real-time via updateXpLocally
+            addSessionProgression(0);
 
             // UPDATE TRAITS globally
             updateTraits({
@@ -473,6 +475,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         if (choice.feedback) {
             // Updated to handle negative scores (simple addition works since choice.score can be -10)
             setScore(prev => prev + choice.score);
+            updateXpLocally(choice.score); // Sync with global header in real-time
             setFeedbackChoice(choice);
 
             // Trigger Floating Text
@@ -484,6 +487,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         } else {
             // No feedback (e.g. navigation only), just go
             setScore(prev => prev + choice.score);
+            updateXpLocally(choice.score); // Sync with global header in real-time
             setCurrentFrameId(choice.next);
         }
     };
@@ -541,9 +545,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 </div>
             )}
 
-            {/* Top Bar (Stats) */}
+            {/* Top Bar (Stats) - shifted down to avoid overlapping with PwaHeader */}
             <div className={clsx(
-                "absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center text-white/80 transition-opacity duration-500",
+                "absolute top-[60px] left-0 w-full pt-8 px-6 pb-6 z-20 flex justify-between items-center text-white/80 transition-opacity duration-500",
                 isBgLoaded ? "opacity-100" : "opacity-0 pointer-events-none"
             )}>
                 <button
