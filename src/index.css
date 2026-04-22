@@ -457,3 +457,59 @@ body {
 .neon-scrollbar::-webkit-scrollbar-thumb {
     background-color: rgba(139, 92, 246, 0.4);
 }
+
+/* --- New Ambient Animations --- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float-horizontal {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+}
+
+@keyframes pulse-glow-cyan {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5)); }
+  50% { filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.8)); }
+}
+
+@keyframes pulse-glow-amber {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5)); }
+  50% { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); }
+}
+
+@keyframes breath {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+@keyframes subtle-rotate {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-breath {
+  animation: breath 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow-cyan {
+  animation: pulse-glow-cyan 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow-amber {
+  animation: pulse-glow-amber 3s ease-in-out infinite;
+}
+
+.animate-subtle-rotate {
+  animation: subtle-rotate 5s ease-in-out infinite;
+}

@@ -202,7 +202,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         audioSynth.playClick();
                         setShowSettings(true);
                     }}
-                    className="w-8 h-8 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg"
+                    className="w-8 h-8 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg hover:rotate-12 active:scale-90"
                     aria-label="Settings"
                 >
                     <Settings size={18} className="md:w-5 md:h-5" />
@@ -213,14 +213,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         toggleCandyMode();
                     }}
                     className={clsx(
-                        "w-8 h-8 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border",
+                        "w-8 h-8 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border hover:-rotate-12 active:scale-90",
                         isCandyMode
                             ? "bg-amber-400/20 hover:bg-amber-400/40 border-amber-300/50"
                             : "bg-indigo-500/20 hover:bg-indigo-500/40 border-indigo-400/50"
                     )}
                     aria-label="Toggle Theme"
                 >
-                    {isCandyMode ? <Sun size={18} className="md:w-5 md:h-5 text-amber-300" /> : <Moon size={18} className="md:w-5 md:h-5 text-indigo-300" />}
+                    {isCandyMode ? <Sun size={18} className="md:w-5 md:h-5 text-amber-300 animate-pulse" /> : <Moon size={18} className="md:w-5 md:h-5 text-indigo-300 animate-breath" />}
                 </button>
             </div>
 
@@ -232,10 +232,10 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                         setShowJournal(true);
                     }}
                     className={clsx(
-                        "group flex items-center gap-1.5 md:gap-3 pr-3 md:pr-6 pl-1.5 py-1 md:py-2 rounded-full shadow-2xl transition-all border-2",
+                        "group flex items-center gap-1.5 md:gap-3 pr-3 md:pr-6 pl-1.5 py-1 md:py-2 rounded-full shadow-2xl transition-all border-2 animate-float",
                         isCandyMode
-                            ? "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95"
-                            : "bg-slate-900 border-amber-600/50 hover:border-amber-400 hover:scale-105 active:scale-95"
+                            ? "bg-white/90 border-pink-200 hover:border-pink-400 hover:scale-105 active:scale-95 animate-pulse-glow-amber"
+                            : "bg-slate-900 border-amber-600/50 hover:border-amber-400 hover:scale-105 active:scale-95 animate-pulse-glow-amber"
                     )}
                 >
                     <div className={clsx(
@@ -257,17 +257,17 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                 </button>
 
                 {/* DNA Profile Button - Isolated to prevent disappearing */}
-                <button
+                 <button
                     onClick={() => {
                         console.log('DNA button clicked');
                         audioSynth.playClick();
                         onOpenDnaProfile();
                     }}
                     className={clsx(
-                        "group flex items-center gap-1.5 pr-2 md:pr-4 pl-1.5 py-1 md:py-1.5 border hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto",
+                        "group flex items-center gap-1.5 pr-2 md:pr-4 pl-1.5 py-1 md:py-1.5 border hover:scale-105 active:scale-95 transition-all shadow-lg rounded-full pointer-events-auto animate-float-delayed",
                         isCandyMode
                             ? "bg-purple-900/40 border-purple-400/50 backdrop-blur-md"
-                            : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md"
+                            : "bg-[#0d0d16] border-[#00f2ff]/30 backdrop-blur-md animate-pulse-glow-cyan"
                     )}
                 >
                     <div className={clsx(
@@ -378,8 +378,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
                                 >
                                     <div
                                         className={clsx(
-                                            "candy-node-container group cursor-pointer hover:scale-105 transition-transform",
-                                            isCurrent && "candy-node-active",
+                                            "candy-node-container group cursor-pointer hover:scale-110 transition-transform animate-float",
+                                            isCurrent && "candy-node-active animate-breath",
                                             !isUnlocked && "candy-node-locked grayscale opacity-80",
                                             isCompleted && "candy-node-completed"
                                         )}
