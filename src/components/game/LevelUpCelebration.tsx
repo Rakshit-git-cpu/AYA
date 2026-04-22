@@ -24,7 +24,10 @@ export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelNam
     }, [onComplete]);
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm overflow-hidden select-none">
+        <div 
+            onClick={onComplete}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm overflow-hidden select-none cursor-pointer"
+        >
             {/* Celebration Particles FX */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 {Array.from({ length: 20 }).map((_, i) => (
@@ -78,6 +81,18 @@ export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelNam
                     </div>
                 </div>
 
+                <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onComplete();
+                    }}
+                    className="mt-12 px-10 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white font-bold uppercase tracking-widest transition-all"
+                >
+                    Continue
+                </motion.button>
             </motion.div>
         </div>
     );
