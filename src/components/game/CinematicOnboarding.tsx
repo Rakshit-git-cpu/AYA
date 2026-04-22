@@ -352,20 +352,24 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
             </motion.div>
           )}
         </AnimatePresence>
+
+
+        {/* Progress dots - moved inside scrollable area at bottom */}
+        <div className="flex items-center justify-center gap-3 mt-12 mb-4">
+          {[1, 2, 3, 4].map((s) => (
+            <div
+              key={s}
+              className={`rounded-full transition-all duration-300 ${
+                s === slide
+                  ? 'w-6 h-2 bg-[#00f1fe] shadow-[0_0_10px_#00f1fe]'
+                  : 'w-2 h-2 bg-[#2b2b38] hover:bg-[#4b4b58]'
+              }`}
+            />
+          ))}
+        </div>
       </div>
-      {/* Fixed bottom progress dots */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3">
-        {[1, 2, 3, 4].map((s) => (
-          <div
-            key={s}
-            className={`rounded-full transition-all duration-300 ${
-              s === slide
-                ? 'w-6 h-2 bg-[#00f1fe] shadow-[0_0_10px_#00f1fe]'
-                : 'w-2 h-2 bg-[#2b2b38] hover:bg-[#4b4b58]'
-            }`}
-          />
-        ))}
-      </div>
+
+
 
       <NotificationPrompt 
         isOpen={showNotificationPrompt}
