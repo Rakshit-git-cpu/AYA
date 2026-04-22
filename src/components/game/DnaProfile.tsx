@@ -216,7 +216,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     }, [userTraits]);
 
     return (
-        <div className="fixed inset-0 z-[100] w-full h-full bg-[#0d0d16] font-sans text-[#f2effb] overflow-y-auto overflow-x-hidden pt-safe-top pb-24 selection:bg-[#99f7ff] selection:text-[#004145]">
+        <div className="fixed inset-0 z-[120] w-full h-full bg-[#0d0d16] font-sans text-[#f2effb] overflow-y-auto overflow-x-hidden pt-safe-top pb-24 selection:bg-[#99f7ff] selection:text-[#004145]">
             
             {/* Deep Space Background gradient */}
             <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,#2b2b38_0%,#000000_60%)]" />
@@ -232,7 +232,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
             <AnimatedHelix />
 
             {/* Navigation Header */}
-            <div className="relative z-20 flex items-center justify-between p-6 w-full max-w-4xl mx-auto">
+            <div className="relative z-20 flex items-center justify-between pt-28 pb-6 px-6 w-full max-w-4xl mx-auto">
                 <button 
                     onClick={() => { audioSynth.playClick(); onBack(); }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#0d0d16]/80 hover:bg-[#1a1a24] backdrop-blur-md rounded-full border border-[#00f2ff]/30 transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,242,255,0.2)] text-[#00f2ff] font-bold tracking-widest text-sm uppercase"
