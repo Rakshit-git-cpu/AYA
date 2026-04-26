@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { audioSynth } from '../../utils/audioSynth';
 import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList, Flame } from 'lucide-react';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
@@ -6,7 +6,9 @@ import { useUserStore } from '../../store/userStore';
 import { calculateLevelInfo } from '../../utils/levelSystem';
 import domtoimage from 'dom-to-image';
 import { InstagramCard } from './InstagramCard';
-import { useRef } from 'react';
+import { FutureSelfCard } from './FutureSelfCard';
+import { FutureSelfShareCard } from './FutureSelfShareCard';
+import { calculateLifeTraits, matchFutureArchetype } from '../../utils/futureSelfMatch';
 
 interface DnaProfileProps {
     onBack: () => void;
@@ -148,8 +150,21 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
 
     const [copiedDNA, setCopiedDNA] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isFutureGenerating, setIsFutureGenerating] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
+    const futureSelfCardRef = useRef<HTMLDivElement>(null);
+
+    // ── Future Self Match computation ────────────────────────────────────────
+    const futureMatch = useMemo(() => {
+        // Use persisted lifeTraits if available, else recalculate from current traits
+        const lifeTraits = profile?.lifeTraits
+            ?? calculateLifeTraits(userTraits as any, profile?.current_streak ?? 0);
+        return matchFutureArchetype(lifeTraits);
+    }, [profile?.lifeTraits, profile?.current_streak, userTraits]);
+
+    const storiesCompleted = profile?.stories_completed ?? 0;
+    const decisionsCount = Math.max(storiesCompleted * 3, storiesCompleted); // ~3 choices per story
 
     const handleShareDNA = () => {
         if (!personalityDNA) return;
@@ -158,6 +173,29 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         setCopiedDNA(true);
         setTimeout(() => setCopiedDNA(false), 2000);
         setTimeout(() => setShowOptions(false), 2000);
+    };
+
+    const handleFutureSelfShare = async () => {
+        if (!futureSelfCardRef.current || isFutureGenerating) return;
+        try {
+            audioSynth.playClick();
+            setIsFutureGenerating(true);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            const dataUrl = await domtoimage.toPng(futureSelfCardRef.current, {
+                quality: 1,
+                bgcolor: '#0d0d16',
+                width: 1080,
+                height: 1080,
+            });
+            const link = document.createElement('a');
+            link.download = `aya-future-self-${profile?.name || 'card'}.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('Future self share failed:', err);
+        } finally {
+            setIsFutureGenerating(false);
+        }
     };
 
     const handleDownloadCard = async () => {
@@ -363,6 +401,14 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                     </div>
                 </div>
 
+                {/* ══ FUTURE SELF CARD ══════════════════════════════════════ */}
+                <FutureSelfCard
+                    futureMatch={futureMatch}
+                    storiesCompleted={storiesCompleted}
+                    decisionsCount={decisionsCount}
+                    onShare={handleFutureSelfShare}
+                />
+
                 {/* Personality DNA Section */}
                 {personalityDNA && (
                     <div className="w-full bg-[rgba(31,31,42,0.6)] backdrop-blur-2xl rounded-[2rem] p-8 mb-10 border border-[#484751] relative overflow-hidden group shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
@@ -471,6 +517,15 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                         personalityDNA={personalityDNA}
                         dynamicProfileTag={dynamicProfileTag}
                         levelName={calculateLevelInfo(profile?.total_xp || 0).title}
+                    />
+                </div>
+
+                {/* HIDDEN OFF-SCREEN FUTURE SELF SHARE CARD */}
+                <div className="absolute top-[-9999px] left-[-9999px]">
+                    <FutureSelfShareCard
+                        ref={futureSelfCardRef}
+                        futureMatch={futureMatch}
+                        userName={profile?.name}
                     />
                 </div>
 

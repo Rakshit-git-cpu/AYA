@@ -7,6 +7,7 @@ import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from '
 import { supabase } from '../../utils/supabase';
 import { IDOL_PROFILES } from '../../data/idolMindsets';
 import { calculateLevelInfo } from '../../utils/levelSystem';
+import { calculateLifeTraits, matchFutureArchetype } from '../../utils/futureSelfMatch';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -365,6 +366,34 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             const newTotalXp = currentTotalXp + sessionTotalXp;
             const newLevelInfo = calculateLevelInfo(newTotalXp);
 
+            // ── Future Self calculation ────────────────────────────────────
+            const currentStreak = userProfile?.current_streak || 0;
+            const futureLT = calculateLifeTraits(
+                {
+                    risk: recalibratedTraits.risk,
+                    creativity: recalibratedTraits.creativity,
+                    vision: recalibratedTraits.vision,
+                    empathy: recalibratedTraits.empathy,
+                    leadership: recalibratedTraits.leadership,
+                    discipline: recalibratedTraits.vision, // proxy
+                    resilience: recalibratedTraits.risk,   // proxy
+                },
+                currentStreak
+            );
+            const futureMatchResult = matchFutureArchetype(futureLT);
+
+            // Patch local Zustand profile with future self data
+            const setProfile = useUserStore.getState().setProfile;
+            const latestProfile = useUserStore.getState().profile;
+            if (latestProfile) {
+                setProfile({
+                    ...latestProfile,
+                    futureArchetype: futureMatchResult.archetype.name,
+                    futureArchetypeScore: futureMatchResult.score,
+                    lifeTraits: futureLT,
+                });
+            }
+
             if (userProfile?.id && !hasInsertedSession.current) {
                 // Guard: prevent duplicate inserts from StrictMode double-renders or rapid re-triggers
                 hasInsertedSession.current = true;
@@ -380,7 +409,18 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                             total_xp: newTotalXp,
                             level: newLevelInfo.level,
                             stories_completed: currentStories + 1,
-                            last_updated: new Date().toISOString()
+                            last_updated: new Date().toISOString(),
+                            // Future Self columns
+                            future_archetype: futureMatchResult.archetype.name,
+                            future_archetype_score: futureMatchResult.score,
+                            life_resilience: futureLT.resilience,
+                            life_discipline: futureLT.discipline,
+                            life_courage: futureLT.courage,
+                            life_creativity: futureLT.creativity,
+                            life_emotional_control: futureLT.emotional_control,
+                            life_leadership: futureLT.leadership,
+                            life_risk_intelligence: futureLT.risk_intelligence,
+                            life_consistency: futureLT.consistency,
                         })
                         .eq('user_id', userProfile.id);
 

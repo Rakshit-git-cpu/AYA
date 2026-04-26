@@ -1,3 +1,6 @@
+import type { LifeTraits } from '../utils/futureSelfMatch';
+export type { LifeTraits };
+
 // New Personality System Types
 export interface PersonalityTraits {
     discipline: number; // 0-100
@@ -53,6 +56,11 @@ export interface UserProfile {
     total_xp?: number;
     level?: number;
     stories_completed?: number;
+
+    // Future Self Match
+    futureArchetype?: string;
+    futureArchetypeScore?: number;
+    lifeTraits?: LifeTraits;
 
     // Daily Challenge & Streak System (Stored in `users` table usually)
     current_streak?: number;
