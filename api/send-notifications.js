@@ -10,8 +10,8 @@ const supabase = createClient(
 // Initialize Web Push
 webpush.setVapidDetails(
   'mailto:support@aya-game.com',
-  process.env.VITE_VAPID_PUBLIC_KEY || 'BKuBEyjIX-OtnnyJ7cyBMLwAycYv6POyGVFIxPnlzbReZLxv3S-QP9wcJ-YIE38w_al1tqIDwSf41MUG8JgipZE',
-  process.env.VAPID_PRIVATE_KEY || 'HHW51N5h_f1ofvSD3fJvVvToP93qk9lwr7_X7PuuPXo'
+  process.env.VITE_VAPID_PUBLIC_KEY || 'BJ3xcv7SUQBXi1J2v1tTAlEiu7J4eImjbKYxXU-V_TI2ijPSj04lkAUd_tqnIdQu3pGhGIMYzLgeLxnRopoIRpE',
+  process.env.VAPID_PRIVATE_KEY || '8DfK0SiZlz_9Tria0G97D9WRL-zzxaIMtm0NgQomTCQ'
 );
 
 /**
