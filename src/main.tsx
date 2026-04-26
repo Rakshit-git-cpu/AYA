@@ -6,8 +6,14 @@ import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-  })
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then((reg) => {
+        console.log('[SW] Registered successfully. Scope:', reg.scope);
+      })
+      .catch((err) => {
+        console.error('[SW] Registration failed:', err);
+      });
+  });
 }
 
 // Global Error Handler moved to index.html for better coverage
