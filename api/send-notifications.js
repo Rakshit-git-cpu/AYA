@@ -14,6 +14,82 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY || 'HHW51N5h_f1ofvSD3fJvVvToP93qk9lwr7_X7PuuPXo'
 );
 
+/**
+ * Rotating pool of motivational bodies for users with an active streak.
+ * Supports [Name] and [X] template placeholders.
+ */
+const STREAK_BODIES = [
+  "[Name], at your age Sachin was already playing for India. What are YOU building?",
+  "Your [X] day streak says a lot about you. Don't let it die tonight.",
+  "[Name], legends aren't born — they show up daily. Like you have for [X] days.",
+  "At your age, Kobe was training at 4AM. You just need to open the app. 🏀",
+  "[Name], your daily challenge takes 5 minutes. Your streak takes a lifetime to build.",
+];
+
+/**
+ * Pick a body template from the rotating pool based on the current day,
+ * then substitute [Name] and [X] with real values.
+ */
+function buildStreakBody(name, streakDays) {
+  const dayIndex = new Date().getDate() % STREAK_BODIES.length;
+  return STREAK_BODIES[dayIndex]
+    .replace(/\[Name\]/g, name)
+    .replace(/\[X\]/g, streakDays);
+}
+
+/**
+ * Build the notification payload for a single user based on their state.
+ *
+ * States (evaluated in priority order):
+ *  1. Completed challenge today already
+ *  2. Active streak (streak > 0, not completed today)
+ *  3. Broken streak (has been active before, streak = 0)
+ *  4. New user (no stories completed yet)
+ */
+function buildNotification(user) {
+  const name = user.name || 'Legend';
+  const streak = user.current_streak || 0;
+
+  // Determine if the user has completed today's challenge.
+  // `last_challenge_date` is expected to be a date string (e.g. "2026-04-26").
+  const today = new Date().toISOString().slice(0, 10);
+  const completedToday = user.last_challenge_date === today;
+
+  if (completedToday) {
+    return {
+      title: `🌟 You showed up today, ${name}`,
+      body: "That's what legends do. Come back tomorrow to keep your streak alive.",
+    };
+  }
+
+  if (streak > 0) {
+    // Pick a random idol for the "personal touch" title variant
+    const idols = ['Sachin', 'Kobe', 'SRK', 'Elon', 'Jobs', 'Musk', 'Ronaldo'];
+    const idol = idols[new Date().getDate() % idols.length];
+    return {
+      title: `🔥 Day ${streak} — Don't break it now`,
+      body: buildStreakBody(name, streak).includes('[Name]')
+        // Fallback in case template substitution missed something
+        ? `${name}, at your age ${idol} was already building their legacy. Your streak is alive. Keep it that way.`
+        : buildStreakBody(name, streak),
+    };
+  }
+
+  if (user.last_active_date) {
+    // Broken streak — user has been active before
+    return {
+      title: `⚡ Start fresh, ${name}`,
+      body: "SRK was rejected 100 times at your age. He showed up anyway. Your daily challenge is waiting.",
+    };
+  }
+
+  // New user — no stories completed yet
+  return {
+    title: `👋 ${name}, your story is waiting`,
+    body: "What would you have done at Kobe's age? Step into their shoes today.",
+  };
+}
+
 export default async function handler(req, res) {
   // Only allow GET for cron jobs
   if (req.method !== 'GET') {
@@ -28,7 +104,6 @@ export default async function handler(req, res) {
 
   try {
     // 1. Fetch all push subscriptions with associated user data
-    // Note: We use a join to get user streak and activity status
     const { data: subscriptions, error } = await supabase
       .from('push_subscriptions')
       .select('*, users:user_id(*)');
@@ -44,16 +119,7 @@ export default async function handler(req, res) {
       const user = sub.users;
       if (!user) return null;
 
-      let title = 'AYA Daily Challenge';
-      let body = `👋 ${user.name || 'Traveler'}, your daily story is waiting. What will you learn today?`;
-
-      if (user.current_streak > 0) {
-        title = '🔥 Streak Alert!';
-        body = `🔥 ${user.name || 'Traveler'}! Your ${user.current_streak} day streak is waiting. Complete today's challenge before midnight!`;
-      } else if (user.last_active_date) {
-        title = '⚡ Start Fresh';
-        body = `⚡ ${user.name || 'Traveler'}, start fresh today. Your daily challenge is ready!`;
-      }
+      const { title, body } = buildNotification(user);
 
       const payload = JSON.stringify({
         title,
@@ -66,7 +132,7 @@ export default async function handler(req, res) {
         return { status: 'fulfilled', userId: user.id };
       } catch (err) {
         console.error(`Failed to send push to ${user.id}:`, err);
-        // If subscription is expired or revoked, we should delete it
+        // If subscription is expired or revoked, clean it up
         if (err.statusCode === 404 || err.statusCode === 410) {
           await supabase.from('push_subscriptions').delete().eq('id', sub.id);
         }
