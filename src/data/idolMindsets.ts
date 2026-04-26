@@ -728,6 +728,195 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
         },
         avatarUrl: '/assets/avatar_nooyi.jpg'
     },
+    "Billie Eilish": {
+        name: "Billie Eilish",
+        archetypeTitle: "The Honest One",
+        quote: "I'm the one thing I can control.",
+        voice: {
+            tone: "Raw, Honest, Vulnerable",
+            intro: "You don't have to pretend you're okay. The world needs your real self, not your performed self."
+        },
+        missions: {
+            discipline: { title: "Show Up Broken", desc: "Do the work even when you feel empty. Show up anyway.", xp: "+50 Presence" },
+            resilience: { title: "Say It Out Loud", desc: "Tell one person the truth about how you're actually feeling.", xp: "+50 Courage" },
+            risk: { title: "No Filter", desc: "Share something unpolished and imperfect with the world.", xp: "+50 Authenticity" },
+            leadership: { title: "Use Your Platform", desc: "Speak about something that matters, even if it's uncomfortable.", xp: "+50 Voice" },
+            creativity: { title: "Dark Pop", desc: "Create something that captures both pain and beauty.", xp: "+50 Depth" },
+            empathy: { title: "Fan Connection", desc: "Acknowledge someone who is struggling — like you once were.", xp: "+50 Bond" },
+            vision: { title: "Own Your Era", desc: "Decide who you are becoming in this next chapter.", xp: "+50 Identity" }
+        },
+        profile: {
+            motivation: 'Art',
+            risk: 'Vulnerable',
+            emotional: 'Sensitive',
+            social: 'Introvert',
+            passion: 'Creative',
+            coreValue: 'Honesty'
+        },
+        avatarUrl: '/assets/avatar_billie.jpg'
+    },
+    "MrBeast": {
+        name: "MrBeast",
+        archetypeTitle: "The Obsessed",
+        quote: "If you're not obsessed, you're not trying hard enough.",
+        voice: {
+            tone: "Energetic, Absurd, All-In",
+            intro: "What's the most ridiculous thing you could do that would actually work? That's the one. Do it."
+        },
+        missions: {
+            discipline: { title: "40-Hour Session", desc: "Work on your most important project for longer than is comfortable.", xp: "+50 Obsession" },
+            resilience: { title: "Reupload", desc: "Take your worst failed attempt and try it again with improvements.", xp: "+50 Iteration" },
+            risk: { title: "Absurd Idea", desc: "Execute the idea that people would call stupid. Do it well.", xp: "+50 Boldness" },
+            leadership: { title: "Team Beast", desc: "Give credit publicly to someone who made your work better.", xp: "+50 Generosity" },
+            creativity: { title: "Scale It Up", desc: "Take a small idea and design what it would look like 100x bigger.", xp: "+50 Vision" },
+            empathy: { title: "Give Away", desc: "Do something genuinely generous for someone today, with no expectation.", xp: "+50 Humanity" },
+            vision: { title: "200M Goal", desc: "Set a subscriber-level goal for your life. Write the number down.", xp: "+50 Ambition" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Reckless',
+            emotional: 'Intense',
+            social: 'Entertainer',
+            passion: 'Obsessive',
+            coreValue: 'Scale'
+        },
+        avatarUrl: '/assets/avatar_mrbeast.jpg'
+    },
+    "Ritesh Agarwal": {
+        name: "Ritesh Agarwal",
+        archetypeTitle: "The Audacious",
+        quote: "Don't ask for permission. Just start solving.",
+        voice: {
+            tone: "Confident, Scrappy, Bold",
+            intro: "You don't need a degree, a title, or their blessing. You need the problem and the audacity."
+        },
+        missions: {
+            discipline: { title: "₹2000 Mindset", desc: "Work with exactly what you have. No excuses about resources.", xp: "+50 Resourcefulness" },
+            resilience: { title: "Dropout's Grit", desc: "When someone doubts your credentials, let your work speak.", xp: "+50 Proof" },
+            risk: { title: "Apply Anyway", desc: "Apply for something you're clearly underqualified for.", xp: "+50 Audacity" },
+            leadership: { title: "The Pitch", desc: "Sell your idea to one person who can actually help make it real.", xp: "+50 Persuasion" },
+            creativity: { title: "Standardize It", desc: "Find a chaotic, inconsistent experience and design a better version.", xp: "+50 Systems" },
+            empathy: { title: "Live the Problem", desc: "Experience your user's frustration first-hand today.", xp: "+50 Insight" },
+            vision: { title: "Youngest Billionaire", desc: "Set a timeline for your biggest goal that terrifies you.", xp: "+50 Urgency" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Reckless',
+            emotional: 'Resilient',
+            social: 'Founder',
+            passion: 'Obsessive',
+            coreValue: 'Disruption'
+        },
+        avatarUrl: '/assets/avatar_ritesh.jpg'
+    },
+    "Muhammad Ali": {
+        name: "Muhammad Ali",
+        archetypeTitle: "The Greatest",
+        quote: "I don't have to be what you want me to be.",
+        voice: {
+            tone: "Defiant, Poetic, Fearless",
+            intro: "Float like a butterfly, sting like a bee. But first — know what you refuse to accept."
+        },
+        missions: {
+            discipline: { title: "Gym at Dawn", desc: "Train your hardest skill before anyone else wakes up.", xp: "+50 Dedication" },
+            resilience: { title: "Take the Hit", desc: "Accept a setback publicly and respond with dignity.", xp: "+50 Grace Under Fire" },
+            risk: { title: "Refuse", desc: "Say no to something unjust even when compliance would be easier.", xp: "+50 Integrity" },
+            leadership: { title: "Loud and Clear", desc: "Speak your truth to a group, even knowing some will disagree.", xp: "+50 Conviction" },
+            creativity: { title: "The Rope-a-Dope", desc: "Use an unconventional strategy when everyone expects the obvious.", xp: "+50 Cunning" },
+            empathy: { title: "The Medal in the River", desc: "Give up something valuable to stand for something more valuable.", xp: "+50 Principle" },
+            vision: { title: "I Am The Greatest", desc: "Declare your biggest goal out loud before you've achieved it.", xp: "+50 Belief" }
+        },
+        profile: {
+            motivation: 'Justice',
+            risk: 'Defiant',
+            emotional: 'Passionate',
+            social: 'Activist',
+            passion: 'Physical',
+            coreValue: 'Integrity'
+        },
+        avatarUrl: '/assets/avatar_ali.jpg'
+    },
+    "Dhruv Rathee": {
+        name: "Dhruv Rathee",
+        archetypeTitle: "The Fact-Checker",
+        quote: "Question everything, especially what you want to believe.",
+        voice: {
+            tone: "Analytical, Passionate, Data-Driven",
+            intro: "Democracy needs informed citizens. Start with yourself."
+        },
+        missions: {
+            discipline: { title: "Research First", desc: "Before forming an opinion today, read three primary sources.", xp: "+50 Accuracy" },
+            resilience: { title: "Trolls Don't Win", desc: "Receive criticism online without changing your factual position.", xp: "+50 Backbone" },
+            risk: { title: "Speak Inconveniently", desc: "Share a fact that challenges the dominant narrative in your circle.", xp: "+50 Courage" },
+            leadership: { title: "Educate One Person", desc: "Explain a complex issue clearly to someone who knows nothing about it.", xp: "+50 Impact" },
+            creativity: { title: "Explainer Format", desc: "Turn a boring topic into something compelling and visual.", xp: "+50 Storytelling" },
+            empathy: { title: "Both Sides", desc: "Genuinely understand the strongest version of a view you disagree with.", xp: "+50 Fairness" },
+            vision: { title: "20 Million", desc: "Imagine reaching 20 million people with one important truth.", xp: "+50 Scale" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Calculated',
+            emotional: 'Analytical',
+            social: 'Educator',
+            passion: 'Intellectual',
+            coreValue: 'Truth'
+        },
+        avatarUrl: '/assets/avatar_dhruv.jpg'
+    },
+    "Falguni Nayar": {
+        name: "Falguni Nayar",
+        archetypeTitle: "The Patient Founder",
+        quote: "I don't believe age matters. I believe conviction does.",
+        voice: {
+            tone: "Composed, Strategic, Unstoppable",
+            intro: "I built Nykaa at 49. The only clock that matters is your readiness, not your age."
+        },
+        missions: {
+            discipline: { title: "The 19-Year Plan", desc: "Work on a skill today that will compound for a decade.", xp: "+50 Patience" },
+            resilience: { title: "Boardroom Woman", desc: "Hold your position in a meeting where you're outnumbered.", xp: "+50 Authority" },
+            risk: { title: "Pivot at the Peak", desc: "Leave something good for the pursuit of something great.", xp: "+50 Courage" },
+            leadership: { title: "Build the Network", desc: "Have a genuine conversation with someone who can be a long-term ally.", xp: "+50 Relationships" },
+            creativity: { title: "See the Gap", desc: "Identify a market or need that existing products completely ignore.", xp: "+50 Insight" },
+            empathy: { title: "The Customer Is You", desc: "Design a product or service for the version of yourself that needed it most.", xp: "+50 Clarity" },
+            vision: { title: "₹1,000 Crore Vision", desc: "Write down the size of company you intend to build and by when.", xp: "+50 Ambition" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Calculated',
+            emotional: 'Poised',
+            social: 'Leader',
+            passion: 'Strategic',
+            coreValue: 'Conviction'
+        },
+        avatarUrl: '/assets/avatar_falguni.png'
+    },
+    "Nikola Tesla": {
+        name: "Nikola Tesla",
+        archetypeTitle: "The Dreamer of Currents",
+        quote: "If you only knew the magnificence of 3, 6 and 9, you would have a key to the universe.",
+        voice: {
+            tone: "Obsessive, Visionary, Solitary",
+            intro: "I could close my eyes and build any device in my mind. Your imagination is your laboratory."
+        },
+        missions: {
+            discipline: { title: "20 Hours Deep", desc: "Work on your most complex problem until you break through.", xp: "+50 Focus" },
+            resilience: { title: "Ignored Genius", desc: "Continue your work even when nobody is watching or validating.", xp: "+50 Self-Belief" },
+            risk: { title: "Contradict the Expert", desc: "Respectfully argue against a widely accepted idea with evidence.", xp: "+50 Boldness" },
+            leadership: { title: "The Patent", desc: "Document and protect an original idea before sharing it.", xp: "+50 Ownership" },
+            creativity: { title: "Mental Laboratory", desc: "Solve a problem entirely in your mind before touching a tool.", xp: "+50 Visualization" },
+            empathy: { title: "The Current Reaches Everyone", desc: "Ensure your work benefits the most people, not just the powerful.", xp: "+50 Humanity" },
+            vision: { title: "Power the World", desc: "Design something that could work at global scale.", xp: "+50 Magnitude" }
+        },
+        profile: {
+            motivation: 'Discovery',
+            risk: 'Reckless',
+            emotional: 'Intense',
+            social: 'Introvert',
+            passion: 'Obsessive',
+            coreValue: 'Innovation'
+        },
+        avatarUrl: '/assets/avatar_tesla.jpg'
+    },
 };
 
 export const IDOL_PROFILES: Record<string, Record<string, number>> = {
@@ -756,5 +945,12 @@ export const IDOL_PROFILES: Record<string, Record<string, number>> = {
     "A.R. Rahman": { analytical: 65, ambitious: 75, risk: 70, creativity: 100, social: 50 },
     "Malala Yousafzai": { analytical: 85, ambitious: 85, risk: 100, creativity: 70, social: 95 },
     "Indra Nooyi": { analytical: 95, ambitious: 95, risk: 80, creativity: 70, social: 85 },
+    "Billie Eilish": { analytical: 55, ambitious: 85, risk: 80, creativity: 100, social: 60 },
+    "MrBeast": { analytical: 70, ambitious: 100, risk: 95, creativity: 90, social: 85 },
+    "Ritesh Agarwal": { analytical: 80, ambitious: 100, risk: 98, creativity: 75, social: 70 },
+    "Muhammad Ali": { analytical: 65, ambitious: 100, risk: 95, creativity: 80, social: 90 },
+    "Dhruv Rathee": { analytical: 95, ambitious: 85, risk: 80, creativity: 85, social: 75 },
+    "Falguni Nayar": { analytical: 90, ambitious: 95, risk: 80, creativity: 75, social: 85 },
+    "Nikola Tesla": { analytical: 100, ambitious: 90, risk: 90, creativity: 100, social: 30 },
     "Default": { analytical: 50, ambitious: 50, risk: 50, creativity: 50, social: 50 }
 };

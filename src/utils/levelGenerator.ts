@@ -363,6 +363,83 @@ export function generateLevels(_age: number): Level[] {
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_25_srk',
             idolTraits: { discipline: 85, resilience: 100, risk: 98, leadership: 90, creativity: 98, empathy: 95, vision: 90 }
         },
+        // Age 19: Billie Eilish
+        {
+            id: 'lvl_19_billie', title: 'Fame Is Eating Me Alive', description: 'At 19, Billie won 5 Grammys and was falling apart inside.',
+            requiredStars: 0, year: 2020, age: 19, theme: 'Music', archetype: 'The Vulnerable', personality: 'Billie Eilish',
+            bio: 'The most streamed artist on the planet, battling body dysmorphia and depression behind closed doors.',
+            fame: 'Grammy record-holder. Gen Z\'s most honest voice.',
+            achievements: ['5 Grammys at age 18', 'Youngest artist to record a Bond theme', 'TIME100 Most Influential'],
+            lesson: 'VULNERABILITY IS STRENGTH — stopping to heal is the most courageous act.',
+            avatarUrl: '/assets/avatar_billie.jpg', scenarioId: 'lvl_age_19_billie',
+            idolTraits: { discipline: 80, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 85 }
+        },
+        // Age 19: MrBeast
+        {
+            id: 'lvl_19_mrbeast', title: 'Drop Out or Keep Uploading', description: 'At 19, Jimmy had 30K subscribers and a ridiculous idea. College apps were due tomorrow.',
+            requiredStars: 0, year: 2017, age: 19, theme: 'Media', archetype: 'The Disruptor', personality: 'MrBeast',
+            bio: 'Five years of uploading with almost no success. One absurd idea that nobody thought would work.',
+            fame: '200M+ YouTube subscribers. Gave away $100M+.',
+            achievements: ['Largest YouTube channel by subscribers', 'Created MrBeast Burger', 'Planted 20 million trees'],
+            lesson: 'ABSURD IDEAS CHANGE THE WORLD — delusional confidence is a superpower.',
+            avatarUrl: '/assets/avatar_mrbeast.jpg', scenarioId: 'lvl_age_19_mrbeast',
+            idolTraits: { discipline: 90, resilience: 85, risk: 100, leadership: 85, creativity: 95, empathy: 80, vision: 95 }
+        },
+        // Age 19: Ritesh Agarwal
+        {
+            id: 'lvl_19_ritesh', title: 'The Dropout Founder', description: 'At 19, Ritesh had ₹2,000, a dropout status, and a world-changing idea.',
+            requiredStars: 0, year: 2012, age: 19, theme: 'Business', archetype: 'The Audacious', personality: 'Ritesh Agarwal',
+            bio: 'A college dropout from Odisha who personally lived the problem he was about to solve.',
+            fame: 'World\'s youngest billionaire at 25. Founder of OYO Rooms.',
+            achievements: ['Thiel Fellowship winner', 'OYO became one of world\'s largest hotel chains', 'Forbes 30 Under 30'],
+            lesson: 'PERMISSION IS A TRAP — winners take it, they don\'t wait for it.',
+            avatarUrl: '/assets/avatar_ritesh.jpg', scenarioId: 'lvl_age_19_ritesh',
+            idolTraits: { discipline: 85, resilience: 90, risk: 100, leadership: 85, creativity: 80, empathy: 75, vision: 95 }
+        },
+        // Age 19: Muhammad Ali
+        {
+            id: 'lvl_19_ali', title: 'Throw The Medal Away', description: 'At 19, Ali won Olympic gold — then was refused service at a restaurant because of his race.',
+            requiredStars: 0, year: 1960, age: 19, theme: 'Activism', archetype: 'The Defiant', personality: 'Muhammad Ali',
+            bio: 'Olympic champion. Refused entry to a restaurant in his own hometown. A decision awaited.',
+            fame: 'Greatest boxer of all time. Greatest activist of his generation.',
+            achievements: ['3-time World Heavyweight Champion', 'Olympic Gold Medalist', 'Presidential Medal of Freedom'],
+            lesson: 'YOUR INTEGRITY IS WORTH MORE THAN ANY TROPHY.',
+            avatarUrl: '/assets/avatar_ali.jpg', scenarioId: 'lvl_age_19_ali',
+            idolTraits: { discipline: 90, resilience: 100, risk: 95, leadership: 95, creativity: 80, empathy: 85, vision: 90 }
+        },
+        // Age 20: Dhruv Rathee
+        {
+            id: 'lvl_20_dhruv', title: 'Germany or India', description: 'At 20, an engineering scholar in Germany felt India needed his voice more than his degree.',
+            requiredStars: 6, year: 2014, age: 20, theme: 'Media', archetype: 'The Educator', personality: 'Dhruv Rathee',
+            bio: 'A scholarship student in Germany watching misinformation spread in India, with 500 YouTube subscribers.',
+            fame: 'India\'s most influential YouTube journalist. 20M+ subscribers.',
+            achievements: ['20M+ YouTube subscribers', 'Covered 2024 Indian elections extensively', 'CNN-News18 Digital Influencer Award'],
+            lesson: 'BUILD THE BRIDGE WHILE CROSSING IT — patience in the building phase is architecture.',
+            avatarUrl: '/assets/avatar_dhruv.jpg', scenarioId: 'lvl_age_20_dhruv',
+            idolTraits: { discipline: 90, resilience: 85, risk: 80, leadership: 75, creativity: 90, empathy: 95, vision: 95 }
+        },
+        // Age 19: Falguni Nayar (shown at 19 as college beginning)
+        {
+            id: 'lvl_19_falguni', title: 'Science or Business', description: 'At 19 at IIM Ahmedabad, Falguni had a fire inside her — but the world said wait.',
+            requiredStars: 0, year: 1982, age: 19, theme: 'Business', archetype: 'The Patient Founder', personality: 'Falguni Nayar',
+            bio: 'One of few women at IIM in 1982, told to play it safe. Her real company was 30 years away.',
+            fame: 'India\'s first self-made female billionaire. Founder of Nykaa.',
+            achievements: ['Founded Nykaa at age 49', 'India\'s first self-made female billionaire (2021)', 'Nykaa IPO at $13B valuation'],
+            lesson: 'THERE IS NO WRONG TIME TO BEGIN — the entrepreneurship window never closes.',
+            avatarUrl: '/assets/avatar_falguni.png', scenarioId: 'lvl_age_19_falguni',
+            idolTraits: { discipline: 95, resilience: 90, risk: 80, leadership: 95, creativity: 75, empathy: 85, vision: 100 }
+        },
+        // Age 19: Nikola Tesla
+        {
+            id: 'lvl_19_tesla', title: 'Trust Your Visions', description: 'At 19, Tesla\'s professors called his mental visualizations a breakdown. They were his superpower.',
+            requiredStars: 0, year: 1875, age: 19, theme: 'Science', archetype: 'The Visionary', personality: 'Nikola Tesla',
+            bio: 'A 19-year-old engineering student in Austria whose mind could build and test machines before touching a single component.',
+            fame: 'His alternating current system powers the entire modern world.',
+            achievements: ['Invented AC power system', 'Pioneered radio technology', 'Holds 300+ patents'],
+            lesson: 'THE MIND THAT SEES DIFFERENTLY IS NOT BROKEN — trust the vision that others call delusion.',
+            avatarUrl: '/assets/avatar_tesla.jpg', scenarioId: 'lvl_age_19_tesla',
+            idolTraits: { discipline: 95, resilience: 85, risk: 90, leadership: 60, creativity: 100, empathy: 60, vision: 100 }
+        },
         {
             id: 'lvl_25', title: 'The Storyteller', description: 'At 25, J.K. Rowling got the idea for Harry Potter on a delayed train.',
             requiredStars: 21, year: 1990, age: 25, theme: 'Writing', archetype: 'The Storyteller', personality: 'J.K. Rowling',
