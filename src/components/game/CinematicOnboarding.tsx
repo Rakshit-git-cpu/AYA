@@ -52,11 +52,13 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
 
   const onAcceptNotifications = async () => {
     await subscribeUserToPush();
+    localStorage.setItem('notificationPromptShown', 'true');
     setShowNotificationPrompt(false);
     onComplete();
   };
 
   const onDeclineNotifications = () => {
+    localStorage.setItem('notificationPromptShown', 'true');
     setShowNotificationPrompt(false);
     onComplete();
   };

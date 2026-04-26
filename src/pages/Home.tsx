@@ -1,23 +1,62 @@
 import { useNavigate } from 'react-router-dom';
 import { Gamepad2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { NotificationPrompt } from '../components/ui/NotificationPrompt';
+import { subscribeUserToPush } from '../utils/pushNotifications';
+
+const NOTIF_KEY = 'notificationPromptShown';
 
 export function HomePage() {
     const navigate = useNavigate();
+    const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
+    useEffect(() => {
+        // Show the modal only if:
+        //  1. The user has NOT been prompted before (localStorage key absent/falsy)
+        //  2. The browser permission is still 'default' (not yet granted or denied)
+        const alreadyShown = localStorage.getItem(NOTIF_KEY);
+        const permission =
+            'Notification' in window ? Notification.permission : 'denied';
+
+        if (!alreadyShown && permission === 'default') {
+            const timer = setTimeout(() => {
+                setShowNotificationPrompt(true);
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
+    const handleAccept = async () => {
+        await subscribeUserToPush();
+        localStorage.setItem(NOTIF_KEY, 'true');
+        setShowNotificationPrompt(false);
+    };
+
+    const handleDecline = () => {
+        localStorage.setItem(NOTIF_KEY, 'true');
+        setShowNotificationPrompt(false);
+    };
 
     return (
-        <div className="h-[100dvh] w-full p-6 flex flex-col items-center justify-center pt-12 pb-24">
-            <div className="w-full max-w-sm space-y-4">
-                <FeatureCard
-                    title="Start The Game"
-                    subtitle="Interactive Story Mode"
-                    icon={Gamepad2}
-                    color="bg-gradient-to-r from-pink-600 to-rose-600"
-                    onClick={() => navigate('/game')}
-                />
-
-
+        <>
+            <div className="h-[100dvh] w-full p-6 flex flex-col items-center justify-center pt-12 pb-24">
+                <div className="w-full max-w-sm space-y-4">
+                    <FeatureCard
+                        title="Start The Game"
+                        subtitle="Interactive Story Mode"
+                        icon={Gamepad2}
+                        color="bg-gradient-to-r from-pink-600 to-rose-600"
+                        onClick={() => navigate('/game')}
+                    />
+                </div>
             </div>
-        </div>
+
+            <NotificationPrompt
+                isOpen={showNotificationPrompt}
+                onAccept={handleAccept}
+                onDecline={handleDecline}
+            />
+        </>
     );
 }
 
