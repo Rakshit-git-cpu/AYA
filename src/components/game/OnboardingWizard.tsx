@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
+import { audioSynth } from '../../utils/audioSynth';
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
@@ -30,6 +31,7 @@ const AgeDial = ({ value, onChange }: { value: number; onChange: (val: number) =
     };
 
     const handleNudge = (direction: -1 | 1) => {
+        audioSynth.playClick();
         const newValue = Math.max(MIN, Math.min(MAX, value + direction));
         onChange(newValue);
     };
@@ -115,6 +117,7 @@ export function OnboardingWizard() {
 
     const handleComplete = async () => {
         if (!name.trim() || !mobile.trim()) return;
+        audioSynth.playClick();
         setIsLoading(true);
         setError("");
 

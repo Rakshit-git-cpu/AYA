@@ -14,16 +14,14 @@ export function AudioController() {
 
     // 1. Initialize Audio Context on first User Interaction
     useEffect(() => {
-        if (hasInteracted) {
-            audioSynth.init();
-            return;
-        }
-
         const handleInteraction = () => {
+            // Aggressively attempt to initialize/resume on every interaction
+            // until the context is running. Mobile browsers require this inside 
+            // a user gesture handler.
+            audioSynth.init();
+            
             if (!hasInteracted) {
                 setHasInteracted(true);
-                audioSynth.init();
-
                 // Force immediate sync of volumes from store on first init
                 const state = useUserStore.getState();
                 audioSynth.setMusicVolume(state.isMusicMuted ? 0 : state.musicVolume);
@@ -31,9 +29,10 @@ export function AudioController() {
             }
         };
 
-        window.addEventListener('click', handleInteraction);
-        window.addEventListener('touchstart', handleInteraction);
-        window.addEventListener('mousedown', handleInteraction);
+        // Listen on window for broad coverage
+        window.addEventListener('click', handleInteraction, { once: false });
+        window.addEventListener('touchstart', handleInteraction, { once: false });
+        window.addEventListener('mousedown', handleInteraction, { once: false });
 
         return () => {
             window.removeEventListener('click', handleInteraction);

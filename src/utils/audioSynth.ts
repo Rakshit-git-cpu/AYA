@@ -31,7 +31,7 @@ export class SoundSynthesizer {
             this.musicGain.connect(this.masterGain);
 
             this.sfxGain = this.ctx.createGain();
-            this.sfxGain.gain.value = 0.8; // Default
+            this.sfxGain.gain.value = 1.0; // Higher default for mobile
             this.sfxGain.connect(this.masterGain);
 
             // Glide Channel
@@ -51,14 +51,16 @@ export class SoundSynthesizer {
                 }
             }).catch(() => { /* expected if no user gesture */ });
         }
-        if (this.ctx?.state === 'suspended') {
-            this.ctx?.resume().catch(e => console.warn("Audio resume failed", e));
+        
+        // Ensure context is resumed if it was suspended
+        if (this.ctx && this.ctx.state !== 'running') {
+            this.ctx.resume().catch(e => console.warn("Audio resume failed", e));
         }
     }
 
     private getMappedVolume(linearVol: number): number {
-        // Cap max volume to 15% of the MP3's raw volume so it stays in the background
-        return linearVol * 0.15;
+        // Cap max volume to 25% of the MP3's raw volume so it stays in the background but is audible
+        return linearVol * 0.25;
     }
 
     public setMusicVolume(vol: number) {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUserStore } from '../../store/userStore';
+import { audioSynth } from '../../utils/audioSynth';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
@@ -234,6 +235,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     };
 
     const handleChoiceClick = async (choice: Choice) => {
+        audioSynth.playClick();
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
 
@@ -591,7 +593,10 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 isBgLoaded ? "opacity-100" : "opacity-0 pointer-events-none"
             )}>
                 <button
-                    onClick={onBack}
+                    onClick={() => {
+                        audioSynth.playClick();
+                        onBack();
+                    }}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
                 >
                     <ChevronRight className="rotate-180 w-3 h-3" /> Exit

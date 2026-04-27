@@ -192,7 +192,10 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
                             Start Journey
                         </button>
                         <button
-                            onClick={onBack}
+                            onClick={() => {
+                                audioSynth.playClick();
+                                onBack();
+                            }}
                             className={clsx(
                                 "w-14 md:w-16 flex items-center justify-center border-2 rounded-2xl transition-all font-bold",
                                 isCandyMode

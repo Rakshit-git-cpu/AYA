@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
+import { audioSynth } from '../../utils/audioSynth';
 import { supabase } from '../../utils/supabase';
 import { Brain, Gamepad2, Dna, ChevronRight, Check } from 'lucide-react';
 import { NotificationPrompt } from '../ui/NotificationPrompt';
@@ -24,8 +25,14 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
 
-  const nextSlide = () => setSlide((prev) => Math.min(prev + 1, 4));
-  const prevSlide = () => setSlide((prev) => Math.max(prev - 1, 1));
+  const nextSlide = () => {
+    audioSynth.playClick();
+    setSlide((prev) => Math.min(prev + 1, 4));
+  };
+  const prevSlide = () => {
+    audioSynth.playBack();
+    setSlide((prev) => Math.max(prev - 1, 1));
+  };
 
   const handleFinish = async () => {
     if (slide === 3 && selectedStruggle && profile?.id) {
@@ -270,7 +277,10 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
                       initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
                       whileHover={{ scale: 1.05, y: -8, z: 100, rotateX: -5, rotateY: 5 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedStruggle(strug)}
+                      onClick={() => {
+                        audioSynth.playClick();
+                        setSelectedStruggle(strug);
+                      }}
                       className={`relative p-10 rounded-3xl backdrop-blur-2xl border-2 transition-all flex flex-col items-center gap-6 shadow-[0_20px_40px_rgba(0,0,0,0.5)] ${
                           selectedStruggle?.id === strug.id 
                           ? 'bg-[#d575ff]/20 border-[#fe00fe] shadow-[0_0_50px_rgba(254,0,254,0.6)] scale-105 z-50' 
