@@ -1,12 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 
 export function AudioController() {
     // Global State
-    const isCandyMode = useUserStore((state) => state.isCandyMode);
-
     const musicVolume = useUserStore((state) => state.musicVolume);
     const sfxVolume = useUserStore((state) => state.sfxVolume);
     const isMusicMuted = useUserStore((state) => state.isMusicMuted);

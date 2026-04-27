@@ -5,6 +5,7 @@ export class SoundSynthesizer {
     private musicGain: GainNode | null = null;
     private sfxGain: GainNode | null = null;
 
+    private isPlayingMusic: boolean = false;
     private bgAudio: HTMLAudioElement | null = null;
     private targetMusicVol: number = 0.5;
     private musicFadeInterval: number | null = null;
