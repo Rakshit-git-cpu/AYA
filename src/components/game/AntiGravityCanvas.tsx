@@ -21,6 +21,10 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     const [isReady, setIsReady] = useState(false);
     const [isImagesLoaded, setIsImagesLoaded] = useState(false);
     const [isVideoFinished, setIsVideoFinished] = useState(false);
+    
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [showPlayButton, setShowPlayButton] = useState(false);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
     // References for the vanilla animation loop to avoid React renders
     const loopRef = useRef<number>(0);
@@ -82,6 +86,32 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
             onReady();
         }
     }, [isImagesLoaded, isVideoFinished, onReady]);
+
+    // Handle video auto-play and mute policy
+    useEffect(() => {
+        if (!isReady && videoRef.current) {
+            // Give it a tiny delay to ensure the DOM is ready for media playback
+            const timer = setTimeout(() => {
+                if (videoRef.current) {
+                    videoRef.current.play().catch(err => {
+                        // If browser blocks unmuted autoplay, show the play button overlay
+                        if (err.name === 'NotAllowedError' || err.name === 'NotSupportedError') {
+                            setShowPlayButton(true);
+                        }
+                    });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isReady]);
+
+    const handleManualPlay = () => {
+        if (videoRef.current) {
+            videoRef.current.play().then(() => {
+                setShowPlayButton(false);
+            }).catch(console.error);
+        }
+    };
 
     // High Performance Engine Loop
     useEffect(() => {
@@ -177,13 +207,32 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         <>
             {!isReady && (
                 <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050814]">
+                    {!isVideoPlaying && !showPlayButton && !isVideoFinished && (
+                        <div className="absolute z-20 flex flex-col items-center text-[#00f1fe] font-mono tracking-widest font-bold">
+                            <div className="w-8 h-8 border-4 border-[#00f1fe] border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_#00f1fe]" />
+                            <div className="text-sm animate-pulse">CONNECTING...</div>
+                        </div>
+                    )}
+
+                    {showPlayButton && (
+                        <div className="absolute z-30 flex flex-col items-center justify-center inset-0 bg-black/80 backdrop-blur-sm">
+                            <button
+                                onClick={handleManualPlay}
+                                className="px-8 py-4 bg-[#00f1fe] text-[#004145] font-black text-xl rounded-full shadow-[0_0_30px_rgba(0,241,254,0.4)] hover:bg-[#99f7ff] transition-all hover:scale-105 animate-pulse"
+                            >
+                                TAP TO START
+                            </button>
+                        </div>
+                    )}
+
                     <video
+                        ref={videoRef}
                         src="/assets/intro.mp4"
-                        autoPlay
-                        muted
                         playsInline
+                        preload="auto"
+                        onPlaying={() => setIsVideoPlaying(true)}
                         onEnded={() => setIsVideoFinished(true)}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover relative z-10"
                     />
                     {/* Fallback loader in case video finishes but images are still loading */}
                     {isVideoFinished && !isImagesLoaded && (
