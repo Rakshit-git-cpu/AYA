@@ -34,8 +34,8 @@ export function AudioController() {
 
     // 2. Manage Music Playback & Volume
     useEffect(() => {
-        // Play/Stop Music based on Mode and Mute state
-        if (hasInteracted && isCandyMode && !isMusicMuted) {
+        // Play/Stop Music based on Mute state
+        if (hasInteracted && !isMusicMuted) {
             audioSynth.startMusic();
         } else {
             audioSynth.stopMusic();
@@ -44,7 +44,7 @@ export function AudioController() {
         // Always ensure volume is correct (e.g. if slider moves while playing)
         audioSynth.setMusicVolume(isMusicMuted ? 0 : musicVolume);
 
-    }, [isCandyMode, isMusicMuted, musicVolume, hasInteracted]);
+    }, [isMusicMuted, musicVolume, hasInteracted]);
 
     // 3. Manage SFX Volume (Independent of Playback)
     useEffect(() => {

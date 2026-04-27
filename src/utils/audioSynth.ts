@@ -5,10 +5,9 @@ export class SoundSynthesizer {
     private musicGain: GainNode | null = null;
     private sfxGain: GainNode | null = null;
 
-    private isPlayingMusic: boolean = false;
-    private nextNoteTime: number = 0;
-    private timerID: number | null = null;
-    private melodyIndex: number = 0;
+    private bgAudio: HTMLAudioElement | null = null;
+    private targetMusicVol: number = 0.5;
+    private musicFadeInterval: number | null = null;
 
     // "Candy" Pentatonic Scale (C Major Pentatonic: C, D, E, G, A)
     // C4, D4, E4, G4, A4, C5, D5, E5
@@ -34,16 +33,46 @@ export class SoundSynthesizer {
             this.sfxGain.gain.value = 0.8; // Default
             this.sfxGain.connect(this.masterGain);
         }
+        
+        if (!this.bgAudio) {
+            this.bgAudio = new Audio('/assets/bg-music.mp3');
+            this.bgAudio.loop = true;
+            this.bgAudio.volume = 0;
+        }
         if (this.ctx.state === 'suspended') {
             this.ctx.resume().catch(e => console.warn("Audio resume failed", e));
         }
     }
 
     public setMusicVolume(vol: number) {
-        if (this.musicGain) {
-            // Smooth transition
-            this.musicGain.gain.setTargetAtTime(Math.max(0, Math.min(1, vol)), this.ctx?.currentTime || 0, 0.1);
+        this.targetMusicVol = Math.max(0, Math.min(1, vol));
+        if (this.musicGain && this.ctx) {
+            this.musicGain.gain.setTargetAtTime(this.targetMusicVol, this.ctx.currentTime, 0.1);
         }
+        this.updateMusicFade();
+    }
+
+    private updateMusicFade() {
+        if (this.musicFadeInterval) {
+            window.clearInterval(this.musicFadeInterval);
+        }
+        if (!this.bgAudio) return;
+
+        const finalVol = this.isPlayingMusic ? this.targetMusicVol : 0;
+
+        this.musicFadeInterval = window.setInterval(() => {
+            if (!this.bgAudio) return;
+            const diff = finalVol - this.bgAudio.volume;
+            if (Math.abs(diff) < 0.05) {
+                this.bgAudio.volume = finalVol;
+                window.clearInterval(this.musicFadeInterval!);
+                if (finalVol === 0 && !this.isPlayingMusic) {
+                    this.bgAudio.pause();
+                }
+            } else {
+                this.bgAudio.volume += diff > 0 ? 0.05 : -0.05;
+            }
+        }, 100);
     }
 
     public setSfxVolume(vol: number) {
@@ -189,85 +218,15 @@ export class SoundSynthesizer {
         if (this.isPlayingMusic) return;
         this.init();
         this.isPlayingMusic = true;
-        this.nextNoteTime = this.ctx?.currentTime || 0;
-        this.melodyIndex = 0;
-        this.scheduler();
+        if (this.bgAudio) {
+            this.bgAudio.play().catch(console.warn);
+        }
+        this.updateMusicFade();
     }
 
     public stopMusic() {
         this.isPlayingMusic = false;
-        if (this.timerID) {
-            window.clearTimeout(this.timerID);
-            this.timerID = null;
-        }
-    }
-
-    private scheduler() {
-        if (!this.isPlayingMusic || !this.ctx) return;
-
-        const lookahead = 25.0; // ms
-        const scheduleAheadTime = 0.1; // seconds
-
-        while (this.nextNoteTime < this.ctx.currentTime + scheduleAheadTime) {
-            this.scheduleNote(this.nextNoteTime);
-            this.nextNote();
-        }
-
-        this.timerID = window.setTimeout(() => this.scheduler(), lookahead);
-    }
-
-    private nextNote() {
-        const secondsPerBeat = 0.5; // 120 BPM-ish
-        this.nextNoteTime += secondsPerBeat;
-        this.melodyIndex++;
-    }
-
-    private scheduleNote(time: number) {
-        if (!this.ctx || !this.musicGain) return;
-
-        // Simple procedurally generated melody logic
-        // We ensure it stays in the pentatonic scale
-
-        // Probability of playing a note on a beat (sparse is better for background)
-        if (Math.random() < 0.6) {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-
-            osc.connect(gain);
-            gain.connect(this.musicGain);
-
-            osc.type = 'sine'; // Soft tone
-
-            // Pick a pleasant note from scale, biased towards lower/mid range for accompaniment
-            const noteIdx = Math.floor(Math.random() * 5); // Base pentatonic
-            const freq = this.scale[noteIdx];
-
-            osc.frequency.setValueAtTime(freq, time);
-
-            // Soft Attack/Release (Marimba-ish)
-            gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(0.15, time + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + 1.5); // Long tail
-
-            osc.start(time);
-            osc.stop(time + 2.0);
-        }
-
-        // Occasional high accent (Bell)
-        if (Math.random() < 0.1) {
-            const osc2 = this.ctx.createOscillator();
-            const gain2 = this.ctx.createGain();
-            osc2.connect(gain2);
-            gain2.connect(this.musicGain);
-            osc2.type = 'triangle';
-            const freq = this.scale[5 + Math.floor(Math.random() * 3)]; // High octave
-            osc2.frequency.setValueAtTime(freq, time);
-            gain2.gain.setValueAtTime(0, time);
-            gain2.gain.linearRampToValueAtTime(0.05, time + 0.02);
-            gain2.gain.exponentialRampToValueAtTime(0.001, time + 1.0);
-            osc2.start(time);
-            osc2.stop(time + 1.0);
-        }
+        this.updateMusicFade();
     }
 
     public playWin() {
