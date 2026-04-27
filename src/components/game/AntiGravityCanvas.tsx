@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { MotionValue } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
 
@@ -178,8 +179,8 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
     return (
         <>
-            {!isReady && (
-                <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-[#050814]">
+            {!isReady && createPortal(
+                <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050814]">
                     <video
                         src="/assets/intro.mp4"
                         autoPlay
@@ -193,7 +194,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                             }
                         }}
                         onEnded={() => setIsVideoFinished(true)}
-                        className={`w-full h-full object-cover relative z-10 transition-opacity duration-500 ease-in-out ${isVideoPlaying && !isFadingOut ? 'opacity-100' : 'opacity-0'}`}
+                        className={`w-full h-full object-contain relative z-10 transition-opacity duration-500 ease-in-out ${isVideoPlaying && !isFadingOut ? 'opacity-100' : 'opacity-0'}`}
                     />
                     {/* Fallback loader in case video finishes but images are still loading */}
                     {isVideoFinished && !isImagesLoaded && (
@@ -207,7 +208,8 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                             </div>
                         </div>
                     )}
-                </div>
+                </div>,
+                document.body
             )}
             <canvas
                 ref={canvasRef}
