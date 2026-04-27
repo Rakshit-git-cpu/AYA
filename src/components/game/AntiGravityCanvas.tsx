@@ -179,7 +179,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     return (
         <>
             {!isReady && (
-                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050814]">
+                <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-[#050814]">
                     <video
                         src="/assets/intro.mp4"
                         autoPlay
