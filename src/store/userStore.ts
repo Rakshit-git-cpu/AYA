@@ -53,6 +53,10 @@ interface UserState {
     isIntroVideoCompleted: boolean;
     setIntroVideoCompleted: (val: boolean) => void;
 
+    // Interaction State
+    hasInteracted: boolean;
+    setHasInteracted: (val: boolean) => void;
+
     resetProgress: () => void;
 }
 
@@ -122,6 +126,9 @@ export const useUserStore = create<UserState>()(
 
             isIntroVideoCompleted: false,
             setIntroVideoCompleted: (val) => set({ isIntroVideoCompleted: val }),
+
+            hasInteracted: false,
+            setHasInteracted: (val) => set({ hasInteracted: val }),
 
             setProfile: (profile) => {
                 // Generate levels dynamically based on Age & Interests

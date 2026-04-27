@@ -53,8 +53,8 @@ export class SoundSynthesizer {
     }
 
     private getMappedVolume(linearVol: number): number {
-        // Cap max volume to 25% of the MP3's raw volume so it stays in the background
-        return linearVol * 0.25;
+        // Cap max volume to 15% of the MP3's raw volume so it stays in the background
+        return linearVol * 0.15;
     }
 
     public setMusicVolume(vol: number) {
@@ -64,11 +64,12 @@ export class SoundSynthesizer {
         }
         
         // Instant update if we are playing to make the slider responsive
-        if (this.bgAudio && this.isPlayingMusic) {
+        if (this.bgAudio) {
             if (this.musicFadeInterval) {
                 window.clearInterval(this.musicFadeInterval);
                 this.musicFadeInterval = null;
             }
+            // Apply mapping immediately
             this.bgAudio.volume = this.getMappedVolume(this.targetMusicVol);
         }
     }

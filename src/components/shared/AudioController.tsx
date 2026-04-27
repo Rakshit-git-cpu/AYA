@@ -9,11 +9,16 @@ export function AudioController() {
     const isMusicMuted = useUserStore((state) => state.isMusicMuted);
     const isSfxMuted = useUserStore((state) => state.isSfxMuted);
     const isIntroVideoCompleted = useUserStore((state) => state.isIntroVideoCompleted);
-
-    const [hasInteracted, setHasInteracted] = useState(false);
+    const hasInteracted = useUserStore((state) => state.hasInteracted);
+    const setHasInteracted = useUserStore((state) => state.setHasInteracted);
 
     // 1. Initialize Audio Context on first User Interaction
     useEffect(() => {
+        if (hasInteracted) {
+            audioSynth.init();
+            return;
+        }
+
         const handleInteraction = () => {
             if (!hasInteracted) {
                 setHasInteracted(true);
@@ -27,8 +32,15 @@ export function AudioController() {
         };
 
         window.addEventListener('click', handleInteraction);
-        return () => window.removeEventListener('click', handleInteraction);
-    }, [hasInteracted]);
+        window.addEventListener('touchstart', handleInteraction);
+        window.addEventListener('mousedown', handleInteraction);
+
+        return () => {
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+            window.removeEventListener('mousedown', handleInteraction);
+        };
+    }, [hasInteracted, setHasInteracted]);
 
     // 2. Manage Music Playback & Volume
     useEffect(() => {
