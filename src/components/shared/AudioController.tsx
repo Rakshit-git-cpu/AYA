@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 

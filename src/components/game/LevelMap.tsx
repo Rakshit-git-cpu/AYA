@@ -202,6 +202,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden select-none">
+            <AudioController />
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
             {/* Daily Challenge Button (Top Center below Navbar) */}

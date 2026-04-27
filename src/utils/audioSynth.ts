@@ -39,9 +39,6 @@ export class SoundSynthesizer {
             this.glideGain.gain.value = 0;
             this.glideGain.connect(this.sfxGain);
         }
-        // ... rest of init ...
-
-        
         if (!this.bgAudio) {
             this.bgAudio = new Audio('/assets/bg-music.mp3');
             this.bgAudio.loop = true;
@@ -54,8 +51,8 @@ export class SoundSynthesizer {
                 }
             }).catch(() => { /* expected if no user gesture */ });
         }
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(e => console.warn("Audio resume failed", e));
+        if (this.ctx?.state === 'suspended') {
+            this.ctx?.resume().catch(e => console.warn("Audio resume failed", e));
         }
     }
 
@@ -197,7 +194,6 @@ export class SoundSynthesizer {
     public playReveal() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-
         const now = this.ctx.currentTime;
         
         // Upward Bloom: Sweeping sawtooth with resonance
@@ -229,7 +225,6 @@ export class SoundSynthesizer {
     public playBack() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-
         const now = this.ctx.currentTime;
         
         // Downward Sweep: Soft sine drop
@@ -253,13 +248,13 @@ export class SoundSynthesizer {
     public playAchievementMinor() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-
         const now = this.ctx.currentTime;
         
         // Bright Sparkle: Triad arpeggio with high sine
         [880, 1108.73, 1318.51].forEach((freq, i) => {
-            const osc = this.ctx!.createOscillator();
-            const gain = this.ctx!.createGain();
+            if (!this.ctx || !this.sfxGain) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
             
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now + i * 0.05);
@@ -269,7 +264,7 @@ export class SoundSynthesizer {
             gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
             
             osc.connect(gain);
-            gain.connect(this.sfxGain!);
+            gain.connect(this.sfxGain);
             osc.start(now + i * 0.05);
             osc.stop(now + i * 0.05 + 0.4);
         });
@@ -278,7 +273,6 @@ export class SoundSynthesizer {
     public playAchievementMajor() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-
         const now = this.ctx.currentTime;
         
         // Cinematic Impact: Sub drop + harmonic glow
@@ -295,9 +289,10 @@ export class SoundSynthesizer {
         sub.stop(now + 1.0);
 
         // Harmonic series bloom
-        [220, 329.63, 440, 554.37, 659.25].forEach((freq, i) => {
-            const osc = this.ctx!.createOscillator();
-            const gain = this.ctx!.createGain();
+        [220, 329.63, 440, 554.37, 659.25].forEach((freq) => {
+            if (!this.ctx || !this.sfxGain) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, now + 0.1);
             osc.frequency.exponentialRampToValueAtTime(freq * 1.01, now + 1.5);
@@ -307,7 +302,7 @@ export class SoundSynthesizer {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
             
             osc.connect(gain);
-            gain.connect(this.sfxGain!);
+            gain.connect(this.sfxGain);
             osc.start(now + 0.1);
             osc.stop(now + 2.0);
         });
@@ -370,13 +365,13 @@ export class SoundSynthesizer {
     public playInspiration() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-
         const now = this.ctx.currentTime;
         
         // Crystal Shimmer: High frequency cluster
         [1500, 1800, 2200, 2700].forEach((freq, i) => {
-            const osc = this.ctx!.createOscillator();
-            const gain = this.ctx!.createGain();
+            if (!this.ctx || !this.sfxGain) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now);
             
@@ -385,7 +380,7 @@ export class SoundSynthesizer {
             gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
             
             osc.connect(gain);
-            gain.connect(this.sfxGain!);
+            gain.connect(this.sfxGain);
             osc.start(now);
             osc.stop(now + 2.5);
         });
@@ -452,13 +447,15 @@ export class SoundSynthesizer {
     public playWin() {
         this.init();
         if (!this.ctx || !this.sfxGain) return;
-        // Big Chord C Major Add 9
         const now = this.ctx.currentTime;
+        
+        // Big Chord C Major Add 9
         [261.63, 329.63, 392.00, 493.88, 523.25].forEach((freq) => {
-            const osc = this.ctx!.createOscillator();
-            const gain = this.ctx!.createGain();
+            if (!this.ctx || !this.sfxGain) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
             osc.connect(gain);
-            gain.connect(this.sfxGain!);
+            gain.connect(this.sfxGain);
             osc.type = 'triangle';
             osc.frequency.value = freq;
             gain.gain.setValueAtTime(0, now);
