@@ -194,7 +194,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                             }
                         }}
                         onEnded={() => setIsVideoFinished(true)}
-                        className={`w-full h-full object-contain relative z-10 transition-opacity duration-500 ease-in-out ${isVideoPlaying && !isFadingOut ? 'opacity-100' : 'opacity-0'}`}
+                        className={`w-full h-full object-cover md:object-contain relative z-10 transition-opacity duration-500 ease-in-out ${isVideoPlaying && !isFadingOut ? 'opacity-100' : 'opacity-0'}`}
                     />
                     {/* Fallback loader in case video finishes but images are still loading */}
                     {isVideoFinished && !isImagesLoaded && (
