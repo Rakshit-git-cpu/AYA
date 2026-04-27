@@ -12,8 +12,7 @@ interface LevelUpCelebrationProps {
 export const LevelUpCelebration: React.FC<LevelUpCelebrationProps> = ({ levelName, levelNumber, onComplete }) => {
     useEffect(() => {
         // Play level up sound
-        // Assuming audioSynth.playHover or a specific playSuccess could be used
-        audioSynth.playHover();
+        audioSynth.playAchievementMajor();
         
         // Auto dismiss after 3.5 seconds
         const timer = setTimeout(() => {

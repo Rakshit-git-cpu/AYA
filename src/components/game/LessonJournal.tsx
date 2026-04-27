@@ -31,7 +31,7 @@ export function LessonJournal({ onClose }: LessonJournalProps) {
                     </div>
                     <button
                         onClick={() => {
-                            audioSynth.playClick();
+                            audioSynth.playBack();
                             onClose();
                         }}
                         className="p-2 hover:bg-orange-200 rounded-full transition-colors text-orange-800"

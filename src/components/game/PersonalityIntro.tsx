@@ -18,9 +18,9 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
     useEffect(() => {
         setIsVisible(true);
         // Safe audio call
-        if (audioSynth.playSwoosh) {
+        if (audioSynth.playReveal) {
             try {
-                audioSynth.playSwoosh();
+                audioSynth.playReveal();
             } catch (e) { console.warn("Audio failed", e); }
         }
     }, []);

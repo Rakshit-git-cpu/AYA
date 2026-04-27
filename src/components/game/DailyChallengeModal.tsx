@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeartCrack, Zap, ShieldAlert, Coins, Target, Moon } from 'lucide-react';
+import { audioSynth } from '../../utils/audioSynth';
 
 export type MoodArchetype = 'Heartbreak' | 'Motivation' | 'Confidence' | 'Money' | 'Purpose' | 'Loneliness';
 
@@ -24,10 +25,20 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
 
     // Escape listener
     React.useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                audioSynth.playBack();
+                onClose();
+            }
+        };
         window.addEventListener('keydown', handleEscape);
         return () => window.removeEventListener('keydown', handleEscape);
     }, [onClose]);
+
+    // Mount sound
+    React.useEffect(() => {
+        if (isOpen) audioSynth.playReveal();
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -87,7 +98,10 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.1 * idx }}
-                                    onClick={() => setSelectedMood(mood.id)}
+                                    onClick={() => {
+                                        audioSynth.playClick();
+                                        setSelectedMood(mood.id);
+                                    }}
                                     className={`relative flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-500 group overflow-hidden
                                         ${isSelected 
                                             ? `bg-slate-800/90 border-2 border-white ring-4 ring-white/20 shadow-[0_0_50px_rgba(255,255,255,0.4)] -translate-y-4 scale-105 z-10` 
@@ -114,7 +128,12 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
                     <div className="flex justify-center mt-6">
                         <button
                             disabled={!selectedMood}
-                            onClick={() => selectedMood && onStartChallenge(selectedMood)}
+                            onClick={() => {
+                                if (selectedMood) {
+                                    audioSynth.playAchievementMinor();
+                                    onStartChallenge(selectedMood);
+                                }
+                            }}
                             className={`relative group px-12 py-5 rounded-full font-black text-xl tracking-widest uppercase overflow-hidden transition-all duration-500
                                 ${selectedMood 
                                     ? 'bg-gradient-to-r from-orange-500 to-rose-600 text-white shadow-[0_0_40px_rgba(249,115,22,0.6)] hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(249,115,22,0.8)] cursor-pointer' 
@@ -133,7 +152,7 @@ export function DailyChallengeModal({ isOpen, onClose, onStartChallenge }: Daily
 
                     {/* Close x */}
                     <button 
-                        onClick={onClose}
+                        onClick={() => { audioSynth.playBack(); onClose(); }}
                         className="absolute top-6 right-6 p-2 rounded-full bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

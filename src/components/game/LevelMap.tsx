@@ -150,22 +150,55 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
     const scrollableDistance = Math.max(0, totalHeight - windowHeight);
     const hudY = useTransform(smoothProgress, [0, 1], [0, -scrollableDistance]);
 
-    // --- AUTO-SCROLL TO TOP ON MOUNT ---
+    // --- STARTUP SOUND & AUTO-SCROLL ---
     useEffect(() => {
+        // Startup Sound
+        audioSynth.playStartup();
+
         const scrollToTop = () => {
             if (containerRef.current) {
                 containerRef.current.scrollTop = 0;
-                // Force artificial scroll event to kickstart framer-motion parallax calculations instantly on mount!
                 containerRef.current.dispatchEvent(new Event('scroll'));
             }
         };
 
-        // De-sync slightly to allow the React DOM to fully render the 6000px absolute layout before measuring
         requestAnimationFrame(scrollToTop);
-        const timer = setTimeout(scrollToTop, 150); // Fallback for heavy paints
-
+        const timer = setTimeout(scrollToTop, 150);
         return () => clearTimeout(timer);
     }, [ageLevels.length]);
+
+    // --- SCROLL AUDIO GLIDE ---
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        let lastScrollTop = container.scrollTop;
+        let scrollTimeout: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            const currentScrollTop = container.scrollTop;
+            const delta = Math.abs(currentScrollTop - lastScrollTop);
+            
+            if (delta > 2) {
+                audioSynth.startGlide();
+                audioSynth.updateGlide(delta);
+                
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    audioSynth.stopGlide();
+                }, 150);
+            }
+            
+            lastScrollTop = currentScrollTop;
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => {
+            container.removeEventListener('scroll', handleScroll);
+            clearTimeout(scrollTimeout);
+            audioSynth.stopGlide();
+        };
+    }, []);
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden select-none">
@@ -497,7 +530,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
             </div>
 
             {/* AGE EDIT MODAL */}
-            {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+            {showSettings && <SettingsModal onClose={() => { audioSynth.playBack(); setShowSettings(false); }} />}
         </div >
     );
 }
