@@ -183,7 +183,6 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                     <video
                         src="/assets/intro.mp4"
                         autoPlay
-                        muted
                         playsInline
                         preload="auto"
                         onPlaying={() => setIsVideoPlaying(true)}
