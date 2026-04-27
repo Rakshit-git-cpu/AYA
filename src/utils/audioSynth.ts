@@ -39,10 +39,22 @@ export class SoundSynthesizer {
             this.bgAudio = new Audio('/assets/bg-music.mp3');
             this.bgAudio.loop = true;
             this.bgAudio.volume = 0;
+
+            // Mobile Unlock Hack: Play and immediately pause if not needed
+            this.bgAudio.play().then(() => {
+                if (!this.isPlayingMusic && this.bgAudio) {
+                    this.bgAudio.pause();
+                }
+            }).catch(() => { /* expected if no user gesture */ });
         }
         if (this.ctx.state === 'suspended') {
             this.ctx.resume().catch(e => console.warn("Audio resume failed", e));
         }
+    }
+
+    private getMappedVolume(linearVol: number): number {
+        // Cap max volume to 25% of the MP3's raw volume so it stays in the background
+        return linearVol * 0.25;
     }
 
     public setMusicVolume(vol: number) {
@@ -50,36 +62,15 @@ export class SoundSynthesizer {
         if (this.musicGain && this.ctx) {
             this.musicGain.gain.setTargetAtTime(this.targetMusicVol, this.ctx.currentTime, 0.1);
         }
+        
+        // Instant update if we are playing to make the slider responsive
         if (this.bgAudio && this.isPlayingMusic) {
-            this.bgAudio.volume = this.targetMusicVol;
             if (this.musicFadeInterval) {
                 window.clearInterval(this.musicFadeInterval);
                 this.musicFadeInterval = null;
             }
+            this.bgAudio.volume = this.getMappedVolume(this.targetMusicVol);
         }
-    }
-
-    private updateMusicFade() {
-        if (this.musicFadeInterval) {
-            window.clearInterval(this.musicFadeInterval);
-        }
-        if (!this.bgAudio) return;
-
-        const finalVol = this.isPlayingMusic ? this.targetMusicVol : 0;
-
-        this.musicFadeInterval = window.setInterval(() => {
-            if (!this.bgAudio) return;
-            const diff = finalVol - this.bgAudio.volume;
-            if (Math.abs(diff) < 0.05) {
-                this.bgAudio.volume = finalVol;
-                window.clearInterval(this.musicFadeInterval!);
-                if (finalVol === 0 && !this.isPlayingMusic) {
-                    this.bgAudio.pause();
-                }
-            } else {
-                this.bgAudio.volume += diff > 0 ? 0.05 : -0.05;
-            }
-        }, 100);
     }
 
     public setSfxVolume(vol: number) {
@@ -225,15 +216,51 @@ export class SoundSynthesizer {
         if (this.isPlayingMusic) return;
         this.init();
         this.isPlayingMusic = true;
+        
         if (this.bgAudio) {
-            this.bgAudio.play().catch(console.warn);
+            if (this.musicFadeInterval) {
+                window.clearInterval(this.musicFadeInterval);
+                this.musicFadeInterval = null;
+            }
+            
+            const target = this.getMappedVolume(this.targetMusicVol);
+            
+            if (this.bgAudio.paused) {
+                this.bgAudio.volume = 0;
+                this.bgAudio.play().catch(console.warn);
+            }
+            
+            this.musicFadeInterval = window.setInterval(() => {
+                if (!this.bgAudio) return;
+                this.bgAudio.volume = Math.min(target, this.bgAudio.volume + 0.05);
+                if (this.bgAudio.volume >= target) {
+                    window.clearInterval(this.musicFadeInterval!);
+                    this.musicFadeInterval = null;
+                }
+            }, 100);
         }
-        this.updateMusicFade();
     }
 
     public stopMusic() {
+        if (!this.isPlayingMusic) return;
         this.isPlayingMusic = false;
-        this.updateMusicFade();
+        
+        if (this.bgAudio) {
+            if (this.musicFadeInterval) {
+                window.clearInterval(this.musicFadeInterval);
+                this.musicFadeInterval = null;
+            }
+            
+            this.musicFadeInterval = window.setInterval(() => {
+                if (!this.bgAudio) return;
+                this.bgAudio.volume = Math.max(0, this.bgAudio.volume - 0.05);
+                if (this.bgAudio.volume <= 0) {
+                    this.bgAudio.pause();
+                    window.clearInterval(this.musicFadeInterval!);
+                    this.musicFadeInterval = null;
+                }
+            }, 100);
+        }
     }
 
     public playWin() {
