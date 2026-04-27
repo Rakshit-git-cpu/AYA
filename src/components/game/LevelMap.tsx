@@ -173,7 +173,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
         if (!container) return;
 
         let lastScrollTop = container.scrollTop;
-        let scrollTimeout: NodeJS.Timeout;
+        let scrollTimeout: any;
 
         const handleScroll = () => {
             const currentScrollTop = container.scrollTop;
