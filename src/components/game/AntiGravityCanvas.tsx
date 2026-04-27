@@ -237,25 +237,21 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         <>
             {!isReady && createPortal(
                 <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050814]">
-                    {!isVideoPlaying && !isVideoFinished && (
-                        <div className="absolute inset-0 z-20 flex flex-col p-6 sm:p-10 bg-[#050814] text-slate-400 font-mono text-[10px] sm:text-xs overflow-y-auto leading-relaxed whitespace-pre-wrap pb-32">
-                            <h2 className="text-[#00f1fe] text-lg sm:text-xl font-bold mb-4 uppercase tracking-widest border-b border-[#00f1fe]/30 pb-2">AYA — Legal Disclaimer</h2>
-                            <div className="opacity-80">
-                                {DISCLAIMER_TEXT}
+                    <div 
+                        onClick={showPlayButton ? handleManualPlay : undefined}
+                        className={`absolute inset-0 z-20 flex flex-col p-6 sm:p-10 bg-[#050814] text-slate-400 font-mono text-[10px] sm:text-xs overflow-y-auto leading-relaxed whitespace-pre-wrap transition-opacity duration-1000 ease-in-out ${(!isVideoPlaying && !isVideoFinished) ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${showPlayButton ? 'cursor-pointer' : ''}`}
+                    >
+                        <h2 className="text-[#00f1fe] text-lg sm:text-xl font-bold mb-4 uppercase tracking-widest border-b border-[#00f1fe]/30 pb-2">AYA — Legal Disclaimer</h2>
+                        <div className="opacity-80">
+                            {DISCLAIMER_TEXT}
+                        </div>
+                        
+                        {showPlayButton && (
+                            <div className="mt-8 mb-12 text-center text-[#00f1fe] font-black tracking-[0.2em] animate-pulse text-xs sm:text-sm border border-[#00f1fe]/30 py-4 rounded-lg bg-[#00f1fe]/5 shadow-[0_0_15px_rgba(0,241,254,0.1)]">
+                                TAP ANYWHERE TO AGREE & START
                             </div>
-                        </div>
-                    )}
-
-                    {showPlayButton && (
-                        <div className="absolute bottom-0 left-0 right-0 z-30 flex flex-col items-center justify-center p-6 bg-gradient-to-t from-[#050814] via-[#050814]/90 to-transparent pt-12">
-                            <button
-                                onClick={handleManualPlay}
-                                className="px-8 py-4 bg-[#00f1fe] text-[#004145] font-black text-xl rounded-full shadow-[0_0_30px_rgba(0,241,254,0.4)] hover:bg-[#99f7ff] transition-all hover:scale-105 animate-pulse uppercase tracking-widest"
-                            >
-                                I ACCEPT & START
-                            </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     <video
                         ref={videoRef}
