@@ -103,7 +103,7 @@ export const useUserStore = create<UserState>()(
             toggleCandyMode: () => set((state) => ({ isCandyMode: !state.isCandyMode })),
 
             // Audio Defaults
-            musicVolume: 0.5,
+            musicVolume: 0.15,
             sfxVolume: 0.8,
             isMusicMuted: false,
             isSfxMuted: false,

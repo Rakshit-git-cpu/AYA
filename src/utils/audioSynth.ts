@@ -50,7 +50,13 @@ export class SoundSynthesizer {
         if (this.musicGain && this.ctx) {
             this.musicGain.gain.setTargetAtTime(this.targetMusicVol, this.ctx.currentTime, 0.1);
         }
-        this.updateMusicFade();
+        if (this.bgAudio && this.isPlayingMusic) {
+            this.bgAudio.volume = this.targetMusicVol;
+            if (this.musicFadeInterval) {
+                window.clearInterval(this.musicFadeInterval);
+                this.musicFadeInterval = null;
+            }
+        }
     }
 
     private updateMusicFade() {
