@@ -12,7 +12,6 @@ export class SoundSynthesizer {
     private isPlayingMusic: boolean = false;
     private bgAudio: HTMLAudioElement | null = null;
     private targetMusicVol: number = 0.5;
-    private musicFadeInterval: number | null = null;
 
     // "Candy" Pentatonic Scale (C Major Pentatonic: C, D, E, G, A)
     // C4, D4, E4, G4, A4, C5, D5, E5
@@ -42,7 +41,16 @@ export class SoundSynthesizer {
         if (!this.bgAudio) {
             this.bgAudio = new Audio('/assets/bg-music.mp3');
             this.bgAudio.loop = true;
-            this.bgAudio.volume = 0;
+            this.bgAudio.volume = 1; // iOS needs this at 1, we control volume via Web Audio API
+
+            if (this.ctx) {
+                try {
+                    const track = this.ctx.createMediaElementSource(this.bgAudio);
+                    track.connect(this.musicGain!);
+                } catch (e) {
+                    console.warn("Failed to route bgAudio to Web Audio API", e);
+                }
+            }
 
             // Mobile Unlock Hack: Play and immediately pause if not needed
             this.bgAudio.play().then(() => {
@@ -65,18 +73,10 @@ export class SoundSynthesizer {
 
     public setMusicVolume(vol: number) {
         this.targetMusicVol = Math.max(0, Math.min(1, vol));
-        if (this.musicGain && this.ctx) {
-            this.musicGain.gain.setTargetAtTime(this.targetMusicVol, this.ctx.currentTime, 0.1);
-        }
+        const target = this.getMappedVolume(this.targetMusicVol);
         
-        // Instant update if we are playing to make the slider responsive
-        if (this.bgAudio) {
-            if (this.musicFadeInterval) {
-                window.clearInterval(this.musicFadeInterval);
-                this.musicFadeInterval = null;
-            }
-            // Apply mapping immediately
-            this.bgAudio.volume = this.getMappedVolume(this.targetMusicVol);
+        if (this.musicGain && this.ctx) {
+            this.musicGain.gain.setTargetAtTime(this.isPlayingMusic ? target : 0, this.ctx.currentTime, 0.1);
         }
     }
 
@@ -400,27 +400,15 @@ export class SoundSynthesizer {
         this.init();
         this.isPlayingMusic = true;
         
-        if (this.bgAudio) {
-            if (this.musicFadeInterval) {
-                window.clearInterval(this.musicFadeInterval);
-                this.musicFadeInterval = null;
-            }
-            
+        if (this.bgAudio && this.ctx && this.musicGain) {
             const target = this.getMappedVolume(this.targetMusicVol);
             
             if (this.bgAudio.paused) {
-                this.bgAudio.volume = 0;
                 this.bgAudio.play().catch(console.warn);
             }
             
-            this.musicFadeInterval = window.setInterval(() => {
-                if (!this.bgAudio) return;
-                this.bgAudio.volume = Math.min(target, this.bgAudio.volume + 0.05);
-                if (this.bgAudio.volume >= target) {
-                    window.clearInterval(this.musicFadeInterval!);
-                    this.musicFadeInterval = null;
-                }
-            }, 100);
+            // Fade in using Web Audio API
+            this.musicGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.5);
         }
     }
 
@@ -428,21 +416,16 @@ export class SoundSynthesizer {
         if (!this.isPlayingMusic) return;
         this.isPlayingMusic = false;
         
-        if (this.bgAudio) {
-            if (this.musicFadeInterval) {
-                window.clearInterval(this.musicFadeInterval);
-                this.musicFadeInterval = null;
-            }
+        if (this.bgAudio && this.ctx && this.musicGain) {
+            // Fade out using Web Audio API
+            this.musicGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.5);
             
-            this.musicFadeInterval = window.setInterval(() => {
-                if (!this.bgAudio) return;
-                this.bgAudio.volume = Math.max(0, this.bgAudio.volume - 0.05);
-                if (this.bgAudio.volume <= 0) {
+            // Pause the actual element after the fade out completes
+            setTimeout(() => {
+                if (!this.isPlayingMusic && this.bgAudio) {
                     this.bgAudio.pause();
-                    window.clearInterval(this.musicFadeInterval!);
-                    this.musicFadeInterval = null;
                 }
-            }, 100);
+            }, 1000);
         }
     }
 
