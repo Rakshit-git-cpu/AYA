@@ -25,6 +25,11 @@ export function AudioController({ isMapActive = true }: { isMapActive?: boolean 
                 const state = useUserStore.getState();
                 audioSynth.setMusicVolume(state.isMusicMuted ? 0 : state.musicVolume);
                 audioSynth.setSfxVolume(state.isSfxMuted ? 0 : state.sfxVolume);
+
+                // Start music synchronously within the gesture to appease strict iOS rules
+                if (!state.isMusicMuted && isMapActive) {
+                    audioSynth.startMusic();
+                }
             }
         };
 
