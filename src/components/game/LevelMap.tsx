@@ -14,9 +14,10 @@ import { DailyChallengeReveal } from './DailyChallengeReveal';
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
     onOpenDnaProfile: () => void;
+    isMapActive?: boolean;
 }
 
-export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
+export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: LevelMapProps) {
     const levels = useUserStore((state) => state.levels);
     const profile = useUserStore((state) => state.profile);
     const activeAge = profile?.age || 18;
@@ -202,7 +203,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile }: LevelMapProps) {
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden">
-            <AudioController />
+            <AudioController isMapActive={isMapActive} />
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
             {/* Daily Challenge Button (Top Center below Navbar) */}

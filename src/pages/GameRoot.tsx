@@ -149,6 +149,7 @@ export function GameRoot() {
             <LevelMap 
                 onPlayLevel={handleLevelClick} 
                 onOpenDnaProfile={() => setView('dna')}
+                isMapActive={view === 'map'}
             />
 
             {/* Level Up Overlay overrides all other Z-layers organically */}
