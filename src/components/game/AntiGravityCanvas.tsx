@@ -19,6 +19,8 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     const imagesRef = useRef<HTMLImageElement[]>(GLOBAL_FRAME_CACHE[folder] || []);
     const [imagesLoaded, setImagesLoaded] = useState(0);
     const [isReady, setIsReady] = useState(false);
+    const [isImagesLoaded, setIsImagesLoaded] = useState(false);
+    const [isVideoFinished, setIsVideoFinished] = useState(false);
 
     // References for the vanilla animation loop to avoid React renders
     const loopRef = useRef<number>(0);
@@ -30,14 +32,13 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         if (GLOBAL_FRAME_CACHE[folder] && GLOBAL_FRAME_CACHE[folder].length === totalFrames) {
             imagesRef.current = GLOBAL_FRAME_CACHE[folder];
             lastProgressRef.current = -1; // CRITICAL: Force the `tick` loop to redraw using the new cache
-            setIsReady(true);
-            onReady();
+            setIsImagesLoaded(true);
             return;
         }
 
         // Only show loading if we have absolute NO cached frames playing in the engine
         if (imagesRef.current.length === 0) {
-            setIsReady(false);
+            setIsImagesLoaded(false);
             setImagesLoaded(0);
         }
 
@@ -53,7 +54,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                 loadedCount++;
 
                 // Track loading progress only if we are displaying the loading screen
-                if (!isReady) {
+                if (!isImagesLoaded) {
                     setImagesLoaded(loadedCount);
                 }
 
@@ -61,8 +62,7 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
                     GLOBAL_FRAME_CACHE[folder] = loadedImages;     // Cache globally
                     imagesRef.current = loadedImages;              // Overwrite current holds safely
                     lastProgressRef.current = -1;                  // CRITICAL: Force the `tick` loop to instantly paint the new theme
-                    setIsReady(true);
-                    onReady();
+                    setIsImagesLoaded(true);
                 }
             };
             loadedImages[i - 1] = img;
@@ -74,6 +74,14 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
         // Removed `onReady` and `isCandyMode` from deps, dependent uniquely on `folder` logic.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [folder, totalFrames]);
+
+    // Effect to handle total readiness
+    useEffect(() => {
+        if (isImagesLoaded && isVideoFinished) {
+            setIsReady(true);
+            onReady();
+        }
+    }, [isImagesLoaded, isVideoFinished, onReady]);
 
     // High Performance Engine Loop
     useEffect(() => {
@@ -168,14 +176,27 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     return (
         <>
             {!isReady && (
-                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050814] text-pink-500 font-mono tracking-widest font-bold">
-                    <div className="text-xl mb-4 animate-pulse">SYSTEM INITIALIZING</div>
-                    <div className="w-64 h-2 bg-slate-800 rounded-full overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.3)]">
-                        <div
-                            className="h-full bg-pink-500 transition-all duration-200"
-                            style={{ width: `${(imagesLoaded / totalFrames) * 100}%` }}
-                        />
-                    </div>
+                <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050814]">
+                    <video
+                        src="/assets/intro.mp4"
+                        autoPlay
+                        muted
+                        playsInline
+                        onEnded={() => setIsVideoFinished(true)}
+                        className="w-full h-full object-cover"
+                    />
+                    {/* Fallback loader in case video finishes but images are still loading */}
+                    {isVideoFinished && !isImagesLoaded && (
+                        <div className="absolute bottom-10 flex flex-col items-center text-pink-500 font-mono tracking-widest font-bold z-10">
+                            <div className="text-sm mb-2 animate-pulse">LOADING MAP...</div>
+                            <div className="w-48 h-1 bg-slate-800 rounded-full overflow-hidden shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                                <div
+                                    className="h-full bg-pink-500 transition-all duration-200"
+                                    style={{ width: `${(imagesLoaded / totalFrames) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
             <canvas
