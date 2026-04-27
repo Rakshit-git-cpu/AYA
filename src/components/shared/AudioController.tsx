@@ -8,6 +8,7 @@ export function AudioController() {
     const sfxVolume = useUserStore((state) => state.sfxVolume);
     const isMusicMuted = useUserStore((state) => state.isMusicMuted);
     const isSfxMuted = useUserStore((state) => state.isSfxMuted);
+    const isIntroVideoCompleted = useUserStore((state) => state.isIntroVideoCompleted);
 
     const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -31,8 +32,8 @@ export function AudioController() {
 
     // 2. Manage Music Playback & Volume
     useEffect(() => {
-        // Play/Stop Music based on Mute state
-        if (hasInteracted && !isMusicMuted) {
+        // Play/Stop Music based on Mute state and Intro completion
+        if (hasInteracted && !isMusicMuted && isIntroVideoCompleted) {
             audioSynth.startMusic();
         } else {
             audioSynth.stopMusic();
@@ -41,7 +42,14 @@ export function AudioController() {
         // Always ensure volume is correct (e.g. if slider moves while playing)
         audioSynth.setMusicVolume(isMusicMuted ? 0 : musicVolume);
 
-    }, [isMusicMuted, musicVolume, hasInteracted]);
+    }, [isMusicMuted, musicVolume, hasInteracted, isIntroVideoCompleted]);
+
+    // 4. Cleanup on unmount (leaving the map to start the game)
+    useEffect(() => {
+        return () => {
+            audioSynth.stopMusic();
+        };
+    }, []);
 
     // 3. Manage SFX Volume (Independent of Playback)
     useEffect(() => {

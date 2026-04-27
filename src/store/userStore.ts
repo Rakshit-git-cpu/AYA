@@ -49,6 +49,10 @@ interface UserState {
     collectedLessons: Lesson[];
     collectLesson: (lesson: Lesson) => void;
 
+    // Cinematic Intro State
+    isIntroVideoCompleted: boolean;
+    setIntroVideoCompleted: (val: boolean) => void;
+
     resetProgress: () => void;
 }
 
@@ -115,6 +119,9 @@ export const useUserStore = create<UserState>()(
                 if (state.collectedLessons.some(l => l.id === lesson.id)) return state;
                 return { collectedLessons: [...state.collectedLessons, lesson] };
             }),
+
+            isIntroVideoCompleted: false,
+            setIntroVideoCompleted: (val) => set({ isIntroVideoCompleted: val }),
 
             setProfile: (profile) => {
                 // Generate levels dynamically based on Age & Interests

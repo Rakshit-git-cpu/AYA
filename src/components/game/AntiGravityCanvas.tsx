@@ -41,6 +41,7 @@ interface AntiGravityCanvasProps {
 
 export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps) {
     const isCandyMode = useUserStore((state) => state.isCandyMode);
+    const setIntroVideoCompleted = useUserStore((state) => state.setIntroVideoCompleted);
     const totalFrames = isCandyMode ? 40 : 240;
     const folder = isCandyMode ? 'map_frames' : 'map_frames_dark';
 
@@ -62,6 +63,8 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
 
     // Preload Images
     useEffect(() => {
+        setIntroVideoCompleted(false);
+
         // If we already have the requested frames fully cached, set instantly and return!
         if (GLOBAL_FRAME_CACHE[folder] && GLOBAL_FRAME_CACHE[folder].length === totalFrames) {
             imagesRef.current = GLOBAL_FRAME_CACHE[folder];
@@ -113,9 +116,10 @@ export function AntiGravityCanvas({ progress, onReady }: AntiGravityCanvasProps)
     useEffect(() => {
         if (isImagesLoaded && isVideoFinished) {
             setIsReady(true);
+            setIntroVideoCompleted(true);
             onReady();
         }
-    }, [isImagesLoaded, isVideoFinished, onReady]);
+    }, [isImagesLoaded, isVideoFinished, onReady, setIntroVideoCompleted]);
 
     // Handle video auto-play and mute policy
     useEffect(() => {
