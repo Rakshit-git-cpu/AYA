@@ -18,4 +18,7 @@ export default defineConfig({
   server: {
     host: true, // Exposes the server to the network
   },
+  build: {
+    chunkSizeWarningLimit: 1200,
+  },
 })
