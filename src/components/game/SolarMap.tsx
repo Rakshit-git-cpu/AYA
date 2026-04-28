@@ -114,15 +114,15 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             if (i >= 235 && i <= 240) continue;
             seq.push(`/assets/map_frames_solar/ezgif-frame-${String(i).padStart(3, '0')}.jpg`);
         }
-        // Second set: 241-719 (skipping 1-5 to avoid freeze)
-        for (let i = 1; i <= 479; i++) {
-            if (i >= 1 && i <= 5) continue;
+        // Second set: 241-479 (skipping 241-245 to avoid freeze)
+        for (let i = 241; i <= 479; i++) {
+            if (i >= 241 && i <= 245) continue;
             seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(${i}).jpg`);
         }
         return seq;
     };
     const FRAME_URLS = getFrameSequence();
-    const totalFrames = FRAME_URLS.length; // 708
+    const totalFrames = FRAME_URLS.length; // 468
 
     const getPosition = (index: number) => {
         const y = index * NODE_SPACING + (isMobile ? 120 : 150);
