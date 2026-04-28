@@ -357,7 +357,7 @@ export const useUserStore = create<UserState>()(
                 isSfxMuted: state.isSfxMuted,
                 collectedLessons: state.collectedLessons
             }),
-            onRehydrateStorage: (state) => {
+            onRehydrateStorage: () => {
                 console.log('[Store] Hydration starting...');
                 return (rehydratedState, error) => {
                     if (error) {
