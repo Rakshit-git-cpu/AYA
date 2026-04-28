@@ -952,5 +952,86 @@ export const IDOL_PROFILES: Record<string, Record<string, number>> = {
     "Dhruv Rathee": { analytical: 95, ambitious: 85, risk: 80, creativity: 85, social: 75 },
     "Falguni Nayar": { analytical: 90, ambitious: 95, risk: 80, creativity: 75, social: 85 },
     "Nikola Tesla": { analytical: 100, ambitious: 90, risk: 90, creativity: 100, social: 30 },
-    "Default": { analytical: 50, ambitious: 50, risk: 50, creativity: 50, social: 50 }
+    "Default": { analytical: 50, ambitious: 50, risk: 50, creativity: 50, social: 50 },
+    "Shubman Gill": {
+        name: "Shubman Gill",
+        archetypeTitle: "The Prince",
+        quote: "Pressure is just a shadow. It disappears when you face the light.",
+        voice: {
+            tone: "Confident, Aggressive, Focused",
+            intro: "Your talent got you here. Your conviction will make you stay."
+        },
+        missions: {
+            discipline: { title: "The Nets", desc: "Practice a single skill until you cannot get it wrong.", xp: "+50 Focus" },
+            resilience: { title: "Block the Noise", desc: "Ignore a piece of unhelpful criticism today.", xp: "+50 Grit" },
+            risk: { title: "The Counter-Attack", desc: "When put on the defensive, strike back confidently.", xp: "+50 Audacity" },
+            leadership: { title: "The Foundation", desc: "Set the tone for a project right from the start.", xp: "+50 Influence" },
+            creativity: { title: "Trust Your Hands", desc: "Rely purely on your instincts to solve a problem.", xp: "+50 Instinct" },
+            empathy: { title: "Acknowledge the Bowler", desc: "Praise an opponent or rival who did well.", xp: "+50 Grace" },
+            vision: { title: "The Big Innings", desc: "Plan out a long-term strategy for a major goal.", xp: "+50 Foresight" }
+        },
+        profile: {
+            motivation: 'Legacy',
+            risk: 'Courageous',
+            emotional: 'Resilient',
+            social: 'Competitor',
+            passion: 'Driven',
+            coreValue: 'Excellence'
+        },
+        avatarUrl: '/assets/avatar_shubman.jpg'
+    },
+    "Prajakta Koli": {
+        name: "Prajakta Koli",
+        archetypeTitle: "The Authentic Voice",
+        quote: "Your weirdness is your magic. Stop trying to hide it.",
+        voice: {
+            tone: "Relatable, Enthusiastic, Honest",
+            intro: "If you aren't being yourself, you are already failing."
+        },
+        missions: {
+            discipline: { title: "The Upload Schedule", desc: "Show up and do the work, even when you don't feel like it.", xp: "+50 Consistency" },
+            resilience: { title: "Ignore the Trolls", desc: "Brush off an online or offline negative comment.", xp: "+50 Confidence" },
+            risk: { title: "The Unfiltered Post", desc: "Share something authentic without worrying about judgment.", xp: "+50 Bravery" },
+            leadership: { title: "Community Builder", desc: "Bring people together over a shared joke or experience.", xp: "+50 Connection" },
+            creativity: { title: "The Everyday Humor", desc: "Find a funny angle to a completely mundane situation.", xp: "+50 Humor" },
+            empathy: { title: "The Relatable Struggle", desc: "Validate someone else's daily frustration.", xp: "+50 Compassion" },
+            vision: { title: "Beyond the Screen", desc: "Dream about taking your small idea to a global stage.", xp: "+50 Ambition" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Bold',
+            emotional: 'Expressive',
+            social: 'Advocate',
+            passion: 'Creative',
+            coreValue: 'Authenticity'
+        },
+        avatarUrl: '/assets/avatar_prajakta.jpg'
+    },
+    "Viswanathan Anand": {
+        name: "Viswanathan Anand",
+        archetypeTitle: "The Grandmaster",
+        quote: "Intuition is the first step. Calculation is the second. Mastery is both.",
+        voice: {
+            tone: "Calm, Analytical, Swift",
+            intro: "Do not slow down your genius to make others comfortable."
+        },
+        missions: {
+            discipline: { title: "The Opening Theory", desc: "Study the foundational basics of your craft deeply.", xp: "+50 Intellect" },
+            resilience: { title: "The Blunder", desc: "Recover instantly from a fast mistake.", xp: "+50 Poise" },
+            risk: { title: "The Lightning Move", desc: "Make a quick, instinctive decision on a difficult problem.", xp: "+50 Instinct" },
+            leadership: { title: "The Mentor", desc: "Teach someone a complex strategy simply.", xp: "+50 Wisdom" },
+            creativity: { title: "The Unseen Angle", desc: "Find a solution that nobody else is looking at.", xp: "+50 Strategy" },
+            empathy: { title: "The Silent Respect", desc: "Acknowledge the brilliant move of a competitor.", xp: "+50 Grace" },
+            vision: { title: "Ten Moves Ahead", desc: "Anticipate the long-term consequences of today's actions.", xp: "+50 Foresight" }
+        },
+        profile: {
+            motivation: 'Mastery',
+            risk: 'Calculated',
+            emotional: 'Calm',
+            social: 'Competitor',
+            passion: 'Strategic',
+            coreValue: 'Excellence'
+        },
+        avatarUrl: '/assets/avatar_anand.jpg'
+    }
 };

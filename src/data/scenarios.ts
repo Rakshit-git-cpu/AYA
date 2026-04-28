@@ -3642,6 +3642,586 @@ export const STORY_DATABASE: Record<string, any> = {
                 ]
             }
         ]
-    }
+    },
+    // AGE 19: Shubman Gill
+    'lvl_age_19_shubman': {
+        title: "The New Prince",
+        source: "Source: 2018-2019 New Zealand Tour",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "2018-2019. You’ve just won the U-19 World Cup. You are being hailed as the 'Next Kohli.' Suddenly, you are thrown into the senior Indian team in New Zealand. You fail. You score 9 and 7. The media says you were 'hyped too early.'",
+                choices: [
+                    {
+                        text: "Go back to domestic cricket. Play it safe to find form away from the media glare.",
+                        next: 'domestic',
+                        score: -5,
+                        feedbackTitle: "Retreat to the Shadows",
+                        feedback: "You find form, but you miss the crucial window of international exposure. You become a domestic giant but an international spectator."
+                    },
+                    {
+                        text: "Demand to stay in the high-pressure international environment despite the crushing criticism.",
+                        next: 'international',
+                        score: 10,
+                        feedbackTitle: "Trial By Fire",
+                        feedback: "You accept that international cricket is unforgiving. You decide that the only way to beat the pressure is to live inside it."
+                    }
+                ]
+            },
+            {
+                id: 'domestic',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "Domestic cricket is easy for you, but when you return to the international stage, the same doubts creep back in.",
+                choices: [
+                    {
+                        text: "Realize you must face the heat. Push for an international return.",
+                        next: 'international',
+                        score: 10,
+                        feedbackTitle: "Second Chance",
+                        feedback: "You realize avoiding failure is the same as avoiding growth."
+                    },
+                    {
+                        text: "Accept your fate as a domestic legend.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "The Unfulfilled Prophecy",
+                        feedback: "You are remembered as a 'what if'."
+                    }
+                ]
+            },
+            {
+                id: 'international',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "The criticism gets louder. Former players question your technique against swing bowling. Your confidence is completely shattered.",
+                choices: [
+                    {
+                        text: "Completely change your batting technique to please the critics.",
+                        next: 'change_technique',
+                        score: -5,
+                        feedbackTitle: "Losing Yourself",
+                        feedback: "You lose your natural flair. You become a rigid, defensive player who survives but never dominates."
+                    },
+                    {
+                        text: "Trust the process. Make minor adjustments, but back the aggressive style that got you here.",
+                        next: 'trust_process',
+                        score: 10,
+                        feedbackTitle: "Unyielding Belief",
+                        feedback: "You trust your hands. You trust your eye. You block the noise and focus on the ball."
+                    }
+                ]
+            },
+            {
+                id: 'change_technique',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "Your mind is cluttered. You forgot how to play your natural game.",
+                choices: [
+                    {
+                        text: "Revert to your instinct. Trust what made you a prodigy.",
+                        next: 'trust_process',
+                        score: 10,
+                        feedbackTitle: "Return to Instinct",
+                        feedback: "You strip away the unnecessary advice and go back to basics."
+                    }
+                ]
+            },
+            {
+                id: 'trust_process',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "You are selected for the historic Gabba Test in Australia. The pitch is lethal, the bowlers are breathing fire, and history is on the line.",
+                choices: [
+                    {
+                        text: "Play a counter-attacking innings. Take the game to the Australians.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "The Gabba Masterclass",
+                        feedback: "You score a breathtaking 91. You lay the foundation for one of the greatest Test wins in history."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_shubman.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You silenced the critics not with words, but with a bat. You proved that early failure is just the entry fee for greatness.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_shubman.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You let the pressure dictate your potential.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_SHUBMAN',
+                bg: '/assets/bg_shubman_nz.jpg',
+                text: "LESSON: Conviction. When everyone writes you off, the only voice that matters is your own. Trust the talent that brought you to the arena.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
 
+    // AGE 20: Prajakta Koli
+    'lvl_age_20_prajakta': {
+        title: "The 2 AM Panic",
+        source: "Source: Finding My Purpose",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_prajakta_silence.jpg',
+                text: "2014. Mumbai.\nYou are 20. For ten years, your only dream was to be a Radio Jockey (RJ). You finally got the internship at a major station. This is it. But it's a nightmare. You're exhausted, the creative freedom is zero, and you realize the \"dream\" was a lie. You meet a talent scout who sees your funny personality and says, \"Quit. Start a YouTube channel.\"\nIt's 2014. In India, \"YouTuber\" isn't a career—it's what people do when they're unemployed. Your parents expect you to have a 'real' job.\nWhat do you do?",
+                choices: [
+                    {
+                        text: "Finish the internship — You worked 10 years for this. Don't throw it away for a \"hobby\" website.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Sunk Cost",
+                        feedback: "You stick it out but are miserable. Your creative spark dies."
+                    },
+                    {
+                        text: "The Leap of Faith — Quit the station tomorrow. No backup plan. Just a camera and your room.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "Taking the Leap",
+                        feedback: "You take a massive risk, trading a 'prestigious' title for a 'silly' YouTube channel."
+                    },
+                    {
+                        text: "Do both — Work the 12-hour RJ shift and try to make videos at 2 AM when you're exhausted.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "Burnout",
+                        feedback: "You burn out completely. Neither your radio show nor your videos succeed."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_prajakta.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "What actually happened: After a \"mental breakdown\" at the radio station, Prajakta quit. She felt she was failing her lifelong dream, but she realized the medium (Radio) was wrong, even if the goal (connecting with people) was right.",
+                choices: [
+                    {
+                        text: "See Lesson",
+                        next: 'LEARNING_PRAJAKTA',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_prajakta.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You chose the comfort of the known over the magic of the unknown.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_PRAJAKTA',
+                bg: '/assets/bg_prajakta_silence.jpg',
+                text: "LESSON: DON'T CLING TO A MISTAKE JUST BECAUSE YOU SPENT A LONG TIME MAKING IT.\nShe traded a \"prestigious\" title for a \"silly\" YouTube channel. Today, she has 7M+ subscribers and has spoken at the UN.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 18: Viswanathan Anand
+    'lvl_age_18_anand': {
+        title: "The Lightning Kid",
+        source: "Source: World Junior Chess Championship 1987",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "1987. You are 18. You are the first Indian to ever win the World Junior Chess Championship. The 'Grandmasters' in Europe don't take you seriously because you play too fast—they call you 'The Coffee-Shop Player'.",
+                choices: [
+                    {
+                        text: "Change your natural, fast style to 'fit in' with the slow, analytical European Grandmasters.",
+                        next: 'slow_down',
+                        score: -5,
+                        feedbackTitle: "Losing Your Edge",
+                        feedback: "You slow down. You try to play their game. You lose your unique rhythm and become just another average player."
+                    },
+                    {
+                        text: "Double down on your speed. Overwhelm them with your natural instinct.",
+                        next: 'speed',
+                        score: 10,
+                        feedbackTitle: "The Lightning Strike",
+                        feedback: "You embrace your intuition. You calculate faster than they can comprehend, putting immense psychological pressure on them."
+                    }
+                ]
+            },
+            {
+                id: 'slow_down',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "You are losing matches because you are constantly second-guessing your initial, brilliant instincts.",
+                choices: [
+                    {
+                        text: "Return to your natural speed. Trust your intuition.",
+                        next: 'speed',
+                        score: 10,
+                        feedbackTitle: "Reclaiming the Rhythm",
+                        feedback: "You realize your speed is a weapon, not a flaw."
+                    },
+                    {
+                        text: "Keep trying to force the slow style.",
+                        next: 'fail',
+                        score: -10,
+                        feedbackTitle: "The Dull Blade",
+                        feedback: "You fade into chess obscurity."
+                    }
+                ]
+            },
+            {
+                id: 'speed',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "You reach the senior level. Your speed is devastating, but against the absolute best (like Kasparov), a single fast mistake costs you the match.",
+                choices: [
+                    {
+                        text: "Refuse to adapt. Blame bad luck.",
+                        next: 'stubborn',
+                        score: -5,
+                        feedbackTitle: "The Plateau",
+                        feedback: "Speed without control is reckless. You hit a ceiling."
+                    },
+                    {
+                        text: "Keep the speed, but develop deep opening preparation. Combine intuition with rigorous study.",
+                        next: 'mastery',
+                        score: 10,
+                        feedbackTitle: "The Complete Player",
+                        feedback: "You spend thousands of hours studying openings. You now play fast *and* flawlessly."
+                    }
+                ]
+            },
+            {
+                id: 'stubborn',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "You realize you can't beat the World Champion on instinct alone.",
+                choices: [
+                    {
+                        text: "Accept the grind. Study the theory.",
+                        next: 'mastery',
+                        score: 10,
+                        feedbackTitle: "Humility",
+                        feedback: "You do the boring work to protect your brilliant instincts."
+                    }
+                ]
+            },
+            {
+                id: 'mastery',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "You face the elite. With your refined speed and flawless preparation, you conquer the chess world, winning the World Championship 5 times across all formats.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_anand.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You became a legend not by copying the Europeans, but by forcing the world to respect the Indian style of play.",
+                choices: [
+                    {
+                        text: "Complete Level",
+                        next: 'COMPLETE',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_anand.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You let others define how you should play your own game.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_ANAND',
+                bg: '/assets/bg_anand_chess.jpg',
+                text: "LESSON: Uniqueness. Never apologize for your natural style. Refine it, protect it, but never abandon it to look 'normal' to the establishment.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 18: Zendaya
+    'lvl_age_18_zendaya': {
+        title: "The Identity Strike",
+        source: "Source: Confidence & Fear",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_zendaya_boardroom.jpg',
+                text: "2014. Hollywood.\nYou are 18. You are a Disney star with a massive following, but you feel like a puppet. You are cast in a new show, K.C. Undercover. The script is \"classic Disney\"—you’re a girl who is clumsy, can’t dance, and is obsessed with boys.\nThe producers tell you, \"This is what works. Don't break the formula.\" But you know this isn't who you are, and it isn't what girls need to see. You want the character to be a martial artist, a tech-wiz, and socially awkward—a real person.\nThey tell you to just \"be grateful\" for the lead role.\nWhat do you do?",
+                choices: [
+                    {
+                        text: "Accept the role — Secure your fame and money first. You can change things when you’re 25.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Hollow Crown",
+                        feedback: "You get the fame, but you remain a puppet. Your creative voice is never heard."
+                    },
+                    {
+                        text: "Walk away — If they don't give you \"Producer\" status and creative control, you quit Disney entirely.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "Taking the Reins",
+                        feedback: "The executives are shocked. It's a massive risk for an 18-year-old, but you stand your ground."
+                    },
+                    {
+                        text: "Negotiate a middle ground — Change some lines but keep the \"safe\" Disney formula to avoid a fight.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Compromise",
+                        feedback: "You change a few lines, but the core stereotype remains. You still feel like a puppet."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_zendaya.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "What actually happened: Zendaya refused to do the show unless she was made a Producer at age 18. She demanded the character be empowered and the title changed. She risked being \"blacklisted\" by the biggest studio in the world to ensure she wasn't just another teen idol.",
+                choices: [
+                    {
+                        text: "See Lesson",
+                        next: 'LEARNING_ZENDAYA',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_zendaya.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You stayed in the background when it was time to step up.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_ZENDAYA',
+                bg: '/assets/bg_zendaya_boardroom.jpg',
+                text: "LESSON: POWER ISN'T GIVEN, IT'S TAKEN.\nShe knew her value. By demanding a seat at the table early, she transitioned from \"Disney Kid\" to the most respected actress of her generation.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 19: Neeraj Chopra
+    'lvl_age_19_neeraj': {
+        title: "The Lonely Flight",
+        source: "Source: Motivation & Drive",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_neeraj_track.jpg',
+                text: "2016. Poland/India.\nYou are 19. You just threw the Javelin 86.48m—a World Junior Record. You are the first Indian athlete to ever hold a world record. You are a national hero.\nBut there is a catch. The Olympic qualification deadline passed just a few days ago. Even though you are literally one of the best in the world, you cannot go to the Rio Olympics.\nThe \"system\" tells you to stay in India, do the celebrity award shows, and wait for the next four years. Your body is tired, and the hype is distracting.\nWhat do you do?",
+                choices: [
+                    {
+                        text: "Enjoy the fame — Use your new status to sign big brand deals and secure your family's future.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Comfort Zone",
+                        feedback: "You enjoy the spotlight, but your training suffers. The lack of elite competition stalls your growth."
+                    },
+                    {
+                        text: "The \"Monk\" Path — Leave India. Go to a remote training center in Europe where nobody knows your name, live in a small room, and train in total silence for years.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "The Path of Mastery",
+                        feedback: "You leave the fame behind. You find yourself alone in a misty stadium, entirely focused on the process."
+                    },
+                    {
+                        text: "Join the Army — Take a stable government job (Subedar) and train part-time while serving.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Compromise",
+                        feedback: "You secure your future, but your training time is split. You plateau on the world stage."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_neeraj.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "What actually happened: Neeraj chose the \"Monk\" Path. Instead of basking in the Indian media's attention, he disappeared into elite international training camps. He lived a lonely, grueling life away from home for years.",
+                choices: [
+                    {
+                        text: "See Lesson",
+                        next: 'LEARNING_NEERAJ',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_neeraj.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You chose short-term comfort over long-term glory.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_NEERAJ',
+                bg: '/assets/bg_neeraj_track.jpg',
+                text: "LESSON: FAME IS A DISTRACTION; MASTERY IS THE GOAL.\nWhile others were celebrating his \"Junior\" record, he was already training for \"Senior\" gold. That isolation is what turned a 19-year-old talent into an Olympic Champion.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 20: Selena Gomez
+    'lvl_age_20_selena': {
+        title: "The Invisible War",
+        source: "Source: Heartbreak & Relationships",
+        frames: [
+            {
+                id: 'intro',
+                bg: '/assets/bg_selena_spotlight.jpg',
+                text: "2012-2013. Global Tour.\nYou are 20. To the world, you have everything: a hit album, a famous boyfriend, and a perfect life.\nBut behind the scenes, your body is failing. You’ve been diagnosed with Lupus, an autoimmune disease. You are in pain, your hair is thinning, and you need chemotherapy.\nThe tabloids are brutal. They say you’re \"going to rehab\" for drugs or \"acting crazy\" because of a breakup. If you tell the truth, you look \"weak\" and might lose your tour contracts. If you stay silent, the world thinks you’re a mess.\nWhat do you do?",
+                choices: [
+                    {
+                        text: "Stay Silent — Protect your \"perfect\" image. Let people think what they want; your health is private.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "The Breaking Point",
+                        feedback: "You try to maintain the facade, but your body gives out. The rumors only get worse."
+                    },
+                    {
+                        text: "The Radical Truth — Cancel the tour. Go public. Tell the world you have a chronic illness, even if it breaks the \"pop star\" illusion.",
+                        next: 'success',
+                        score: 10,
+                        feedbackTitle: "Vulnerability as Strength",
+                        feedback: "You step away from the spotlight. The truth is shocking, but it sets you free from the toxic rumors."
+                    },
+                    {
+                        text: "Push Through — Take the meds, hide the pain, and finish the tour. You can't let your fans or your label down.",
+                        next: 'fail',
+                        score: -5,
+                        feedbackTitle: "Physical Collapse",
+                        feedback: "You push your body too far and end up hospitalized, forcing a cancellation anyway."
+                    }
+                ]
+            },
+            {
+                id: 'success',
+                bg: '/assets/avatar_selena.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "What actually happened: Selena disappeared from the spotlight to undergo chemotherapy. When she returned, she didn't hide it. She became a face for Lupus awareness and mental health, even showing her surgery scars.",
+                choices: [
+                    {
+                        text: "See Lesson",
+                        next: 'LEARNING_SELENA',
+                        score: 10,
+                        feedbackTitle: "Mission Accomplished",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'fail',
+                bg: '/assets/avatar_selena.jpg',
+                bgSize: 'object-contain',
+                bgPosition: 'object-center bg-black',
+                text: "You let the pressure of the spotlight destroy your well-being.",
+                choices: [
+                    {
+                        text: "Try Again",
+                        next: 'intro',
+                        score: 0,
+                        feedbackTitle: "",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_SELENA',
+                bg: '/assets/bg_selena_spotlight.jpg',
+                text: "LESSON: VULNERABILITY IS THE ULTIMATE STRENGTH.\nShe realized that her \"perfect\" image was a cage. By being honest about her pain, she built a deeper connection with millions of people that a \"perfect\" pop star never could.",
+                choices: [
+                    { text: "Finish Chapter", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    }
 };
