@@ -12,7 +12,8 @@ import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 
 // Global cache to keep frames in memory across component mounts
-let globalSolarFramesCache: ImageBitmap[] | null = null;
+type FrameType = HTMLImageElement | ImageBitmap;
+let globalSolarFramesCache: FrameType[] | null = null;
 
 interface SolarMapProps {
     onPlayLevel: (level: any) => void;
@@ -143,7 +144,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
     const [canvasReady, setCanvasReady] = useState(false);
     const [framesLoaded, setFramesLoaded] = useState(0);
-    const idleFramesRef = useRef<ImageBitmap[]>([]);
+    const idleFramesRef = useRef<FrameType[]>([]);
     const currentFrameIdx = useRef<number>(0);
 
     useEffect(() => {
@@ -199,6 +200,16 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
         const isInitialLoad = performance.now() < 3500;
 
+        const loadFrame = (url: string): Promise<HTMLImageElement> => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = url;
+            });
+        };
+
         const loadFrames = async () => {
             // Check cache
             if (globalSolarFramesCache) {
@@ -215,7 +226,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             }
 
             const batchSize = 50;
-            const loadedBitmaps: ImageBitmap[] = new Array(totalFrames);
+            const loadedBitmaps: FrameType[] = new Array(totalFrames);
             
             // First load frame 1 immediately and draw it to prevent blank screen
             const firstImg = new Image();
@@ -236,14 +247,9 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     const src = FRAME_URLS[j];
                     
                     batchPromises.push(
-                        fetch(src)
-                            .then(res => {
-                                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                                return res.blob();
-                            })
-                            .then(blob => createImageBitmap(blob))
-                            .then(bitmap => {
-                                loadedBitmaps[j] = bitmap;
+                        loadFrame(src)
+                            .then(img => {
+                                loadedBitmaps[j] = img;
                                 if (!isUnmounted) {
                                     setFramesLoaded(prev => prev + 1);
                                 }
@@ -271,14 +277,9 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     const src = FRAME_URLS[j];
                     
                     batchPromises.push(
-                        fetch(src)
-                            .then(res => {
-                                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                                return res.blob();
-                            })
-                            .then(blob => createImageBitmap(blob))
-                            .then(bitmap => {
-                                loadedBitmaps[j] = bitmap;
+                        loadFrame(src)
+                            .then(img => {
+                                loadedBitmaps[j] = img;
                                 if (!isUnmounted) {
                                     setFramesLoaded(prev => prev + 1);
                                 }
