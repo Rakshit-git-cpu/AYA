@@ -7,7 +7,7 @@ import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
 import { audioSynth } from '../../utils/audioSynth';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { DailyChallengeModal } from './DailyChallengeModal';
 import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
@@ -165,7 +165,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const { scrollYProgress } = useScroll({ container: containerRef });
+    const scrollYProgress = useMotionValue(0);
 
     const smoothProgress = useSpring(scrollYProgress, {
         stiffness: 400,
@@ -340,31 +340,80 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         }
     };
 
-    // Scroll Parallax Effect
+    // Custom Scroll Parallax Effect (Native Wheel/Touch)
     useEffect(() => {
-        return scrollYProgress.on('change', (latest) => {
+        if (!canvasReady || idleFramesRef.current.length === 0) return;
+
+        let currentFrame = currentFrameIdx.current || 0;
+        const totalFrames = idleFramesRef.current.length;
+        const container = containerRef.current;
+        let touchStartY = 0;
+
+        const drawFrame = (frameIndex: number) => {
+            const img = idleFramesRef.current[frameIndex];
             const canvas = canvasRef.current;
-            if (!canvas || !idleFramesRef.current || idleFramesRef.current.length === 0) return;
+            if (!img || !canvas) return;
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            const frameIndex = Math.min(
-                Math.floor(latest * (idleFramesRef.current.length - 1)),
-                idleFramesRef.current.length - 1
-            );
-            currentFrameIdx.current = frameIndex;
-            const img = idleFramesRef.current[frameIndex];
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+            const x = (canvas.width / 2) - (img.width / 2) * scale;
+            const y = (canvas.height / 2) - (img.height / 2) * scale;
+            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        };
 
-            if (img) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-                const x = (canvas.width / 2) - (img.width / 2) * scale;
-                const y = (canvas.height / 2) - (img.height / 2) * scale;
-                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-            }
-        });
-    }, [scrollYProgress]);
+        const updateScroll = (frameChange: number) => {
+            currentFrame = Math.max(0, Math.min(totalFrames - 1, currentFrame + frameChange));
+            currentFrameIdx.current = currentFrame;
+            
+            // Draw frame directly
+            drawFrame(currentFrame);
+            
+            // Sync nodes position (Framer Motion handles the HUD movement smoothly)
+            scrollYProgress.set(currentFrame / Math.max(1, totalFrames - 1));
+        };
+
+        const handleWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            const delta = e.deltaY;
+            const frameChange = Math.sign(delta) * Math.ceil(Math.abs(delta) / 50);
+            updateScroll(frameChange);
+        };
+
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStartY = e.touches[0].clientY;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            const touchDelta = touchStartY - e.touches[0].clientY;
+            touchStartY = e.touches[0].clientY;
+            
+            const frameChange = Math.sign(touchDelta) * Math.ceil(Math.abs(touchDelta) / 20);
+            updateScroll(frameChange);
+        };
+
+        // Attach to BOTH window and container to ensure it always fires
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        
+        container?.addEventListener('wheel', handleWheel, { passive: false });
+        container?.addEventListener('touchstart', handleTouchStart, { passive: false });
+        container?.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+        return () => {
+            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            
+            container?.removeEventListener('wheel', handleWheel);
+            container?.removeEventListener('touchstart', handleTouchStart);
+            container?.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [canvasReady, scrollYProgress]);
 
     useEffect(() => {
         audioSynth.playStartup();
@@ -543,7 +592,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             )}
 
             {/* Scrollable Map */}
-            <div ref={containerRef} className="w-full h-full overflow-y-auto overflow-x-hidden relative scroll-smooth">
+            <div ref={containerRef} className="fixed inset-0 w-[100vw] h-[100vh] overflow-hidden">
                 <div style={{ height: totalHeight, width: '100%' }} />
 
                 {/* LAYER 1: STATIC CANVAS */}
