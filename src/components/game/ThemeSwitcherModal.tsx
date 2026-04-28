@@ -104,7 +104,7 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
 
   const [toast, setToast] = useState<string | null>(null);
   const [particles] = useState(() =>
-    Array.from({ length: 18 }, (_, i) => ({ id: i, depth: (i % 3) + 1 }))
+    Array.from({ length: 30 }, (_, i) => ({ id: i, depth: (i % 3) + 1 }))
   );
 
   const handleSelect = async (themeId: MapTheme) => {
@@ -152,15 +152,17 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
         >
           {/* Modal Container */}
           <motion.div
-            className="relative w-full max-w-sm rounded-3xl overflow-hidden"
+            className="relative w-full max-w-sm md:max-w-4xl rounded-3xl overflow-hidden"
             initial={{ scale: 0.75, opacity: 0, y: 60, filter: 'blur(12px)' }}
             animate={{ scale: 1, opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ scale: 0.8, opacity: 0, y: 30, filter: 'blur(8px)' }}
             transition={{ type: 'spring', damping: 20, stiffness: 280 }}
             style={{
-              background: 'linear-gradient(145deg, rgba(12,12,29,0.97) 0%, rgba(5,5,20,0.99) 100%)',
-              boxShadow: '0 40px 80px rgba(0,0,0,0.8), 0 0 60px rgba(0,241,254,0.08), inset 0 1px 0 rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgba(15, 15, 30, 0.3)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 40px 80px rgba(0,0,0,0.8), 0 0 60px rgba(0,241,254,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.1)',
             }}
           >
             {/* Particle Background Layer */}
@@ -224,7 +226,7 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
             </div>
 
             {/* Theme Cards */}
-            <div className="relative z-10 flex flex-col gap-3 px-4 pb-6" style={{ perspective: '1000px' }}>
+            <div className="relative z-10 flex flex-col md:flex-row gap-4 px-4 md:px-8 pb-6 md:pb-8" style={{ perspective: '1200px' }}>
               {THEMES.map((theme, idx) => {
                 const isActive = mapTheme === theme.id;
                 const isLight = theme.id === 'light';
@@ -236,19 +238,13 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
                     initial={{ opacity: 0, y: 30, rotateX: 15 }}
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     transition={{ delay: 0.15 + idx * 0.08, type: 'spring', damping: 18 }}
-                    whileHover={{
-                      scale: 1.03,
-                      y: isActive ? -6 : -4,
-                      rotateX: -4,
-                      rotateY: 2,
-                      z: isActive ? 80 : 40,
-                    }}
+                    whileHover={{ rotateX: -5, rotateY: 5, scale: 1.05, z: 30 }}
                     whileTap={{ scale: 0.97, y: 1 }}
                     style={{
                       background: theme.bgGradient,
                       boxShadow: isActive
-                        ? `0 0 0 2px ${theme.borderColor}, 0 20px 50px ${theme.glowColor}, 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)`
-                        : `0 0 0 1px rgba(255,255,255,0.06), 0 8px 20px rgba(0,0,0,0.4)`,
+                        ? `0 0 0 2px ${theme.borderColor}, 0 0 30px ${theme.borderColor}, 0 20px 50px ${theme.glowColor}, 0 8px 20px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.15)`
+                        : `0 0 0 1px rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.5)`,
                       transformStyle: 'preserve-3d',
                     }}
                   >
@@ -265,16 +261,16 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
                       />
                     )}
 
-                    <div className="flex items-center gap-4 p-4">
+                    <div className="flex flex-row md:flex-col items-center md:items-start gap-4 p-4 md:p-6">
                       {/* Preview Thumbnail */}
                       <div
-                        className="w-16 h-14 rounded-xl flex-shrink-0 flex items-center justify-center relative overflow-hidden"
+                        className="w-16 h-14 md:w-full md:h-28 rounded-xl flex-shrink-0 flex items-center justify-center relative overflow-hidden"
                         style={{
                           background: theme.previewGradient,
                           boxShadow: `0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)`,
                         }}
                       >
-                        <span className="text-2xl relative z-10 drop-shadow-lg">{theme.emoji}</span>
+                        <span className="text-2xl md:text-5xl relative z-10 drop-shadow-lg">{theme.emoji}</span>
                         {/* Inner depth shimmer */}
                         <div
                           className="absolute inset-0 pointer-events-none"
@@ -294,10 +290,10 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
                       </div>
 
                       {/* Text Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span
-                            className="text-sm font-black tracking-tight truncate"
+                      <div className="flex-1 min-w-0 md:w-full">
+                        <div className="flex items-center gap-2 mb-0.5 md:mb-2">
+                            <span
+                              className="text-sm md:text-lg font-black tracking-tight truncate"
                             style={{
                               fontFamily: "'Space Grotesk', sans-serif",
                               color: isLight ? '#1e1040' : '#ffffff',
@@ -322,7 +318,7 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
                           )}
                         </div>
                         <p
-                          className="text-xs truncate"
+                          className="text-xs md:text-sm truncate md:whitespace-normal"
                           style={{
                             color: isActive ? theme.accentColor : (isLight ? '#6b6082' : '#6b6a88'),
                             fontFamily: "'Manrope', sans-serif",
@@ -335,7 +331,7 @@ export function ThemeSwitcherModal({ isOpen, onClose }: ThemeSwitcherModalProps)
 
                       {/* Check / Arrow */}
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="hidden w-8 h-8 rounded-full md:flex items-center justify-center flex-shrink-0 absolute bottom-4 right-4"
                         style={{
                           background: isActive ? theme.borderColor : 'rgba(255,255,255,0.05)',
                           boxShadow: isActive ? `0 0 16px ${theme.glowColor}` : 'none',
