@@ -3,6 +3,7 @@ import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { CinematicOnboarding } from '../components/game/CinematicOnboarding';
 import { LevelMap } from '../components/game/LevelMap';
+import { SolarMap } from '../components/game/SolarMap';
 import { CharacterSelection } from '../components/game/CharacterSelection';
 import { ScenarioGame } from '../components/game/ScenarioGame';
 import { PersonalityIntro } from '../components/game/PersonalityIntro';
@@ -22,6 +23,16 @@ export function GameRoot() {
     const levels = useUserStore((state) => state.levels);
     const unlockLevel = useUserStore((state) => state.unlockLevel);
     const syncLevels = useUserStore((state) => state.syncLevels);
+    const mapTheme = useUserStore((state) => state.mapTheme);
+    const setMapTheme = useUserStore((state) => state.setMapTheme);
+
+    // Sync theme from localStorage on mount
+    useEffect(() => {
+        const storedTheme = localStorage.getItem('aya_map_theme') as any;
+        if (storedTheme && storedTheme !== mapTheme) {
+            setMapTheme(storedTheme);
+        }
+    }, []);
 
     useEffect(() => {
         syncLevels();
@@ -146,11 +157,19 @@ export function GameRoot() {
                 <DnaProfile onBack={() => setView('map')} />
             )}
 
-            <LevelMap 
-                onPlayLevel={handleLevelClick} 
-                onOpenDnaProfile={() => setView('dna')}
-                isMapActive={view !== 'game' && view !== 'report'}
-            />
+            {mapTheme === 'solar' ? (
+                <SolarMap 
+                    onPlayLevel={handleLevelClick} 
+                    onOpenDnaProfile={() => setView('dna')}
+                    isMapActive={view !== 'game' && view !== 'report'}
+                />
+            ) : (
+                <LevelMap 
+                    onPlayLevel={handleLevelClick} 
+                    onOpenDnaProfile={() => setView('dna')}
+                    isMapActive={view !== 'game' && view !== 'report'}
+                />
+            )}
 
             {/* Level Up Overlay overrides all other Z-layers organically */}
             {showLevelUp && profile && (
