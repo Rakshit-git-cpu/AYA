@@ -122,7 +122,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
     const [canvasReady, setCanvasReady] = useState(false);
     const [framesLoaded, setFramesLoaded] = useState(0);
-    const totalIdleFrames = 240;
+    const totalFrames = 719;
     const idleFramesRef = useRef<ImageBitmap[]>([]);
     const currentFrameIdx = useRef<number>(0);
 
@@ -184,7 +184,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             if (globalSolarFramesCache) {
                 idleFramesRef.current = globalSolarFramesCache;
                 setCanvasReady(true);
-                setFramesLoaded(totalIdleFrames);
+                setFramesLoaded(totalFrames);
                 drawFrame(globalSolarFramesCache[currentFrameIdx.current]);
                 return;
             }
@@ -195,7 +195,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             }
 
             const batchSize = 50;
-            const loadedBitmaps: ImageBitmap[] = new Array(totalIdleFrames);
+            const loadedBitmaps: ImageBitmap[] = new Array(totalFrames);
             
             // First load frame 1 immediately and draw it to prevent blank screen
             const firstImg = new Image();
@@ -207,12 +207,18 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 }
             });
 
-            for (let i = 0; i < totalIdleFrames; i += batchSize) {
+            for (let i = 0; i < totalFrames; i += batchSize) {
                 if (isUnmounted) return;
                 const batchPromises = [];
-                for (let j = i; j < i + batchSize && j < totalIdleFrames; j++) {
-                    const frameNum = String(j + 1).padStart(3, '0');
-                    const src = `/assets/map_frames_solar/ezgif-frame-${frameNum}.jpg`;
+                for (let j = i; j < i + batchSize && j < totalFrames; j++) {
+                    let src = '';
+                    if (j < 240) {
+                        const frameNum = String(j + 1).padStart(3, '0');
+                        src = `/assets/map_frames_solar/ezgif-frame-${frameNum}.jpg`;
+                    } else {
+                        const frameNum = j - 240 + 1; // 1 to 479
+                        src = `/assets/map_frames_solar/ezfif-frame-242%20(${frameNum}).jpg`;
+                    }
                     
                     batchPromises.push(
                         fetch(src)
@@ -224,7 +230,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                     setFramesLoaded(prev => prev + 1);
                                 }
                             })
-                            .catch(e => console.warn(`Failed to load frame ${frameNum}`, e))
+                            .catch(e => console.warn(`Failed to load frame ${j + 1}`, e))
                     );
                 }
                 await Promise.all(batchPromises);
@@ -233,7 +239,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             if (isUnmounted) return;
             
             // Fill any missing frames with previous available frame to prevent crash
-            for (let i = 0; i < totalIdleFrames; i++) {
+            for (let i = 0; i < totalFrames; i++) {
                 if (!loadedBitmaps[i]) {
                     loadedBitmaps[i] = loadedBitmaps[i-1] || loadedBitmaps.find(b => b)!;
                 }
@@ -275,7 +281,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            const frameIdx = Math.floor(latest * (totalIdleFrames - 1));
+            const frameIdx = Math.floor(latest * (totalFrames - 1));
             currentFrameIdx.current = frameIdx;
             const img = idleFramesRef.current[frameIdx];
 
@@ -400,16 +406,16 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             )}
 
             {/* Loading Bar Overlay */}
-            {(!canvasReady && framesLoaded < totalIdleFrames && (navigator.hardwareConcurrency || 4) >= 4) && (
+            {(!canvasReady && framesLoaded < totalFrames && (navigator.hardwareConcurrency || 4) >= 4) && (
                 <div className="absolute inset-0 z-[150] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm pointer-events-none transition-opacity duration-1000">
                     <div className="w-64 h-2 bg-slate-900 rounded-full overflow-hidden border border-[#FFB347]/30 shadow-[0_0_15px_rgba(255,179,71,0.2)]">
                         <div 
                             className="h-full bg-gradient-to-r from-[#FFB347] to-[#ff7b00] transition-all duration-300"
-                            style={{ width: `${(framesLoaded / totalIdleFrames) * 100}%` }}
+                            style={{ width: `${(framesLoaded / totalFrames) * 100}%` }}
                         />
                     </div>
                     <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#FFB347] animate-pulse">
-                        Warping Space... {Math.round((framesLoaded / totalIdleFrames) * 100)}%
+                        Warping Space... {Math.round((framesLoaded / totalFrames) * 100)}%
                     </p>
                 </div>
             )}
