@@ -105,7 +105,26 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
     const NODE_OFFSETS = isMobile ? MOBILE_NODE_OFFSETS : DESKTOP_NODE_OFFSETS;
 
-    const totalHeight = (ageLevels.length * NODE_SPACING) + (isMobile ? 300 : 400);
+    // Define the exact sequence of available frames
+    const getFrameSequence = () => {
+        const seq: string[] = [];
+        // 1-240
+        for (let i = 1; i <= 240; i++) {
+            seq.push(`/assets/map_frames_solar/ezgif-frame-${String(i).padStart(3, '0')}.jpg`);
+        }
+        // Transition frame
+        seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(1).jpg`);
+        // 241-479
+        for (let i = 241; i <= 479; i++) {
+            seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(${i}).jpg`);
+        }
+        return seq;
+    };
+    const FRAME_URLS = getFrameSequence();
+    const totalFrames = FRAME_URLS.length; // 480
+
+    const contentHeight = (ageLevels.length * NODE_SPACING) + (isMobile ? 300 : 400);
+    const totalHeight = Math.max(contentHeight, totalFrames * 10);
 
     const getPosition = (index: number) => {
         const y = index * NODE_SPACING + (isMobile ? 120 : 150);
@@ -122,7 +141,6 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
     const [canvasReady, setCanvasReady] = useState(false);
     const [framesLoaded, setFramesLoaded] = useState(0);
-    const totalFrames = 719;
     const idleFramesRef = useRef<ImageBitmap[]>([]);
     const currentFrameIdx = useRef<number>(0);
 
@@ -211,18 +229,14 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 if (isUnmounted) return;
                 const batchPromises = [];
                 for (let j = i; j < i + batchSize && j < totalFrames; j++) {
-                    let src = '';
-                    if (j < 240) {
-                        const frameNum = String(j + 1).padStart(3, '0');
-                        src = `/assets/map_frames_solar/ezgif-frame-${frameNum}.jpg`;
-                    } else {
-                        const frameNum = j - 240 + 1; // 1 to 479
-                        src = `/assets/map_frames_solar/ezfif-frame-242%20(${frameNum}).jpg`;
-                    }
+                    const src = FRAME_URLS[j];
                     
                     batchPromises.push(
                         fetch(src)
-                            .then(res => res.blob())
+                            .then(res => {
+                                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                                return res.blob();
+                            })
                             .then(blob => createImageBitmap(blob))
                             .then(bitmap => {
                                 loadedBitmaps[j] = bitmap;
@@ -230,7 +244,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                     setFramesLoaded(prev => prev + 1);
                                 }
                             })
-                            .catch(e => console.warn(`Failed to load frame ${j + 1}`, e))
+                            .catch(e => console.warn(`Failed to load frame at index ${j}: ${src}`, e))
                     );
                 }
                 await Promise.all(batchPromises);
@@ -251,6 +265,12 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 setCanvasReady(true);
             }
             
+            console.log('[Solar] Total frames loaded:', loadedBitmaps.length);
+            console.log('[Solar] First frame:', loadedBitmaps[0] ? 'OK' : 'MISSING');
+            console.log('[Solar] Frame 240:', loadedBitmaps[239] ? 'OK' : 'MISSING');
+            console.log('[Solar] Frame 241:', loadedBitmaps[240] ? 'OK' : 'MISSING');
+            console.log('[Solar] Last frame:', loadedBitmaps[loadedBitmaps.length - 1] ? 'OK' : 'MISSING');
+
             drawFrame(idleFramesRef.current[currentFrameIdx.current]);
         };
 
