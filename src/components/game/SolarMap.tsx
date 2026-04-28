@@ -471,22 +471,22 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full">
                         {/* Connecting Path */}
                         <div className="absolute inset-0 pointer-events-none">
-                            <svg className="absolute top-0 left-0 w-full h-full" style={{ overflow: 'visible' }}>
+                            <svg className="absolute top-0 left-0 w-full h-full" viewBox={`0 0 100 ${totalHeight}`} preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                                 <path
                                     d={ageLevels.reduce((path, _, i) => {
-                                        if (i === 0) return `M ${50}% 80`;
+                                        if (i === 0) return `M 50 80`;
                                         const prev = getPosition(i - 1);
                                         const curr = getPosition(i);
                                         const curveStrength = isMobile ? 3 : 4;
                                         const prevXPercent = 50 + (prev.x / curveStrength);
                                         const currXPercent = 50 + (curr.x / curveStrength);
-                                        return `${path} C ${prevXPercent}% ${prev.y + 70}, ${currXPercent}% ${curr.y - 70}, ${currXPercent}% ${curr.y}`;
+                                        return `${path} C ${prevXPercent} ${prev.y + 70}, ${currXPercent} ${curr.y - 70}, ${currXPercent} ${curr.y}`;
                                     }, "")}
                                     fill="none"
                                     stroke="#FFB347"
-                                    strokeWidth={isMobile ? "40" : "50"}
+                                    strokeWidth={isMobile ? "2" : "2.5"}
                                     strokeLinecap="round"
-                                    strokeDasharray="10 20"
+                                    strokeDasharray="1 2"
                                     className="drop-shadow-[0_0_15px_rgba(255,179,71,0.4)] opacity-50"
                                 />
                             </svg>

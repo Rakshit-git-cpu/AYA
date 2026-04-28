@@ -383,25 +383,25 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full">
                         {/* CANDY PATH: Stepping Stones */}
                         <div className="absolute inset-0 pointer-events-none">
-                            <svg className="absolute top-0 left-0 w-full h-full" style={{ overflow: 'visible' }}>
+                            <svg className="absolute top-0 left-0 w-full h-full" viewBox={`0 0 100 ${totalHeight}`} preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                                 {/* Path logic identical, just re-rendered with new getPosition */}
                                 <path
                                     d={ageLevels.reduce((path, _, i) => {
-                                        if (i === 0) return `M ${50 + (0)}% 80`;
+                                        if (i === 0) return `M 50 80`;
                                         const prev = getPosition(i - 1);
                                         const curr = getPosition(i);
                                         // Adjust curve handles for mobile to be tighter
                                         const curveStrength = isMobile ? 3 : 4;
                                         const prevXPercent = 50 + (prev.x / curveStrength);
                                         const currXPercent = 50 + (curr.x / curveStrength);
-                                        return `${path} C ${prevXPercent}% ${prev.y + 70}, ${currXPercent}% ${curr.y - 70}, ${currXPercent}% ${curr.y}`;
+                                        return `${path} C ${prevXPercent} ${prev.y + 70}, ${currXPercent} ${curr.y - 70}, ${currXPercent} ${curr.y}`;
                                     }, "")}
                                     fill="none"
-                                    stroke={isCandyMode ? "#F472B6" : "#F59E0B"} // pink-400 or amber-500
-                                    strokeWidth={isMobile ? "40" : "50"} // Thicker path
+                                    stroke={isCandyMode ? "#F472B6" : "#F59E0B"}
+                                    strokeWidth={isMobile ? "2" : "2.5"}
                                     strokeLinecap="round"
-                                    strokeDasharray="10 20" // Dashed line for style
-                                    className={isCandyMode ? "drop-shadow-[0_0_10px_rgba(244,114,182,0.6)]" : "drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]"} // Glow effect
+                                    strokeDasharray="1 2"
+                                    className={isCandyMode ? "drop-shadow-[0_0_10px_rgba(244,114,182,0.6)]" : "drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]"}
                                 />
                             </svg>
                         </div>
