@@ -15,9 +15,12 @@ import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
 import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 import { useRef } from 'react';
+import { supabase } from '../utils/supabase';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
+    const setProfile = useUserStore((state) => state.setProfile);
+    const completeAssessment = useUserStore((state) => state.completeAssessment);
     const completeLevel = useUserStore((state) => state.completeLevel);
 
     const levels = useUserStore((state) => state.levels);
@@ -41,6 +44,7 @@ export function GameRoot() {
     const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     // Level up tracking
     const prevLevelRef = useRef(profile?.level || 1);
@@ -61,6 +65,97 @@ export function GameRoot() {
 
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
+
+    // Auto-Login Logic
+    useEffect(() => {
+        const checkAutoLogin = async () => {
+            const savedUserId = localStorage.getItem('aya_user_id');
+            const savedMobile = localStorage.getItem('aya_user_mobile');
+
+            if (savedUserId && savedMobile && !profile) {
+                try {
+                    // Fetch user from users table
+                    const { data: user, error: userError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', savedUserId)
+                        .single();
+
+                    if (userError || !user) throw userError || new Error("User not found");
+
+                    // Fetch personality
+                    const { data: profiles, error: profileError } = await supabase
+                        .from('personality_profiles')
+                        .select('*')
+                        .eq('user_id', savedUserId);
+
+                    if (profileError) throw profileError;
+
+                    const baseProfile = {
+                        id: user.id,
+                        mobile: user.mobile,
+                        name: user.name,
+                        age: user.age,
+                        interests: [],
+                        roleModels: [],
+                        traits: {
+                            discipline: 50, resilience: 50, risk: 50,
+                            leadership: 50, creativity: 50, empathy: 50, vision: 50
+                        },
+                        assessmentCompleted: false,
+                        total_xp: 0,
+                        level: 1,
+                        streak: 0
+                    };
+
+                    // Fetch latest game session for XP/Level/Streak
+                    const { data: sessions } = await supabase
+                        .from('game_sessions')
+                        .select('*')
+                        .eq('user_id', savedUserId)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (sessions && sessions.length > 0) {
+                        const lastSession = sessions[0];
+                        baseProfile.total_xp = lastSession.total_xp || 0;
+                        baseProfile.level = lastSession.current_level || 1;
+                        baseProfile.streak = lastSession.streak || 0;
+                    }
+
+                    if (profiles && profiles.length > 0) {
+                        const p = profiles[0];
+                        const loadedTraits = {
+                            discipline: 50, resilience: 50, risk: p.trait_risk_taker || 50,
+                            leadership: p.trait_ambitious || 50, creativity: p.trait_creative || 50, empathy: p.trait_social || 50, vision: 50,
+                        };
+
+                        baseProfile.traits = loadedTraits as any;
+                        baseProfile.assessmentCompleted = true;
+                        setProfile(baseProfile as any);
+                        completeAssessment(loadedTraits as any, {
+                            motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
+                            social: 'Supporter', passion: 'Creative', coreValue: 'Success'
+                        });
+                    } else {
+                        setProfile(baseProfile as any);
+                    }
+
+                    setOnboardingComplete(true);
+                } catch (e) {
+                    console.error("Auto-login failed:", e);
+                    localStorage.removeItem('aya_user_id');
+                    localStorage.removeItem('aya_user_mobile');
+                }
+            }
+            setIsInitializing(false);
+        };
+        checkAutoLogin();
+    }, []);
+
+    if (isInitializing) {
+        return <div className="w-full h-screen bg-[#0d0d16] flex items-center justify-center text-[#00f1fe] font-black text-2xl tracking-[0.2em] animate-pulse">INITIALIZING...</div>;
+    }
 
     if (!profile) {
         return <OnboardingWizard />;

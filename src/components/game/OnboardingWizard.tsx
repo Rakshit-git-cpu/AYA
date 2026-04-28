@@ -138,6 +138,11 @@ export function OnboardingWizard() {
                     
                 if (profileError) throw profileError;
 
+                localStorage.setItem('aya_user_id', user.id);
+                localStorage.setItem('aya_user_mobile', mobile);
+                localStorage.setItem('aya_user_name', name);
+                localStorage.setItem('aya_user_age', age.toString());
+
                 const baseProfile = {
                     id: user.id,
                     mobile: user.mobile,
@@ -177,6 +182,11 @@ export function OnboardingWizard() {
                     .single();
 
                 if (insertError) throw insertError;
+
+                localStorage.setItem('aya_user_id', newUser.id);
+                localStorage.setItem('aya_user_mobile', mobile);
+                localStorage.setItem('aya_user_name', name);
+                localStorage.setItem('aya_user_age', age.toString());
 
                 setProfile({
                     id: newUser.id,

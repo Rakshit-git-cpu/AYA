@@ -760,6 +760,21 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                         Reset Progress
                     </button>
 
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('aya_user_id');
+                            localStorage.removeItem('aya_user_mobile');
+                            localStorage.removeItem('aya_user_name');
+                            localStorage.removeItem('aya_user_age');
+                            localStorage.removeItem('hasSeenOnboarding');
+                            localStorage.removeItem('aya_map_theme');
+                            window.location.reload();
+                        }}
+                        className="w-full bg-[#1a0a05] hover:bg-orange-950/40 text-orange-400/80 hover:text-orange-400 border border-orange-900/50 hover:border-orange-500/50 font-bold py-3.5 rounded-xl transform active:scale-95 transition-all uppercase tracking-widest text-xs"
+                    >
+                        Sign Out
+                    </button>
+
                     <button onClick={onClose} className="w-full text-slate-500 text-xs font-bold tracking-widest py-2 hover:text-white transition-colors uppercase">
                         Close
                     </button>

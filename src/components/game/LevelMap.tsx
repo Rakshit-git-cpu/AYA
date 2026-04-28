@@ -620,6 +620,21 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                         Restart Journey (Reset)
                     </button>
 
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('aya_user_id');
+                            localStorage.removeItem('aya_user_mobile');
+                            localStorage.removeItem('aya_user_name');
+                            localStorage.removeItem('aya_user_age');
+                            localStorage.removeItem('hasSeenOnboarding');
+                            localStorage.removeItem('aya_map_theme');
+                            window.location.reload();
+                        }}
+                        className="w-full bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-200 border border-slate-700 hover:border-orange-800 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all uppercase tracking-wider text-xs"
+                    >
+                        Sign Out
+                    </button>
+
                     <button onClick={onClose} className="w-full text-slate-500 text-sm py-2 hover:text-white transition-colors">
                         Close Overlay
                     </button>
