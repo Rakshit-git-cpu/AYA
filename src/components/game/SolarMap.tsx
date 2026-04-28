@@ -118,6 +118,12 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
     const [canvasReady, setCanvasReady] = useState(false);
+    const [framesLoaded, setFramesLoaded] = useState(0);
+    const totalIdleFrames = 240;
+    const idleFramesRef = useRef<ImageBitmap[]>([]);
+    const animationFrameId = useRef<number>(0);
+    const lastDrawTime = useRef<number>(0);
+    const currentFrameIdx = useRef<number>(0);
 
     useEffect(() => {
         const handleResize = () => setWindowHeight(window.innerHeight);
@@ -137,41 +143,125 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const scrollableDistance = Math.max(0, totalHeight - windowHeight);
     const hudY = useTransform(smoothProgress, [0, 1], [0, -scrollableDistance]);
 
-    // Draw static first frame
+    // Idle Animation Frame Logic
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const img = new Image();
-        img.src = '/assets/map_frames_solar/ezgif-frame-001.jpg';
-        img.onload = () => {
+        let isUnmounted = false;
+        
+        // Low-end device check
+        const isLowEnd = (navigator.hardwareConcurrency || 4) < 4;
+
+        const drawFrame = (img: ImageBitmap | HTMLImageElement) => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
-            // Cover scaling
             const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
             const x = (canvas.width / 2) - (img.width / 2) * scale;
             const y = (canvas.height / 2) - (img.height / 2) * scale;
-            
             ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-            setCanvasReady(true);
         };
 
+        if (isLowEnd) {
+            // Static fallback
+            const img = new Image();
+            img.src = '/assets/map_frames_solar/ezgif-frame-001.jpg';
+            img.onload = () => {
+                if (isUnmounted) return;
+                drawFrame(img);
+                setCanvasReady(true);
+            };
+            return () => { isUnmounted = true; };
+        }
+
+        const loadFrames = async () => {
+            const batchSize = 50;
+            const loadedBitmaps: ImageBitmap[] = new Array(totalIdleFrames);
+            
+            // First load frame 1 immediately and draw it to prevent blank screen
+            const firstImg = new Image();
+            firstImg.src = '/assets/map_frames_solar/ezgif-frame-001.jpg';
+            await new Promise((resolve) => {
+                firstImg.onload = () => {
+                    if (!isUnmounted) drawFrame(firstImg);
+                    resolve(true);
+                }
+            });
+
+            for (let i = 0; i < totalIdleFrames; i += batchSize) {
+                if (isUnmounted) return;
+                const batchPromises = [];
+                for (let j = i; j < i + batchSize && j < totalIdleFrames; j++) {
+                    const frameNum = String(j + 1).padStart(3, '0');
+                    const src = `/assets/map_frames_solar/ezgif-frame-${frameNum}.jpg`;
+                    
+                    batchPromises.push(
+                        fetch(src)
+                            .then(res => res.blob())
+                            .then(blob => createImageBitmap(blob))
+                            .then(bitmap => {
+                                loadedBitmaps[j] = bitmap;
+                                if (!isUnmounted) {
+                                    setFramesLoaded(prev => prev + 1);
+                                }
+                            })
+                            .catch(e => console.warn(`Failed to load frame ${frameNum}`, e))
+                    );
+                }
+                await Promise.all(batchPromises);
+            }
+
+            if (isUnmounted) return;
+            
+            // Fill any missing frames with previous available frame to prevent crash
+            for (let i = 0; i < totalIdleFrames; i++) {
+                if (!loadedBitmaps[i]) {
+                    loadedBitmaps[i] = loadedBitmaps[i-1] || loadedBitmaps.find(b => b)!;
+                }
+            }
+
+            idleFramesRef.current = loadedBitmaps;
+            setCanvasReady(true);
+            
+            // Start animation loop
+            const targetFPS = 30;
+            const frameInterval = 1000 / targetFPS;
+
+            const animate = (time: number) => {
+                if (isUnmounted) return;
+                
+                if (time - lastDrawTime.current >= frameInterval) {
+                    drawFrame(idleFramesRef.current[currentFrameIdx.current]);
+                    currentFrameIdx.current = (currentFrameIdx.current + 1) % totalIdleFrames;
+                    lastDrawTime.current = time;
+                }
+                
+                animationFrameId.current = requestAnimationFrame(animate);
+            };
+            
+            animationFrameId.current = requestAnimationFrame(animate);
+        };
+
+        loadFrames();
+
         const handleResize = () => {
-            if (img.complete) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-                const x = (canvas.width / 2) - (img.width / 2) * scale;
-                const y = (canvas.height / 2) - (img.height / 2) * scale;
-                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+            if (idleFramesRef.current.length > 0) {
+               drawFrame(idleFramesRef.current[currentFrameIdx.current]);
+            } else if (isLowEnd) {
+                const img = new Image();
+                img.src = '/assets/map_frames_solar/ezgif-frame-001.jpg';
+                img.onload = () => drawFrame(img);
             }
         };
 
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        return () => {
+            isUnmounted = true;
+            window.removeEventListener('resize', handleResize);
+            if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+        };
     }, []);
 
     useEffect(() => {
@@ -281,6 +371,21 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     onClose={() => setChallengeMood(null)}
                     onComplete={(level) => { setChallengeMood(null); onPlayLevel(level); }}
                 />
+            )}
+
+            {/* Loading Bar Overlay */}
+            {(!canvasReady && framesLoaded < totalIdleFrames && (navigator.hardwareConcurrency || 4) >= 4) && (
+                <div className="absolute inset-0 z-[150] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm pointer-events-none transition-opacity duration-1000">
+                    <div className="w-64 h-2 bg-slate-900 rounded-full overflow-hidden border border-[#FFB347]/30 shadow-[0_0_15px_rgba(255,179,71,0.2)]">
+                        <div 
+                            className="h-full bg-gradient-to-r from-[#FFB347] to-[#ff7b00] transition-all duration-300"
+                            style={{ width: `${(framesLoaded / totalIdleFrames) * 100}%` }}
+                        />
+                    </div>
+                    <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#FFB347] animate-pulse">
+                        Warping Space... {Math.round((framesLoaded / totalIdleFrames) * 100)}%
+                    </p>
+                </div>
             )}
 
             {/* Scrollable Map */}
