@@ -6,7 +6,7 @@ import { useUserStore } from '../../store/userStore';
 // Global Cache for persistent frame images across unmounts/renders
 const GLOBAL_FRAME_CACHE: Record<string, HTMLImageElement[]> = {};
 
-const DISCLAIMER_TEXT = `About The Game
+export const DISCLAIMER_TEXT = `About The Game
 At Your Age (AYA) is an interactive personality discovery game designed for entertainment and personal reflection purposes only. The scenarios, stories and personality assessments presented in this app are fictional simulations inspired by publicly available historical information and are not intended to be factually comprehensive or academically verified.
 
 About Personality Assessments

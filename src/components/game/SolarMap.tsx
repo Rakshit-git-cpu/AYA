@@ -1,6 +1,8 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { DISCLAIMER_TEXT } from './AntiGravityCanvas';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
@@ -148,6 +150,15 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const idleFramesRef = useRef<FrameType[]>([]);
     const currentFrameIdx = useRef<number>(0);
 
+    // Intro Video & Disclaimer State
+    const [isReady, setIsReady] = useState(false);
+    const [isVideoFinished, setIsVideoFinished] = useState(false);
+    const [showPlayButton, setShowPlayButton] = useState(false);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+    const [isFadingOut, setIsFadingOut] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const setIntroVideoCompleted = useUserStore((state) => state.setIntroVideoCompleted);
+
     useEffect(() => {
         const handleResize = () => setWindowHeight(window.innerHeight);
         window.addEventListener('resize', handleResize);
@@ -275,10 +286,6 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             }
             
             console.log('[Solar] Total frames loaded:', idleFramesRef.current.length);
-            console.log('[Solar] First URL:', FRAME_URLS[0]);
-            console.log('[Solar] Last URL:', FRAME_URLS[FRAME_URLS.length - 1]);
-            console.log('[Solar] Frame 240 URL:', FRAME_URLS[240]);
-
             drawFrame(idleFramesRef.current[currentFrameIdx.current]);
         };
 
@@ -300,6 +307,38 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    // Effect to handle total readiness (Video + Images)
+    useEffect(() => {
+        if (canvasReady && isVideoFinished) {
+            setIsReady(true);
+            setIntroVideoCompleted(true);
+        }
+    }, [canvasReady, isVideoFinished, setIntroVideoCompleted]);
+
+    // Handle video auto-play and mute policy
+    useEffect(() => {
+        if (!isReady && videoRef.current) {
+            const timer = setTimeout(() => {
+                if (videoRef.current) {
+                    videoRef.current.play().catch(err => {
+                        if (err.name === 'NotAllowedError' || err.name === 'NotSupportedError') {
+                            setShowPlayButton(true);
+                        }
+                    });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isReady]);
+
+    const handleManualPlay = () => {
+        if (videoRef.current) {
+            videoRef.current.play().then(() => {
+                setShowPlayButton(false);
+            }).catch(console.error);
+        }
+    };
 
     // Scroll Parallax Effect
     useEffect(() => {
@@ -451,6 +490,58 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 </div>
             )}
 
+            {/* Cinematic Intro & Disclaimer Portal */}
+            {!isReady && createPortal(
+                <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0510]">
+                    <div 
+                        onClick={showPlayButton ? handleManualPlay : undefined}
+                        className={`absolute inset-0 z-20 flex flex-col p-6 sm:p-10 bg-[#0a0510] text-[#FFB347]/60 font-mono text-[10px] sm:text-xs overflow-y-auto leading-relaxed whitespace-pre-wrap transition-opacity duration-1000 ease-in-out ${(!isVideoPlaying && !isVideoFinished) ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${showPlayButton ? 'cursor-pointer' : ''}`}
+                    >
+                        <h2 className="text-[#FFB347] text-lg sm:text-xl font-bold mb-4 uppercase tracking-widest border-b border-[#FFB347]/30 pb-2 text-center">Solar Realm — Legal Disclaimer</h2>
+                        <div className="opacity-80">
+                            {DISCLAIMER_TEXT}
+                        </div>
+                        
+                        {showPlayButton && (
+                            <div className="mt-8 mb-12 text-center text-[#FFB347] font-black tracking-[0.2em] animate-pulse text-xs sm:text-sm border border-[#FFB347]/30 py-4 rounded-lg bg-[#FFB347]/5 shadow-[0_0_15px_rgba(255,179,71,0.1)]">
+                                TAP ANYWHERE TO AGREE & ENTER THE SUN
+                            </div>
+                        )}
+                    </div>
+
+                    <video
+                        ref={videoRef}
+                        src="/assets/intro.mp4"
+                        autoPlay
+                        playsInline
+                        preload="auto"
+                        onPlaying={() => setIsVideoPlaying(true)}
+                        onTimeUpdate={(e) => {
+                            const vid = e.target as HTMLVideoElement;
+                            if (vid.duration && vid.duration - vid.currentTime < 0.5) {
+                                setIsFadingOut(true);
+                            }
+                        }}
+                        onEnded={() => setIsVideoFinished(true)}
+                        className={`w-full h-full object-cover md:object-contain relative z-10 transition-opacity duration-500 ease-in-out ${isVideoPlaying && !isFadingOut ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                    
+                    {/* Progress Bar inside Intro for Solar Map specifically */}
+                    {isVideoFinished && !canvasReady && (
+                        <div className="absolute bottom-10 flex flex-col items-center text-[#FFB347] font-mono tracking-widest font-bold z-10">
+                            <div className="text-sm mb-2 animate-pulse uppercase">Solar Map Loading...</div>
+                            <div className="w-48 h-1 bg-slate-900 rounded-full overflow-hidden shadow-[0_0_15px_rgba(255,179,71,0.3)] border border-[#FFB347]/20">
+                                <div
+                                    className="h-full bg-gradient-to-r from-[#FFB347] to-[#ff7b00] transition-all duration-300"
+                                    style={{ width: `${(framesLoaded / totalFrames) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>,
+                document.body
+            )}
+
             {/* Scrollable Map */}
             <div ref={containerRef} className="w-full h-full overflow-y-auto overflow-x-hidden relative scroll-smooth">
                 <div style={{ height: totalHeight, width: '100%' }} />
@@ -469,28 +560,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     style={{ height: totalHeight, y: hudY, opacity: canvasReady ? 1 : 0 }}
                 >
                     <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full">
-                        {/* Connecting Path */}
-                        <div className="absolute inset-0 pointer-events-none">
-                            <svg className="absolute top-0 left-0 w-full h-full" viewBox={`0 0 100 ${totalHeight}`} preserveAspectRatio="none" style={{ overflow: 'visible' }}>
-                                <path
-                                    d={ageLevels.reduce((path, _, i) => {
-                                        if (i === 0) return `M 50 80`;
-                                        const prev = getPosition(i - 1);
-                                        const curr = getPosition(i);
-                                        const curveStrength = isMobile ? 3 : 4;
-                                        const prevXPercent = 50 + (prev.x / curveStrength);
-                                        const currXPercent = 50 + (curr.x / curveStrength);
-                                        return `${path} C ${prevXPercent} ${prev.y + 70}, ${currXPercent} ${curr.y - 70}, ${currXPercent} ${curr.y}`;
-                                    }, "")}
-                                    fill="none"
-                                    stroke="#FFB347"
-                                    strokeWidth={isMobile ? "2" : "2.5"}
-                                    strokeLinecap="round"
-                                    strokeDasharray="1 2"
-                                    className="drop-shadow-[0_0_15px_rgba(255,179,71,0.4)] opacity-50"
-                                />
-                            </svg>
-                        </div>
+                        {/* Nodes */}
 
                         {/* Nodes */}
                         {ageLevels.map((level, i) => {
