@@ -407,13 +407,12 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            e.preventDefault();
             if (!ticking) {
                 requestAnimationFrame(() => {
                     const touchDelta = touchStartY - e.touches[0].clientY;
                     touchStartY = e.touches[0].clientY;
                     
-                    const delta = touchDelta * 0.5; // Touch sensitivity
+                    const delta = touchDelta * 1.5; // Increased touch sensitivity for mobile
                     targetFrameRef.current = Math.max(0, Math.min(totalFrames - 1, targetFrameRef.current + delta));
                     ticking = false;
                 });
@@ -423,12 +422,15 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
         // Attach to BOTH window and container to ensure it always fires
         window.addEventListener('wheel', handleWheel, { passive: false });
-        window.addEventListener('touchstart', handleTouchStart, { passive: false });
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
         
         container?.addEventListener('wheel', handleWheel, { passive: false });
-        container?.addEventListener('touchstart', handleTouchStart, { passive: false });
-        container?.addEventListener('touchmove', handleTouchMove, { passive: false });
+        container?.addEventListener('touchstart', handleTouchStart, { passive: true });
+        container?.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+        canvas?.addEventListener('touchstart', handleTouchStart, { passive: true });
+        canvas?.addEventListener('touchmove', handleTouchMove, { passive: true });
 
         return () => {
             cancelAnimationFrame(animationFrameId);
@@ -441,6 +443,9 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             container?.removeEventListener('wheel', handleWheel);
             container?.removeEventListener('touchstart', handleTouchStart);
             container?.removeEventListener('touchmove', handleTouchMove);
+            
+            canvas?.removeEventListener('touchstart', handleTouchStart);
+            canvas?.removeEventListener('touchmove', handleTouchMove);
         };
     }, [canvasReady, scrollYProgress]);
 
@@ -621,7 +626,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             )}
 
             {/* Scrollable Map */}
-            <div ref={containerRef} className="fixed inset-0 w-[100vw] h-[100vh] overflow-hidden">
+            <div ref={containerRef} className="fixed inset-0 w-[100vw] h-[100vh] overflow-hidden touch-none">
                 <div style={{ height: totalHeight, width: '100%' }} />
 
                 {/* LAYER 1: STATIC CANVAS */}
