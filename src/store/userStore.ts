@@ -4,6 +4,8 @@ import type { UserProfile, Level, Lesson, PersonalityTraits, PsychologicalProfil
 import { generateLevels } from '../utils/levelGenerator';
 import { calculateLevelInfo } from '../utils/levelSystem';
 
+export type MapTheme = 'city_dark' | 'solar' | 'light';
+
 interface UserState {
     profile: UserProfile | null;
     completedOnboarding: boolean;
@@ -30,8 +32,13 @@ interface UserState {
     updateTraits: (modifiers: Partial<PersonalityTraits>) => void;
     completeAssessment: (initialTraits: PersonalityTraits, profile: PsychologicalProfile) => void;
 
-    // Theme State
+    // ── Theme State (3-way) ──────────────────────────────────────────────────
+    mapTheme: MapTheme;
+    setMapTheme: (theme: MapTheme) => void;
+    cycleMapTheme: () => void;
+    /** @deprecated use mapTheme === 'light' */
     isCandyMode: boolean;
+    /** @deprecated use cycleMapTheme */
     toggleCandyMode: () => void;
 
     // Audio State
@@ -102,9 +109,26 @@ export const useUserStore = create<UserState>()(
                 };
             }),
 
-            // Default to Dark Mode
-            isCandyMode: false,
-            toggleCandyMode: () => set((state) => ({ isCandyMode: !state.isCandyMode })),
+            // ── Theme (3-way) ────────────────────────────────────────────────
+            mapTheme: (localStorage.getItem('aya_map_theme') as MapTheme) || 'city_dark',
+            setMapTheme: (theme) => {
+                localStorage.setItem('aya_map_theme', theme);
+                set({ mapTheme: theme });
+            },
+            cycleMapTheme: () => set((state) => {
+                const order: MapTheme[] = ['city_dark', 'solar', 'light'];
+                const next = order[(order.indexOf(state.mapTheme) + 1) % order.length];
+                localStorage.setItem('aya_map_theme', next);
+                return { mapTheme: next };
+            }),
+            // Deprecated shims — kept for backward compatibility
+            get isCandyMode(): boolean { return (useUserStore.getState().mapTheme === 'light'); },
+            toggleCandyMode: () => set((state) => {
+                const order: MapTheme[] = ['city_dark', 'solar', 'light'];
+                const next = order[(order.indexOf(state.mapTheme) + 1) % order.length];
+                localStorage.setItem('aya_map_theme', next);
+                return { mapTheme: next };
+            }),
 
             // Audio Defaults
             musicVolume: 0.15,
@@ -313,7 +337,7 @@ export const useUserStore = create<UserState>()(
             })
         }),
         {
-            name: 'aya-user-storage-v5', // v5: persist profile to fix empty-map-on-refresh bug
+            name: 'aya-user-storage-v6', // v6: mapTheme replaces isCandyMode
             partialize: (state) => ({
                 // CRITICAL: persist profile so syncLevels can run after hard refresh
                 profile: state.profile,
@@ -321,7 +345,7 @@ export const useUserStore = create<UserState>()(
 
                 levels: state.levels,
                 levelScores: state.levelScores,
-                isCandyMode: state.isCandyMode,
+                mapTheme: state.mapTheme,
 
                 // Persist Audio Settings
                 musicVolume: state.musicVolume,

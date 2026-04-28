@@ -10,6 +10,7 @@ import { AntiGravityCanvas } from './AntiGravityCanvas';
 import { DailyChallengeModal } from './DailyChallengeModal';
 import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
+import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -71,8 +72,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
     const ageLevels = processedLevels;
 
-    const isCandyMode = useUserStore((state) => state.isCandyMode);
-    const toggleCandyMode = useUserStore((state) => state.toggleCandyMode);
+    const mapTheme = useUserStore((state) => state.mapTheme);
+    const isCandyMode = mapTheme === 'light';
     
     // Streaks
     const checkStreak = useUserStore((state) => state.checkStreak);
@@ -85,6 +86,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [showSettings, setShowSettings] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
     const [showChallengeModal, setShowChallengeModal] = useState(false);
+    const [showThemeSwitcher, setShowThemeSwitcher] = useState(false);
     const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
     // Mobile Detection
@@ -254,7 +256,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 <button
                     onClick={() => {
                         audioSynth.playClick();
-                        toggleCandyMode();
+                        setShowThemeSwitcher(true);
                     }}
                     className={clsx(
                         "w-8 h-8 md:w-10 md:h-10 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border hover:-rotate-12 active:scale-90",
@@ -328,6 +330,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             </div>
 
             {/* Modals (Fixed Overlay) */}
+            <ThemeSwitcherModal isOpen={showThemeSwitcher} onClose={() => setShowThemeSwitcher(false)} />
             {showJournal && <LessonJournal onClose={() => setShowJournal(false)} />}
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
             {showChallengeModal && (
