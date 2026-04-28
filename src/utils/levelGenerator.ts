@@ -20,7 +20,7 @@ export function generateLevels(_age: number): Level[] {
         },
         {
             id: 'lvl_19_neeraj', title: 'The Lonely Flight', description: 'At 19, Neeraj chose isolation over fame.',
-            requiredStars: 0, year: 2016, age: 19, theme: 'Sports', archetype: 'The Monk', personality: 'Neeraj Chopra',
+            requiredStars: 0, year: 2016, age: 18, theme: 'Sports', archetype: 'The Monk', personality: 'Neeraj Chopra',
             bio: 'A 19-year-old Javelin World Junior Record holder who chose a lonely path to Olympic Gold.',
             fame: 'Olympic Gold Medalist. National Hero.',
             achievements: ['Olympic Gold (Tokyo 2020)', 'World Athletics Champion', 'First Indian to win Diamond League'],
@@ -30,7 +30,7 @@ export function generateLevels(_age: number): Level[] {
         },
         {
             id: 'lvl_20_prajakta', title: 'The 2 AM Panic', description: 'At 20, Prajakta quit her 10-year dream job for a risky YouTube career.',
-            requiredStars: 0, year: 2014, age: 20, theme: 'Media', archetype: 'The Authentic', personality: 'Prajakta Koli',
+            requiredStars: 0, year: 2014, age: 18, theme: 'Media', archetype: 'The Authentic', personality: 'Prajakta Koli',
             bio: 'A disillusioned Radio Jockey intern who took a leap of faith to become MostlySane.',
             fame: 'India\'s top female comedy creator. Actor.',
             achievements: ['7M+ YouTube Subscribers', 'Forbes 30 Under 30', 'Climate Change Ambassador'],
@@ -40,7 +40,7 @@ export function generateLevels(_age: number): Level[] {
         },
         {
             id: 'lvl_20_selena', title: 'The Invisible War', description: 'At 20, Selena battled Lupus behind the perfect pop-star facade.',
-            requiredStars: 0, year: 2012, age: 20, theme: 'Music', archetype: 'The Vulnerable', personality: 'Selena Gomez',
+            requiredStars: 0, year: 2012, age: 18, theme: 'Music', archetype: 'The Vulnerable', personality: 'Selena Gomez',
             bio: 'A global superstar who chose to reveal her illness rather than maintain a perfect image.',
             fame: 'Global pop sensation and mental health advocate.',
             achievements: ['Most followed woman on Instagram', 'Founder of Rare Beauty', 'Mental health philanthropist'],
@@ -51,7 +51,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 17: Shah Rukh Khan
         {
             id: 'lvl_17_srk', title: 'The Stage or The Books', description: 'At 17, SRK faces an impossible choice — grieve, study, or chase the stage.',
-            requiredStars: 0, year: 1982, age: 17, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1982, age: 18, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A grieving 17-year-old with a rare theatrical gift, torn between financial duty and a burning passion for the stage.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
