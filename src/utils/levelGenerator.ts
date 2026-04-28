@@ -8,6 +8,46 @@ export function generateLevels(_age: number): Level[] {
 
     // Master List of ALL Levels
     const levels: Omit<Level, 'status' | 'isLocked' | 'stars'>[] = [
+        {
+            id: 'lvl_18_zendaya', title: 'The Identity Strike', description: 'At 18, Zendaya risked her Disney career for creative control.',
+            requiredStars: 0, year: 2014, age: 18, theme: 'Arts', archetype: 'The Producer', personality: 'Zendaya',
+            bio: 'A Disney star who refused to be just another hollow stereotype.',
+            fame: 'Emmy-winning actress and global fashion icon.',
+            achievements: ['Youngest two-time Emmy winner', 'Time 100 Most Influential', 'Producer at 18'],
+            lesson: 'POWER ISN\'T GIVEN, IT\'S TAKEN.',
+            avatarUrl: '/assets/avatar_zendaya.jpg', scenarioId: 'lvl_age_18_zendaya',
+            idolTraits: { discipline: 90, resilience: 95, risk: 100, leadership: 90, creativity: 95, empathy: 85, vision: 95 }
+        },
+        {
+            id: 'lvl_19_neeraj', title: 'The Lonely Flight', description: 'At 19, Neeraj chose isolation over fame.',
+            requiredStars: 0, year: 2016, age: 19, theme: 'Sports', archetype: 'The Monk', personality: 'Neeraj Chopra',
+            bio: 'A 19-year-old Javelin World Junior Record holder who chose a lonely path to Olympic Gold.',
+            fame: 'Olympic Gold Medalist. National Hero.',
+            achievements: ['Olympic Gold (Tokyo 2020)', 'World Athletics Champion', 'First Indian to win Diamond League'],
+            lesson: 'FAME IS A DISTRACTION; MASTERY IS THE GOAL.',
+            avatarUrl: '/assets/avatar_neeraj.jpg', scenarioId: 'lvl_age_19_neeraj',
+            idolTraits: { discipline: 100, resilience: 95, risk: 85, leadership: 80, creativity: 75, empathy: 70, vision: 95 }
+        },
+        {
+            id: 'lvl_20_prajakta', title: 'The 2 AM Panic', description: 'At 20, Prajakta quit her 10-year dream job for a risky YouTube career.',
+            requiredStars: 0, year: 2014, age: 20, theme: 'Media', archetype: 'The Authentic', personality: 'Prajakta Koli',
+            bio: 'A disillusioned Radio Jockey intern who took a leap of faith to become MostlySane.',
+            fame: 'India\'s top female comedy creator. Actor.',
+            achievements: ['7M+ YouTube Subscribers', 'Forbes 30 Under 30', 'Climate Change Ambassador'],
+            lesson: 'DON\'T CLING TO A MISTAKE JUST BECAUSE YOU SPENT A LONG TIME MAKING IT.',
+            avatarUrl: '/assets/avatar_prajakta.jpg', scenarioId: 'lvl_age_20_prajakta',
+            idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 85, creativity: 95, empathy: 100, vision: 90 }
+        },
+        {
+            id: 'lvl_20_selena', title: 'The Invisible War', description: 'At 20, Selena battled Lupus behind the perfect pop-star facade.',
+            requiredStars: 0, year: 2012, age: 20, theme: 'Music', archetype: 'The Vulnerable', personality: 'Selena Gomez',
+            bio: 'A global superstar who chose to reveal her illness rather than maintain a perfect image.',
+            fame: 'Global pop sensation and mental health advocate.',
+            achievements: ['Most followed woman on Instagram', 'Founder of Rare Beauty', 'Mental health philanthropist'],
+            lesson: 'VULNERABILITY IS THE ULTIMATE STRENGTH.',
+            avatarUrl: '/assets/avatar_selena.jpg', scenarioId: 'lvl_age_20_selena',
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 95, creativity: 90, empathy: 100, vision: 85 }
+        },
         // Age 17: Shah Rukh Khan
         {
             id: 'lvl_17_srk', title: 'The Stage or The Books', description: 'At 17, SRK faces an impossible choice — grieve, study, or chase the stage.',
@@ -449,46 +489,6 @@ export function generateLevels(_age: number): Level[] {
             lesson: 'CREATIVITY strikes in the quiet moments of life.',
             avatarUrl: '/assets/avatar_jk_rowling.png', scenarioId: 'lvl_age_25',
             idolTraits: { discipline: 85, resilience: 98, risk: 85, leadership: 75, creativity: 100, empathy: 90, vision: 95 }
-        },
-        {
-            id: 'lvl_18_zendaya', title: 'The Identity Strike', description: 'At 18, Zendaya risked her Disney career for creative control.',
-            requiredStars: 0, year: 2014, age: 18, theme: 'Arts', archetype: 'The Producer', personality: 'Zendaya',
-            bio: 'A Disney star who refused to be just another hollow stereotype.',
-            fame: 'Emmy-winning actress and global fashion icon.',
-            achievements: ['Youngest two-time Emmy winner', 'Time 100 Most Influential', 'Producer at 18'],
-            lesson: 'POWER ISN\'T GIVEN, IT\'S TAKEN.',
-            avatarUrl: '/assets/avatar_zendaya.jpg', scenarioId: 'lvl_age_18_zendaya',
-            idolTraits: { discipline: 90, resilience: 95, risk: 100, leadership: 90, creativity: 95, empathy: 85, vision: 95 }
-        },
-        {
-            id: 'lvl_19_neeraj', title: 'The Lonely Flight', description: 'At 19, Neeraj chose isolation over fame.',
-            requiredStars: 0, year: 2016, age: 19, theme: 'Sports', archetype: 'The Monk', personality: 'Neeraj Chopra',
-            bio: 'A 19-year-old Javelin World Junior Record holder who chose a lonely path to Olympic Gold.',
-            fame: 'Olympic Gold Medalist. National Hero.',
-            achievements: ['Olympic Gold (Tokyo 2020)', 'World Athletics Champion', 'First Indian to win Diamond League'],
-            lesson: 'FAME IS A DISTRACTION; MASTERY IS THE GOAL.',
-            avatarUrl: '/assets/avatar_neeraj.jpg', scenarioId: 'lvl_age_19_neeraj',
-            idolTraits: { discipline: 100, resilience: 95, risk: 85, leadership: 80, creativity: 75, empathy: 70, vision: 95 }
-        },
-        {
-            id: 'lvl_20_prajakta', title: 'The 2 AM Panic', description: 'At 20, Prajakta quit her 10-year dream job for a risky YouTube career.',
-            requiredStars: 0, year: 2014, age: 20, theme: 'Media', archetype: 'The Authentic', personality: 'Prajakta Koli',
-            bio: 'A disillusioned Radio Jockey intern who took a leap of faith to become MostlySane.',
-            fame: 'India\'s top female comedy creator. Actor.',
-            achievements: ['7M+ YouTube Subscribers', 'Forbes 30 Under 30', 'Climate Change Ambassador'],
-            lesson: 'DON\'T CLING TO A MISTAKE JUST BECAUSE YOU SPENT A LONG TIME MAKING IT.',
-            avatarUrl: '/assets/avatar_prajakta.jpg', scenarioId: 'lvl_age_20_prajakta',
-            idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 85, creativity: 95, empathy: 100, vision: 90 }
-        },
-        {
-            id: 'lvl_20_selena', title: 'The Invisible War', description: 'At 20, Selena battled Lupus behind the perfect pop-star facade.',
-            requiredStars: 0, year: 2012, age: 20, theme: 'Music', archetype: 'The Vulnerable', personality: 'Selena Gomez',
-            bio: 'A global superstar who chose to reveal her illness rather than maintain a perfect image.',
-            fame: 'Global pop sensation and mental health advocate.',
-            achievements: ['Most followed woman on Instagram', 'Founder of Rare Beauty', 'Mental health philanthropist'],
-            lesson: 'VULNERABILITY IS THE ULTIMATE STRENGTH.',
-            avatarUrl: '/assets/avatar_selena.jpg', scenarioId: 'lvl_age_20_selena',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 95, creativity: 90, empathy: 100, vision: 85 }
         }
     ];
 
