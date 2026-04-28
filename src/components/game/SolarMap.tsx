@@ -105,21 +105,23 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
     const NODE_OFFSETS = isMobile ? MOBILE_NODE_OFFSETS : DESKTOP_NODE_OFFSETS;
 
-    // Define the exact sequence of 719 frames as requested
+    // Define the exact sequence of frames as requested
     const getFrameSequence = () => {
         const seq: string[] = [];
-        // 1-240
+        // First set: 1-240 (skipping 235-240)
         for (let i = 1; i <= 240; i++) {
+            if (i >= 235 && i <= 240) continue;
             seq.push(`/assets/map_frames_solar/ezgif-frame-${String(i).padStart(3, '0')}.jpg`);
         }
-        // 241-719
+        // Second set: 241-719 (skipping 1-5 to avoid freeze)
         for (let i = 1; i <= 479; i++) {
+            if (i >= 1 && i <= 5) continue;
             seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(${i}).jpg`);
         }
         return seq;
     };
     const FRAME_URLS = getFrameSequence();
-    const totalFrames = 719;
+    const totalFrames = FRAME_URLS.length; // 708
 
     const getPosition = (index: number) => {
         const y = index * NODE_SPACING + (isMobile ? 120 : 150);
@@ -225,11 +227,12 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 }
             });
 
-            // Load 1-240 FIRST
-            for (let i = 0; i < 240; i += batchSize) {
+            // Load First Set
+            const firstSetCount = 234; // 240 - 6 skipped
+            for (let i = 0; i < firstSetCount; i += batchSize) {
                 if (isUnmounted) return;
                 const batchPromises = [];
-                for (let j = i; j < i + batchSize && j < 240; j++) {
+                for (let j = i; j < i + batchSize && j < firstSetCount; j++) {
                     const src = FRAME_URLS[j];
                     
                     batchPromises.push(
@@ -251,8 +254,17 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 await Promise.all(batchPromises);
             }
 
-            // THEN Load 241-719
-            for (let i = 240; i < totalFrames; i += batchSize) {
+            // THEN Load Second Set
+            const getScrollFrameUrl = (num: number) => `/assets/map_frames_solar/ezfif-frame-242%20(${num}).jpg`;
+            console.log('[Solar] Starting second set load...');
+            console.log('[Solar] Sample second set URL:', getScrollFrameUrl(1));
+            
+            const testImg = new Image();
+            testImg.onload = () => console.log('[Solar] Second set frame 1 LOADED OK');
+            testImg.onerror = (e) => console.log('[Solar] Second set frame 1 FAILED:', e);
+            testImg.src = getScrollFrameUrl(1);
+
+            for (let i = firstSetCount; i < totalFrames; i += batchSize) {
                 if (isUnmounted) return;
                 const batchPromises = [];
                 for (let j = i; j < i + batchSize && j < totalFrames; j++) {
@@ -292,8 +304,9 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 setCanvasReady(true);
             }
             
-            console.log('[Solar Debug] frames array length:', idleFramesRef.current.length);
-            console.log('[Solar Debug] last frame source:', idleFramesRef.current[idleFramesRef.current.length - 1]);
+            console.log('[Solar] First set count:', firstSetCount);
+            console.log('[Solar] Second set count:', totalFrames - firstSetCount);
+            console.log('[Solar] Total frames:', idleFramesRef.current.length);
 
             drawFrame(idleFramesRef.current[currentFrameIdx.current]);
         };
