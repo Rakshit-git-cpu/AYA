@@ -54,6 +54,11 @@ export function GameRoot() {
         }
     }, [profile?.level]);
 
+    useEffect(() => {
+        console.log('[GameRoot] Profile State:', profile);
+        console.log('[GameRoot] Assessment Completed:', profile?.assessmentCompleted);
+    }, [profile]);
+
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
 

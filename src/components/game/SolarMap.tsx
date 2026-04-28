@@ -210,7 +210,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             return () => { isUnmounted = true; };
         }
 
-        const isInitialLoad = performance.now() < 3500;
+        const isInitialLoad = performance.now() < 10000;
 
         const loadFrame = (url: string): Promise<HTMLImageElement> => {
             return new Promise((resolve, reject) => {

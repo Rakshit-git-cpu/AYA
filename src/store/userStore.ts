@@ -64,6 +64,10 @@ interface UserState {
     hasInteracted: boolean;
     setHasInteracted: (val: boolean) => void;
 
+    // Solar Load Tracking
+    hasSolarLoadedThisSession: boolean;
+    setSolarLoadedThisSession: (val: boolean) => void;
+
     resetProgress: () => void;
 }
 
@@ -153,6 +157,9 @@ export const useUserStore = create<UserState>()(
 
             hasInteracted: false,
             setHasInteracted: (val) => set({ hasInteracted: val }),
+
+            hasSolarLoadedThisSession: false,
+            setSolarLoadedThisSession: (val) => set({ hasSolarLoadedThisSession: val }),
 
             setProfile: (profile) => {
                 // Generate levels dynamically based on Age & Interests
@@ -337,23 +344,28 @@ export const useUserStore = create<UserState>()(
             })
         }),
         {
-            name: 'aya-user-storage-v6', // v6: mapTheme replaces isCandyMode
+            name: 'aya-user-storage-v10', // v10: session tracking and improved persistence
             partialize: (state) => ({
-                // CRITICAL: persist profile so syncLevels can run after hard refresh
                 profile: state.profile,
                 completedOnboarding: state.completedOnboarding,
-
                 levels: state.levels,
                 levelScores: state.levelScores,
                 mapTheme: state.mapTheme,
-
-                // Persist Audio Settings
                 musicVolume: state.musicVolume,
                 sfxVolume: state.sfxVolume,
                 isMusicMuted: state.isMusicMuted,
                 isSfxMuted: state.isSfxMuted,
-
                 collectedLessons: state.collectedLessons
             }),
+            onRehydrateStorage: (state) => {
+                console.log('[Store] Hydration starting...');
+                return (rehydratedState, error) => {
+                    if (error) {
+                        console.error('[Store] Hydration failed:', error);
+                    } else {
+                        console.log('[Store] Hydration complete. Profile:', rehydratedState?.profile?.name || 'none');
+                    }
+                };
+            }
         }
     ));
