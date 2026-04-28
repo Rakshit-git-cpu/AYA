@@ -106,23 +106,24 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
     const NODE_OFFSETS = isMobile ? MOBILE_NODE_OFFSETS : DESKTOP_NODE_OFFSETS;
 
-    // Define the exact sequence of frames as requested
+    // Build frame sequence from EXACTLY what exists on disk:
+    // ezgif-frame-001.jpg to ezgif-frame-240.jpg  (240 files)
+    // ezfif-frame-242 (1).jpg                      (1 file)
+    // ezfif-frame-242 (241).jpg to (479).jpg       (239 files)
+    // TOTAL: 480 files
     const getFrameSequence = () => {
         const seq: string[] = [];
-        // First set: 1-240 (skipping 235-240)
         for (let i = 1; i <= 240; i++) {
-            if (i >= 235 && i <= 240) continue;
             seq.push(`/assets/map_frames_solar/ezgif-frame-${String(i).padStart(3, '0')}.jpg`);
         }
-        // Second set: 241-479 (skipping 241-245 to avoid freeze)
+        seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(1).jpg`);
         for (let i = 241; i <= 479; i++) {
-            if (i >= 241 && i <= 245) continue;
             seq.push(`/assets/map_frames_solar/ezfif-frame-242%20(${i}).jpg`);
         }
         return seq;
     };
     const FRAME_URLS = getFrameSequence();
-    const totalFrames = FRAME_URLS.length; // 468
+    const totalFrames = FRAME_URLS.length; // 480
 
     const getPosition = (index: number) => {
         const y = index * NODE_SPACING + (isMobile ? 120 : 150);
@@ -238,44 +239,12 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 }
             });
 
-            // Load First Set
-            const firstSetCount = 234; // 240 - 6 skipped
-            for (let i = 0; i < firstSetCount; i += batchSize) {
-                if (isUnmounted) return;
-                const batchPromises = [];
-                for (let j = i; j < i + batchSize && j < firstSetCount; j++) {
-                    const src = FRAME_URLS[j];
-                    
-                    batchPromises.push(
-                        loadFrame(src)
-                            .then(img => {
-                                loadedBitmaps[j] = img;
-                                if (!isUnmounted) {
-                                    setFramesLoaded(prev => prev + 1);
-                                }
-                            })
-                            .catch(e => console.warn(`Failed to load frame at index ${j}: ${src}`, e))
-                    );
-                }
-                await Promise.all(batchPromises);
-            }
-
-            // THEN Load Second Set
-            const getScrollFrameUrl = (num: number) => `/assets/map_frames_solar/ezfif-frame-242%20(${num}).jpg`;
-            console.log('[Solar] Starting second set load...');
-            console.log('[Solar] Sample second set URL:', getScrollFrameUrl(1));
-            
-            const testImg = new Image();
-            testImg.onload = () => console.log('[Solar] Second set frame 1 LOADED OK');
-            testImg.onerror = (e) => console.log('[Solar] Second set frame 1 FAILED:', e);
-            testImg.src = getScrollFrameUrl(1);
-
-            for (let i = firstSetCount; i < totalFrames; i += batchSize) {
+            // Load ALL frames in one unified loop — no split needed
+            for (let i = 0; i < totalFrames; i += batchSize) {
                 if (isUnmounted) return;
                 const batchPromises = [];
                 for (let j = i; j < i + batchSize && j < totalFrames; j++) {
                     const src = FRAME_URLS[j];
-                    
                     batchPromises.push(
                         loadFrame(src)
                             .then(img => {
@@ -284,7 +253,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                     setFramesLoaded(prev => prev + 1);
                                 }
                             })
-                            .catch(e => console.warn(`Failed to load frame at index ${j}: ${src}`, e))
+                            .catch(e => console.warn(`[Solar] Failed frame ${j}: ${src}`, e))
                     );
                 }
                 await Promise.all(batchPromises);
@@ -305,9 +274,10 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 setCanvasReady(true);
             }
             
-            console.log('[Solar] First set count:', firstSetCount);
-            console.log('[Solar] Second set count:', totalFrames - firstSetCount);
-            console.log('[Solar] Total frames:', idleFramesRef.current.length);
+            console.log('[Solar] Total frames loaded:', idleFramesRef.current.length);
+            console.log('[Solar] First URL:', FRAME_URLS[0]);
+            console.log('[Solar] Last URL:', FRAME_URLS[FRAME_URLS.length - 1]);
+            console.log('[Solar] Frame 240 URL:', FRAME_URLS[240]);
 
             drawFrame(idleFramesRef.current[currentFrameIdx.current]);
         };
