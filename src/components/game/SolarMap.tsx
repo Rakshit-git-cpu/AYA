@@ -11,6 +11,9 @@ import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 
+// Global cache to keep frames in memory across component mounts
+let globalSolarFramesCache: ImageBitmap[] | null = null;
+
 interface SolarMapProps {
     onPlayLevel: (level: any) => void;
     onOpenDnaProfile: () => void;
@@ -121,8 +124,6 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [framesLoaded, setFramesLoaded] = useState(0);
     const totalIdleFrames = 240;
     const idleFramesRef = useRef<ImageBitmap[]>([]);
-    const animationFrameId = useRef<number>(0);
-    const lastDrawTime = useRef<number>(0);
     const currentFrameIdx = useRef<number>(0);
 
     useEffect(() => {
@@ -176,7 +177,23 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             return () => { isUnmounted = true; };
         }
 
+        const isInitialLoad = performance.now() < 3500;
+
         const loadFrames = async () => {
+            // Check cache
+            if (globalSolarFramesCache) {
+                idleFramesRef.current = globalSolarFramesCache;
+                setCanvasReady(true);
+                setFramesLoaded(totalIdleFrames);
+                drawFrame(globalSolarFramesCache[currentFrameIdx.current]);
+                return;
+            }
+
+            // If it's initial load, we still load them but we won't show the loading UI
+            if (isInitialLoad) {
+                setCanvasReady(true);
+            }
+
             const batchSize = 50;
             const loadedBitmaps: ImageBitmap[] = new Array(totalIdleFrames);
             
@@ -222,26 +239,13 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 }
             }
 
+            globalSolarFramesCache = loadedBitmaps;
             idleFramesRef.current = loadedBitmaps;
-            setCanvasReady(true);
+            if (!isInitialLoad) {
+                setCanvasReady(true);
+            }
             
-            // Start animation loop
-            const targetFPS = 30;
-            const frameInterval = 1000 / targetFPS;
-
-            const animate = (time: number) => {
-                if (isUnmounted) return;
-                
-                if (time - lastDrawTime.current >= frameInterval) {
-                    drawFrame(idleFramesRef.current[currentFrameIdx.current]);
-                    currentFrameIdx.current = (currentFrameIdx.current + 1) % totalIdleFrames;
-                    lastDrawTime.current = time;
-                }
-                
-                animationFrameId.current = requestAnimationFrame(animate);
-            };
-            
-            animationFrameId.current = requestAnimationFrame(animate);
+            drawFrame(idleFramesRef.current[currentFrameIdx.current]);
         };
 
         loadFrames();
@@ -260,9 +264,31 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         return () => {
             isUnmounted = true;
             window.removeEventListener('resize', handleResize);
-            if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         };
     }, []);
+
+    // Scroll Parallax Effect
+    useEffect(() => {
+        return scrollYProgress.on('change', (latest) => {
+            const canvas = canvasRef.current;
+            if (!canvas || !idleFramesRef.current || idleFramesRef.current.length === 0) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            const frameIdx = Math.floor(latest * (totalIdleFrames - 1));
+            currentFrameIdx.current = frameIdx;
+            const img = idleFramesRef.current[frameIdx];
+
+            if (img) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+                const x = (canvas.width / 2) - (img.width / 2) * scale;
+                const y = (canvas.height / 2) - (img.height / 2) * scale;
+                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+            }
+        });
+    }, [scrollYProgress]);
 
     useEffect(() => {
         audioSynth.playStartup();
