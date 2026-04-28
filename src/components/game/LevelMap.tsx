@@ -623,12 +623,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         onClick={() => {
-                            localStorage.removeItem('aya_user_id');
-                            localStorage.removeItem('aya_user_mobile');
-                            localStorage.removeItem('aya_user_name');
-                            localStorage.removeItem('aya_user_age');
-                            localStorage.removeItem('hasSeenOnboarding');
-                            localStorage.removeItem('aya_map_theme');
+                            localStorage.clear();
                             window.location.reload();
                         }}
                         className="w-full bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-200 border border-slate-700 hover:border-orange-800 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all uppercase tracking-wider text-xs"

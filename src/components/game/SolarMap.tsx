@@ -341,19 +341,26 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         }
     };
 
-    // Custom Scroll Parallax Effect (Native Wheel/Touch)
+    // Custom Scroll Parallax Effect (Native Wheel/Touch with Lerp)
     useEffect(() => {
         if (!canvasReady || idleFramesRef.current.length === 0) return;
 
-        let currentFrame = currentFrameIdx.current || 0;
         const totalFrames = idleFramesRef.current.length;
         const container = containerRef.current;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        canvas.style.willChange = 'transform';
+
+        const targetFrameRef = { current: currentFrameIdx.current || 0 };
+        const currentFrameRef = { current: currentFrameIdx.current || 0 };
         let touchStartY = 0;
+        let ticking = false;
+        let animationFrameId: number;
 
         const drawFrame = (frameIndex: number) => {
             const img = idleFramesRef.current[frameIndex];
-            const canvas = canvasRef.current;
-            if (!img || !canvas) return;
+            if (!img) return;
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
@@ -365,22 +372,34 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
         };
 
-        const updateScroll = (frameChange: number) => {
-            currentFrame = Math.max(0, Math.min(totalFrames - 1, currentFrame + frameChange));
-            currentFrameIdx.current = currentFrame;
+        const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+        const updateFrame = () => {
+            currentFrameRef.current = lerp(currentFrameRef.current, targetFrameRef.current, 0.1);
+            const frameIndex = Math.round(currentFrameRef.current);
+            currentFrameIdx.current = frameIndex;
             
-            // Draw frame directly
-            drawFrame(currentFrame);
+            drawFrame(frameIndex);
             
-            // Sync nodes position (Framer Motion handles the HUD movement smoothly)
-            scrollYProgress.set(currentFrame / Math.max(1, totalFrames - 1));
+            // Sync HUD nodes using continuous values for extreme smoothness
+            scrollYProgress.set(currentFrameRef.current / Math.max(1, totalFrames - 1));
+
+            animationFrameId = requestAnimationFrame(updateFrame);
         };
+
+        // Start infinite animation loop
+        animationFrameId = requestAnimationFrame(updateFrame);
 
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
-            const delta = e.deltaY;
-            const frameChange = Math.sign(delta) * Math.ceil(Math.abs(delta) / 50);
-            updateScroll(frameChange);
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const delta = e.deltaY * 0.3; // Desktop sensitivity 0.3
+                    targetFrameRef.current = Math.max(0, Math.min(totalFrames - 1, targetFrameRef.current + delta));
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
         const handleTouchStart = (e: TouchEvent) => {
@@ -389,11 +408,17 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
         const handleTouchMove = (e: TouchEvent) => {
             e.preventDefault();
-            const touchDelta = touchStartY - e.touches[0].clientY;
-            touchStartY = e.touches[0].clientY;
-            
-            const frameChange = Math.sign(touchDelta) * Math.ceil(Math.abs(touchDelta) / 20);
-            updateScroll(frameChange);
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const touchDelta = touchStartY - e.touches[0].clientY;
+                    touchStartY = e.touches[0].clientY;
+                    
+                    const delta = touchDelta * 0.5; // Touch sensitivity
+                    targetFrameRef.current = Math.max(0, Math.min(totalFrames - 1, targetFrameRef.current + delta));
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
         // Attach to BOTH window and container to ensure it always fires
@@ -406,6 +431,9 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         container?.addEventListener('touchmove', handleTouchMove, { passive: false });
 
         return () => {
+            cancelAnimationFrame(animationFrameId);
+            canvas.style.willChange = 'auto';
+
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
@@ -812,15 +840,10 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         onClick={() => {
-                            localStorage.removeItem('aya_user_id');
-                            localStorage.removeItem('aya_user_mobile');
-                            localStorage.removeItem('aya_user_name');
-                            localStorage.removeItem('aya_user_age');
-                            localStorage.removeItem('hasSeenOnboarding');
-                            localStorage.removeItem('aya_map_theme');
+                            localStorage.clear();
                             window.location.reload();
                         }}
-                        className="w-full bg-[#1a0a05] hover:bg-orange-950/40 text-orange-400/80 hover:text-orange-400 border border-orange-900/50 hover:border-orange-500/50 font-bold py-3.5 rounded-xl transform active:scale-95 transition-all uppercase tracking-widest text-xs"
+                        className="w-full bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-200 border border-slate-700 hover:border-orange-800 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all uppercase tracking-wider text-xs"
                     >
                         Sign Out
                     </button>

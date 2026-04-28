@@ -44,7 +44,7 @@ export function GameRoot() {
     const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
-    const [isInitializing, setIsInitializing] = useState(true);
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
 
     // Level up tracking
     const prevLevelRef = useRef(profile?.level || 1);
@@ -58,103 +58,93 @@ export function GameRoot() {
         }
     }, [profile?.level]);
 
-    useEffect(() => {
-        console.log('[GameRoot] Profile State:', profile);
-        console.log('[GameRoot] Assessment Completed:', profile?.assessmentCompleted);
-    }, [profile]);
-
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
 
-    // Auto-Login Logic
     useEffect(() => {
-        const checkAutoLogin = async () => {
-            const savedUserId = localStorage.getItem('aya_user_id');
-            const savedMobile = localStorage.getItem('aya_user_mobile');
-
+        const checkExistingSession = async () => {
+            const savedUserId = localStorage.getItem('aya_user_id')
+            const savedMobile = localStorage.getItem('aya_user_mobile')
+            
             if (savedUserId && savedMobile && !profile) {
                 try {
-                    // Fetch user from users table
-                    const { data: user, error: userError } = await supabase
+                    // Fetch user from Supabase
+                    const { data: user } = await supabase
                         .from('users')
                         .select('*')
                         .eq('id', savedUserId)
-                        .single();
+                        .single()
+                    
+                    if (user) {
+                        // Fetch personality profile
+                        const { data: profileData } = await supabase
+                            .from('personality_profiles')
+                            .select('*')
+                            .eq('user_id', savedUserId)
+                            .single()
 
-                    if (userError || !user) throw userError || new Error("User not found");
+                        // Fetch latest game session for XP/Level/Streak
+                        const { data: sessions } = await supabase
+                            .from('game_sessions')
+                            .select('*')
+                            .eq('user_id', savedUserId)
+                            .order('created_at', { ascending: false })
+                            .limit(1);
 
-                    // Fetch personality
-                    const { data: profiles, error: profileError } = await supabase
-                        .from('personality_profiles')
-                        .select('*')
-                        .eq('user_id', savedUserId);
-
-                    if (profileError) throw profileError;
-
-                    const baseProfile = {
-                        id: user.id,
-                        mobile: user.mobile,
-                        name: user.name,
-                        age: user.age,
-                        interests: [],
-                        roleModels: [],
-                        traits: {
-                            discipline: 50, resilience: 50, risk: 50,
-                            leadership: 50, creativity: 50, empathy: 50, vision: 50
-                        },
-                        assessmentCompleted: false,
-                        total_xp: 0,
-                        level: 1,
-                        streak: 0
-                    };
-
-                    // Fetch latest game session for XP/Level/Streak
-                    const { data: sessions } = await supabase
-                        .from('game_sessions')
-                        .select('*')
-                        .eq('user_id', savedUserId)
-                        .order('created_at', { ascending: false })
-                        .limit(1);
-
-                    if (sessions && sessions.length > 0) {
-                        const lastSession = sessions[0];
-                        baseProfile.total_xp = lastSession.total_xp || 0;
-                        baseProfile.level = lastSession.current_level || 1;
-                        baseProfile.streak = lastSession.streak || 0;
-                    }
-
-                    if (profiles && profiles.length > 0) {
-                        const p = profiles[0];
-                        const loadedTraits = {
-                            discipline: 50, resilience: 50, risk: p.trait_risk_taker || 50,
-                            leadership: p.trait_ambitious || 50, creativity: p.trait_creative || 50, empathy: p.trait_social || 50, vision: 50,
+                        const lastSession = sessions && sessions.length > 0 ? sessions[0] : null;
+                        
+                        const loadedTraits = profileData ? {
+                            discipline: 50, resilience: 50, risk: profileData.trait_risk_taker || 50,
+                            leadership: profileData.trait_ambitious || 50, creativity: profileData.trait_creative || 50, empathy: profileData.trait_social || 50, vision: 50,
+                        } : {
+                            discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50
                         };
 
-                        baseProfile.traits = loadedTraits as any;
-                        baseProfile.assessmentCompleted = true;
-                        setProfile(baseProfile as any);
-                        completeAssessment(loadedTraits as any, {
-                            motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
-                            social: 'Supporter', passion: 'Creative', coreValue: 'Success'
-                        });
-                    } else {
-                        setProfile(baseProfile as any);
-                    }
+                        // Load into store
+                        setProfile({
+                            name: user.name,
+                            age: user.age,
+                            mobile: user.mobile,
+                            id: user.id,
+                            total_xp: lastSession ? lastSession.total_xp : (user.total_xp || 0),
+                            level: lastSession ? lastSession.current_level : (user.level || 1),
+                            streak: lastSession ? lastSession.streak : (user.current_streak || 0),
+                            assessmentCompleted: !!profileData,
+                            interests: [],
+                            roleModels: [],
+                            traits: loadedTraits
+                        } as any);
 
-                    setOnboardingComplete(true);
-                } catch (e) {
-                    console.error("Auto-login failed:", e);
-                    localStorage.removeItem('aya_user_id');
-                    localStorage.removeItem('aya_user_mobile');
+                        if (profileData) {
+                            completeAssessment(loadedTraits as any, {
+                                motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
+                                social: 'Supporter', passion: 'Creative', coreValue: 'Success'
+                            });
+                        }
+                        setOnboardingComplete(true);
+                    } else {
+                        // User not found in DB — clear localStorage
+                        localStorage.removeItem('aya_user_id')
+                        localStorage.removeItem('aya_user_mobile')
+                        localStorage.removeItem('aya_user_name')
+                        localStorage.removeItem('aya_user_age')
+                    }
+                } catch (error) {
+                    console.error('Session check failed:', error)
+                    localStorage.removeItem('aya_user_id')
+                    localStorage.removeItem('aya_user_mobile')
                 }
             }
-            setIsInitializing(false);
-        };
-        checkAutoLogin();
-    }, []);
+            setIsCheckingSession(false)
+        }
+        
+        checkExistingSession()
+    }, [])
 
-    if (isInitializing) {
-        return <div className="w-full h-screen bg-[#0d0d16] flex items-center justify-center text-[#00f1fe] font-black text-2xl tracking-[0.2em] animate-pulse">INITIALIZING...</div>;
+    if (isCheckingSession) {
+        return <div className="w-full h-screen bg-black flex items-center justify-center">
+            <div className="text-cyan-400 text-xl animate-pulse">Loading...</div>
+        </div>
     }
 
     if (!profile) {
