@@ -114,7 +114,7 @@ export const useUserStore = create<UserState>()(
             }),
 
             // ── Theme (3-way) ────────────────────────────────────────────────
-            mapTheme: (localStorage.getItem('aya_map_theme') as MapTheme) || 'city_dark',
+            mapTheme: (localStorage.getItem('aya_map_theme') as MapTheme) || 'solar',
             setMapTheme: (theme) => {
                 localStorage.setItem('aya_map_theme', theme);
                 set({ mapTheme: theme });
