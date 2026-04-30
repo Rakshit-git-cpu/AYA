@@ -440,7 +440,12 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                     ? "border-4 border-amber-400 ring-4 ring-amber-400/30 shadow-[0_0_25px_rgba(245,158,11,0.8)]"
                                                     : "border-transparent ring-2 ring-[#4DD9FF]/80 shadow-[0_0_15px_rgba(77,217,255,0.6)]")
                                         )}>
-                                            <img src={level.avatarUrl || '/assets/avatar_business.png'} alt={level.archetype} className="w-full h-full object-cover node-content" />
+                                            <img 
+                                                src={level.avatarUrl || '/assets/avatar_business.png'} 
+                                                alt={level.archetype} 
+                                                className="w-full h-full object-cover node-content" 
+                                                onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}
+                                            />
                                             {!isUnlocked && (
                                                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-200/50 backdrop-blur-[1px]">
                                                     <Lock size={20} className="text-slate-500 drop-shadow-md opacity-80 md:w-6 md:h-6" />

@@ -447,6 +447,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                         src={idolData.avatarUrl || '/assets/avatar_business.png'} 
                                         alt={idolName} 
                                         className="w-full h-full object-cover" 
+                                        onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}
                                     />
                                     {/* Gloss Reflection */}
                                     <div className={clsx(
@@ -510,6 +511,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                                             src={personalityDNA.idol1.avatarUrl || '/assets/avatar_business.png'} 
                                                             alt={personalityDNA.idol1.name} 
                                                             className="w-full h-full object-cover" 
+                                                            onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}
                                                         />
                                                     </div>
                                                 </div>
@@ -532,6 +534,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                                             src={personalityDNA.idol2.avatarUrl || '/assets/avatar_business.png'} 
                                                             alt={personalityDNA.idol2.name} 
                                                             className="w-full h-full object-cover" 
+                                                            onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}
                                                         />
                                                     </div>
                                                 </div>
