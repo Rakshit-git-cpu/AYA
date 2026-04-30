@@ -207,9 +207,10 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
 );
 
 export function MatchReport({ userTraits, userProfile, idolName, onClose }: MatchReportProps) {
-    const isCandyMode = useUserStore((state) => state.isCandyMode);
     const [animatedPercent, setAnimatedPercent] = useState(0);
-    const idolData = IDOL_MINDSETS[idolName] || IDOL_MINDSETS["Default"];
+    const isCandyMode = useUserStore((state) => state.isCandyMode);
+    const cleanIdolName = (idolName || "Default").trim();
+    const idolData = IDOL_MINDSETS[cleanIdolName] || IDOL_MINDSETS["Default"];
 
     // Dynamic Trait Calculation based on Supabase mapped properties
     const TRAIT_MAP = [
@@ -233,7 +234,8 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
 
     // Dynamic Match Calculation using strict IDOL_PROFILES
     const matchScore = useMemo(() => {
-        const strictIdolTraits = IDOL_PROFILES[idolName] || IDOL_PROFILES["Default"];
+        const cleanIdolName = (idolName || "Default").trim();
+        const strictIdolTraits = IDOL_PROFILES[cleanIdolName] || IDOL_PROFILES["Default"];
         
         const totalDiff = 
             Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
@@ -281,12 +283,12 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
         return {
             idol1: {
                 name: top2[0],
-                avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '',
+                avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[0])
             },
             idol2: {
                 name: top2[1],
-                avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '',
+                avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[1])
             }
         };
@@ -441,7 +443,11 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                         ? "border-white bg-gradient-to-b from-purple-500 to-indigo-600 shadow-[0_0_80px_rgba(236,72,153,0.8)]"
                                         : "border-[#0a0f28] bg-slate-900 shadow-[0_0_50px_rgba(77,217,255,0.4)] ring-2 ring-[#4DD9FF]/30"
                                 )}>
-                                    <img src={idolData.avatarUrl} alt={idolName} className="w-full h-full object-cover" />
+                                    <img 
+                                        src={idolData.avatarUrl || '/assets/avatar_business.png'} 
+                                        alt={idolName} 
+                                        className="w-full h-full object-cover" 
+                                    />
                                     {/* Gloss Reflection */}
                                     <div className={clsx(
                                         "absolute top-0 left-0 w-full h-1/2 rounded-t-full pointer-events-none",
@@ -500,7 +506,11 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                                         "w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden mb-3",
                                                         isCandyMode ? "border-pink-500/50" : "border-slate-700"
                                                     )}>
-                                                        <img src={personalityDNA.idol1.avatarUrl} alt={personalityDNA.idol1.name} className="w-full h-full object-cover" />
+                                                        <img 
+                                                            src={personalityDNA.idol1.avatarUrl || '/assets/avatar_business.png'} 
+                                                            alt={personalityDNA.idol1.name} 
+                                                            className="w-full h-full object-cover" 
+                                                        />
                                                     </div>
                                                 </div>
 
@@ -518,7 +528,11 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                                         "w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden mb-3",
                                                         isCandyMode ? "border-purple-500/50" : "border-slate-700"
                                                     )}>
-                                                        <img src={personalityDNA.idol2.avatarUrl} alt={personalityDNA.idol2.name} className="w-full h-full object-cover" />
+                                                        <img 
+                                                            src={personalityDNA.idol2.avatarUrl || '/assets/avatar_business.png'} 
+                                                            alt={personalityDNA.idol2.name} 
+                                                            className="w-full h-full object-cover" 
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>

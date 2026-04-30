@@ -618,7 +618,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Empathic',
             coreValue: 'Kindness'
         },
-        avatarUrl: '/assets/avatar_default.png'
+        avatarUrl: '/assets/avatar_business.png'
     },
     "P.V. Sindhu": {
         name: "P.V. Sindhu",
@@ -996,7 +996,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Strategic',
             coreValue: 'Excellence'
         },
-        avatarUrl: '/assets/avatar_anand.jpg'
+        avatarUrl: '/assets/avatar_business.png' // Fallback until avatar_anand.jpg is verified
     },
     "Zendaya": {
         name: "Zendaya",
