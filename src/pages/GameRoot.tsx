@@ -15,12 +15,9 @@ import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
 import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 import { useRef } from 'react';
-import { supabase } from '../utils/supabase';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
-    const setProfile = useUserStore((state) => state.setProfile);
-    const completeAssessment = useUserStore((state) => state.completeAssessment);
     const completeLevel = useUserStore((state) => state.completeLevel);
 
     const levels = useUserStore((state) => state.levels);
@@ -29,9 +26,10 @@ export function GameRoot() {
     const mapTheme = useUserStore((state) => state.mapTheme);
     const setMapTheme = useUserStore((state) => state.setMapTheme);
 
+    // Sync theme from localStorage on mount
     // Sync theme from localStorage on mount; default to 'solar' if nothing stored
     useEffect(() => {
-        const storedTheme = (localStorage.getItem('aya_map_theme') as any) || 'solar';
+        const storedTheme = (localStorage.getItem('aya_map_theme') as any) || 'city_dark';
         if (storedTheme !== mapTheme) {
             setMapTheme(storedTheme);
         }
@@ -44,7 +42,6 @@ export function GameRoot() {
     const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
-    const [isCheckingSession, setIsCheckingSession] = useState(true);
 
     // Level up tracking
     const prevLevelRef = useRef(profile?.level || 1);
@@ -58,94 +55,13 @@ export function GameRoot() {
         }
     }, [profile?.level]);
 
+    useEffect(() => {
+        console.log('[GameRoot] Profile State:', profile);
+        console.log('[GameRoot] Assessment Completed:', profile?.assessmentCompleted);
+    }, [profile]);
+
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
-
-    useEffect(() => {
-        const checkExistingSession = async () => {
-            const savedUserId = localStorage.getItem('aya_user_id')
-            const savedMobile = localStorage.getItem('aya_user_mobile')
-            
-            if (savedUserId && savedMobile && !profile) {
-                try {
-                    // Fetch user from Supabase
-                    const { data: user } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', savedUserId)
-                        .single()
-                    
-                    if (user) {
-                        // Fetch personality profile
-                        const { data: profileData } = await supabase
-                            .from('personality_profiles')
-                            .select('*')
-                            .eq('user_id', savedUserId)
-                            .single()
-
-                        // Fetch latest game session for XP/Level/Streak
-                        const { data: sessions } = await supabase
-                            .from('game_sessions')
-                            .select('*')
-                            .eq('user_id', savedUserId)
-                            .order('created_at', { ascending: false })
-                            .limit(1);
-
-                        const lastSession = sessions && sessions.length > 0 ? sessions[0] : null;
-                        
-                        const loadedTraits = profileData ? {
-                            discipline: 50, resilience: 50, risk: profileData.trait_risk_taker || 50,
-                            leadership: profileData.trait_ambitious || 50, creativity: profileData.trait_creative || 50, empathy: profileData.trait_social || 50, vision: 50,
-                        } : {
-                            discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50
-                        };
-
-                        // Load into store
-                        setProfile({
-                            name: user.name,
-                            age: user.age,
-                            mobile: user.mobile,
-                            id: user.id,
-                            total_xp: lastSession ? lastSession.total_xp : (user.total_xp || 0),
-                            level: lastSession ? lastSession.current_level : (user.level || 1),
-                            streak: lastSession ? lastSession.streak : (user.current_streak || 0),
-                            assessmentCompleted: !!profileData,
-                            interests: [],
-                            roleModels: [],
-                            traits: loadedTraits
-                        } as any);
-
-                        if (profileData) {
-                            completeAssessment(loadedTraits as any, {
-                                motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
-                                social: 'Supporter', passion: 'Creative', coreValue: 'Success'
-                            });
-                        }
-                        setOnboardingComplete(true);
-                    } else {
-                        // User not found in DB — clear localStorage
-                        localStorage.removeItem('aya_user_id')
-                        localStorage.removeItem('aya_user_mobile')
-                        localStorage.removeItem('aya_user_name')
-                        localStorage.removeItem('aya_user_age')
-                    }
-                } catch (error) {
-                    console.error('Session check failed:', error)
-                    localStorage.removeItem('aya_user_id')
-                    localStorage.removeItem('aya_user_mobile')
-                }
-            }
-            setIsCheckingSession(false)
-        }
-        
-        checkExistingSession()
-    }, [])
-
-    if (isCheckingSession) {
-        return <div className="w-full h-screen bg-black flex items-center justify-center">
-            <div className="text-cyan-400 text-xl animate-pulse">Loading...</div>
-        </div>
-    }
 
     if (!profile) {
         return <OnboardingWizard />;
