@@ -29,7 +29,7 @@ export function GameRoot() {
     // Sync theme from localStorage on mount
     // Sync theme from localStorage on mount; default to 'solar' if nothing stored
     useEffect(() => {
-        const storedTheme = (localStorage.getItem('aya_map_theme') as any) || 'solar';
+        const storedTheme = (localStorage.getItem('aya_map_theme') as any) || 'city_dark';
         if (storedTheme !== mapTheme) {
             setMapTheme(storedTheme);
         }
