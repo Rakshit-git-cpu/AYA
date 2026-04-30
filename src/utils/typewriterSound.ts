@@ -42,85 +42,57 @@ class TypewriterSound {
     try {
       const ctx = this.getContext()
       
-      // 1. The metallic "Clack" (Filtered white noise)
-      const noiseSource = ctx.createBufferSource()
-      noiseSource.buffer = this.getNoiseBuffer(ctx)
-      
-      const noiseFilter = ctx.createBiquadFilter()
-      noiseFilter.type = 'highpass'
-      // Randomize the filter frequency for slight variation per key
-      noiseFilter.frequency.value = 2500 + (Math.random() * 800)
-      
-      const noiseGain = ctx.createGain()
-      noiseGain.gain.setValueAtTime(0.4, ctx.currentTime)
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.025)
-      
-      noiseSource.connect(noiseFilter)
-      noiseFilter.connect(noiseGain)
-      noiseGain.connect(ctx.destination)
-      
-      // 2. The heavy "Thump" (Low frequency transient)
-      const osc = ctx.createOscillator()
-      osc.type = 'triangle'
-      osc.frequency.setValueAtTime(100 + (Math.random() * 40), ctx.currentTime)
-      
-      const oscGain = ctx.createGain()
-      oscGain.gain.setValueAtTime(0.3, ctx.currentTime)
-      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.02)
-      
-      osc.connect(oscGain)
-      oscGain.connect(ctx.destination)
-      
-      // Fire both components
-      noiseSource.start(ctx.currentTime)
-      osc.start(ctx.currentTime)
-      
-      noiseSource.stop(ctx.currentTime + 0.03)
-      osc.stop(ctx.currentTime + 0.03)
-    } catch (e) {
-      // Silently fail if audio not supported
-    }
-  }
-
-  // Slightly heavier mechanical sound for punctuation
-  playPause() {
-    if (!this.isEnabled) return
-    try {
-      const ctx = this.getContext()
-      
-      // Heavier clack
+      // Subtle modern keyboard tap (Soft bandpass filtered noise)
       const noiseSource = ctx.createBufferSource()
       noiseSource.buffer = this.getNoiseBuffer(ctx)
       
       const noiseFilter = ctx.createBiquadFilter()
       noiseFilter.type = 'bandpass'
-      noiseFilter.frequency.value = 1500
+      // Lower frequency for a softer, plastic/membrane tap (not metallic)
+      noiseFilter.frequency.value = 800 + (Math.random() * 200)
+      noiseFilter.Q.value = 0.8 // Soft, wide band
       
       const noiseGain = ctx.createGain()
-      noiseGain.gain.setValueAtTime(0.6, ctx.currentTime)
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04)
+      // Very low volume, extremely fast decay
+      noiseGain.gain.setValueAtTime(0.15, ctx.currentTime)
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.015)
       
       noiseSource.connect(noiseFilter)
       noiseFilter.connect(noiseGain)
       noiseGain.connect(ctx.destination)
       
-      // Heavier thump
-      const osc = ctx.createOscillator()
-      osc.type = 'square'
-      osc.frequency.setValueAtTime(80, ctx.currentTime)
+      noiseSource.start(ctx.currentTime)
+      noiseSource.stop(ctx.currentTime + 0.02)
+    } catch (e) {
+      // Silently fail if audio not supported
+    }
+  }
+
+  // Slightly heavier sound for punctuation (like hitting Return/Spacebar)
+  playPause() {
+    if (!this.isEnabled) return
+    try {
+      const ctx = this.getContext()
       
-      const oscGain = ctx.createGain()
-      oscGain.gain.setValueAtTime(0.2, ctx.currentTime)
-      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04)
+      const noiseSource = ctx.createBufferSource()
+      noiseSource.buffer = this.getNoiseBuffer(ctx)
       
-      osc.connect(oscGain)
-      oscGain.connect(ctx.destination)
+      const noiseFilter = ctx.createBiquadFilter()
+      noiseFilter.type = 'bandpass'
+      // Deeper sound for larger keys
+      noiseFilter.frequency.value = 400 + (Math.random() * 100)
+      noiseFilter.Q.value = 0.5 
+      
+      const noiseGain = ctx.createGain()
+      noiseGain.gain.setValueAtTime(0.2, ctx.currentTime)
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025)
+      
+      noiseSource.connect(noiseFilter)
+      noiseFilter.connect(noiseGain)
+      noiseGain.connect(ctx.destination)
       
       noiseSource.start(ctx.currentTime)
-      osc.start(ctx.currentTime)
-      
-      noiseSource.stop(ctx.currentTime + 0.05)
-      osc.stop(ctx.currentTime + 0.05)
+      noiseSource.stop(ctx.currentTime + 0.03)
     } catch (e) {}
   }
 
