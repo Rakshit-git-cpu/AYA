@@ -33,22 +33,21 @@ class TypewriterSound {
       oscillator.connect(gainNode)
       gainNode.connect(ctx.destination)
       
-      // Different pitch for different characters for realism
-      const baseFreq = character === character.toUpperCase() 
-        ? 800 : 600
-      const freq = baseFreq + (Math.random() * 200 - 100)
+      // Lower pitch, subtle click
+      const baseFreq = character === character.toUpperCase() ? 300 : 250
+      const freq = baseFreq + (Math.random() * 50 - 25)
       
       oscillator.frequency.setValueAtTime(freq, ctx.currentTime)
-      oscillator.type = 'square'
+      oscillator.type = 'sine' // Sine is softer and less harsh than square
       
-      // Very short sharp click sound
-      gainNode.gain.setValueAtTime(0.08, ctx.currentTime)
+      // Extremely quick decay for a 'tick' sound, lower volume
+      gainNode.gain.setValueAtTime(0.04, ctx.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(
-        0.001, ctx.currentTime + 0.04
+        0.001, ctx.currentTime + 0.015
       )
       
       oscillator.start(ctx.currentTime)
-      oscillator.stop(ctx.currentTime + 0.04)
+      oscillator.stop(ctx.currentTime + 0.02)
     } catch (e) {
       // Silently fail if audio not supported
     }
@@ -65,16 +64,16 @@ class TypewriterSound {
       oscillator.connect(gainNode)
       gainNode.connect(ctx.destination)
       
-      oscillator.frequency.setValueAtTime(400, ctx.currentTime)
-      oscillator.type = 'square'
+      oscillator.frequency.setValueAtTime(200, ctx.currentTime)
+      oscillator.type = 'sine'
       
-      gainNode.gain.setValueAtTime(0.05, ctx.currentTime)
+      gainNode.gain.setValueAtTime(0.02, ctx.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(
-        0.001, ctx.currentTime + 0.06
+        0.001, ctx.currentTime + 0.03
       )
       
       oscillator.start(ctx.currentTime)
-      oscillator.stop(ctx.currentTime + 0.06)
+      oscillator.stop(ctx.currentTime + 0.04)
     } catch (e) {}
   }
 

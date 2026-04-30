@@ -200,7 +200,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     setFrameStartTime(Date.now()); // Restart timer once question is readable
                     clearInterval(timer);
                 }
-            }, 20); // Slightly faster typing
+            }, 35); // Softer, more readable typing speed
         }, 100);
 
         return () => {
