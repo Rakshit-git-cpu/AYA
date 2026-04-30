@@ -15,7 +15,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'Emmy-winning actress and global fashion icon.',
             achievements: ['Youngest two-time Emmy winner', 'Time 100 Most Influential', 'Producer at 18'],
             lesson: 'POWER ISN\'T GIVEN, IT\'S TAKEN.',
-            avatarUrl: '/assets/avatar_zendaya.jpg', scenarioId: 'lvl_age_18_zendaya',
+            avatarUrl: '/assets/avatar_zendaya.jpg?v=2', scenarioId: 'lvl_age_18_zendaya',
             idolTraits: { discipline: 90, resilience: 95, risk: 100, leadership: 90, creativity: 95, empathy: 85, vision: 95 }
         },
         {
@@ -25,7 +25,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'Olympic Gold Medalist. National Hero.',
             achievements: ['Olympic Gold (Tokyo 2020)', 'World Athletics Champion', 'First Indian to win Diamond League'],
             lesson: 'FAME IS A DISTRACTION; MASTERY IS THE GOAL.',
-            avatarUrl: '/assets/avatar_neeraj.jpg', scenarioId: 'lvl_age_19_neeraj',
+            avatarUrl: '/assets/avatar_neeraj.jpg?v=2', scenarioId: 'lvl_age_19_neeraj',
             idolTraits: { discipline: 100, resilience: 95, risk: 85, leadership: 80, creativity: 75, empathy: 70, vision: 95 }
         },
         {
@@ -35,7 +35,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'India\'s top female comedy creator. Actor.',
             achievements: ['7M+ YouTube Subscribers', 'Forbes 30 Under 30', 'Climate Change Ambassador'],
             lesson: 'DON\'T CLING TO A MISTAKE JUST BECAUSE YOU SPENT A LONG TIME MAKING IT.',
-            avatarUrl: '/assets/avatar_prajakta.jpg', scenarioId: 'lvl_age_20_prajakta',
+            avatarUrl: '/assets/avatar_prajakta.jpg?v=2', scenarioId: 'lvl_age_20_prajakta',
             idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 85, creativity: 95, empathy: 100, vision: 90 }
         },
         {
@@ -45,7 +45,7 @@ export function generateLevels(_age: number): Level[] {
             fame: 'Global pop sensation and mental health advocate.',
             achievements: ['Most followed woman on Instagram', 'Founder of Rare Beauty', 'Mental health philanthropist'],
             lesson: 'VULNERABILITY IS THE ULTIMATE STRENGTH.',
-            avatarUrl: '/assets/avatar_selena.jpg', scenarioId: 'lvl_age_20_selena',
+            avatarUrl: '/assets/avatar_selena.jpg?v=2', scenarioId: 'lvl_age_20_selena',
             idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 95, creativity: 90, empathy: 100, vision: 85 }
         },
         // Age 17: Shah Rukh Khan

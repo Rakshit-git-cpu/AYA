@@ -619,7 +619,8 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             coreValue: 'Kindness'
         },
         avatarUrl: '/assets/avatar_business.png'
-    },
+    }
+,
     "P.V. Sindhu": {
         name: "P.V. Sindhu",
         archetypeTitle: "The Challenger",
@@ -942,7 +943,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Driven',
             coreValue: 'Excellence'
         },
-        avatarUrl: '/assets/avatar_shubman.jpg'
+        avatarUrl: '/assets/avatar_shubman.jpg?v=2'
     },
     "Prajakta Koli": {
         name: "Prajakta Koli",
@@ -969,7 +970,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Creative',
             coreValue: 'Authenticity'
         },
-        avatarUrl: '/assets/avatar_prajakta.jpg'
+        avatarUrl: '/assets/avatar_prajakta.jpg?v=2'
     },
     "Viswanathan Anand": {
         name: "Viswanathan Anand",
@@ -1023,7 +1024,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Creative',
             coreValue: 'Authenticity'
         },
-        avatarUrl: '/assets/avatar_zendaya.jpg'
+        avatarUrl: '/assets/avatar_zendaya.jpg?v=2'
     },
     "Neeraj Chopra": {
         name: "Neeraj Chopra",
@@ -1050,7 +1051,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Physical',
             coreValue: 'Excellence'
         },
-        avatarUrl: '/assets/avatar_neeraj.jpg'
+        avatarUrl: '/assets/avatar_neeraj.jpg?v=2'
     },
     "Selena Gomez": {
         name: "Selena Gomez",
@@ -1077,7 +1078,7 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             passion: 'Empathic',
             coreValue: 'Authenticity'
         },
-        avatarUrl: '/assets/avatar_selena.jpg'
+        avatarUrl: '/assets/avatar_selena.jpg?v=2'
     }
 };
 
