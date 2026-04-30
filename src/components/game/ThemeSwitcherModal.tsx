@@ -24,17 +24,6 @@ interface ThemeCard {
 
 const THEMES: ThemeCard[] = [
   {
-    id: 'solar',
-    emoji: '☀️',
-    label: 'Solar Realm',
-    subtext: 'Cosmic & Mysterious',
-    borderColor: '#FFB347',
-    glowColor: 'rgba(255,179,71,0.5)',
-    bgGradient: 'linear-gradient(135deg, #0a0510 0%, #1a0a05 50%, #0f0808 100%)',
-    previewGradient: 'radial-gradient(ellipse at 30% 40%, #ff6b35 0%, #f7931e 40%, #1a0505 70%, #000 100%)',
-    accentColor: '#FFB347',
-  },
-  {
     id: 'city_dark',
     emoji: '🌆',
     label: 'Neo City',
@@ -59,7 +48,7 @@ const THEMES: ThemeCard[] = [
 ];
 
 const THEME_LABELS: Record<MapTheme, string> = {
-  solar: 'Solar Realm ☀️',
+  solar: 'Solar Realm ☀️', // kept for type-safety, not rendered
   city_dark: 'Neo City 🌆',
   light: 'Classic 🌅',
 };

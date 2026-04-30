@@ -3,7 +3,8 @@ import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { CinematicOnboarding } from '../components/game/CinematicOnboarding';
 import { LevelMap } from '../components/game/LevelMap';
-import { SolarMap } from '../components/game/SolarMap';
+// SolarMap import preserved for future use — not rendered currently
+// import { SolarMap } from '../components/game/SolarMap';
 import { CharacterSelection } from '../components/game/CharacterSelection';
 import { ScenarioGame } from '../components/game/ScenarioGame';
 import { PersonalityIntro } from '../components/game/PersonalityIntro';
@@ -26,10 +27,10 @@ export function GameRoot() {
     const mapTheme = useUserStore((state) => state.mapTheme);
     const setMapTheme = useUserStore((state) => state.setMapTheme);
 
-    // Sync theme from localStorage on mount
-    // Sync theme from localStorage on mount; default to 'solar' if nothing stored
+    // Sync theme from localStorage on mount; reset 'solar' → 'city_dark'
     useEffect(() => {
-        const storedTheme = (localStorage.getItem('aya_map_theme') as any) || 'city_dark';
+        const raw = localStorage.getItem('aya_map_theme') as any;
+        const storedTheme = (!raw || raw === 'solar') ? 'city_dark' : raw;
         if (storedTheme !== mapTheme) {
             setMapTheme(storedTheme);
         }
@@ -163,19 +164,12 @@ export function GameRoot() {
                 <DnaProfile onBack={() => setView('map')} />
             )}
 
-            {mapTheme === 'solar' ? (
-                <SolarMap 
-                    onPlayLevel={handleLevelClick} 
-                    onOpenDnaProfile={() => setView('dna')}
-                    isMapActive={view !== 'game' && view !== 'report'}
-                />
-            ) : (
-                <LevelMap 
-                    onPlayLevel={handleLevelClick} 
-                    onOpenDnaProfile={() => setView('dna')}
-                    isMapActive={view !== 'game' && view !== 'report'}
-                />
-            )}
+            {/* SolarMap hidden until re-enabled — always render LevelMap (handles dark/light via mapTheme) */}
+            <LevelMap 
+                onPlayLevel={handleLevelClick} 
+                onOpenDnaProfile={() => setView('dna')}
+                isMapActive={view !== 'game' && view !== 'report'}
+            />
 
             {/* Level Up Overlay overrides all other Z-layers organically */}
             {showLevelUp && profile && (
