@@ -7,6 +7,7 @@ class TypewriterSound {
   private isEnabled: boolean = true
   private lastPlayTime: number = 0
   private minInterval: number = 30 // minimum ms between clicks
+  private noiseBuffer: AudioBuffer | null = null
 
   private getContext(): AudioContext {
     if (!this.audioContext) {
@@ -16,8 +17,21 @@ class TypewriterSound {
     return this.audioContext
   }
 
+  // Generate a burst of white noise for the metallic "clack"
+  private getNoiseBuffer(ctx: AudioContext): AudioBuffer {
+    if (!this.noiseBuffer) {
+      const bufferSize = ctx.sampleRate * 0.05 // 50ms
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1
+      }
+      this.noiseBuffer = buffer
+    }
+    return this.noiseBuffer
+  }
+
   playClick(character: string) {
-    // Don't play sound for spaces or punctuation pauses
     if (!this.isEnabled) return
     if (character === ' ') return
     
@@ -27,53 +41,86 @@ class TypewriterSound {
 
     try {
       const ctx = this.getContext()
-      const oscillator = ctx.createOscillator()
-      const gainNode = ctx.createGain()
       
-      oscillator.connect(gainNode)
-      gainNode.connect(ctx.destination)
+      // 1. The metallic "Clack" (Filtered white noise)
+      const noiseSource = ctx.createBufferSource()
+      noiseSource.buffer = this.getNoiseBuffer(ctx)
       
-      // Lower pitch, subtle click
-      const baseFreq = character === character.toUpperCase() ? 300 : 250
-      const freq = baseFreq + (Math.random() * 50 - 25)
+      const noiseFilter = ctx.createBiquadFilter()
+      noiseFilter.type = 'highpass'
+      // Randomize the filter frequency for slight variation per key
+      noiseFilter.frequency.value = 2500 + (Math.random() * 800)
       
-      oscillator.frequency.setValueAtTime(freq, ctx.currentTime)
-      oscillator.type = 'sine' // Sine is softer and less harsh than square
+      const noiseGain = ctx.createGain()
+      noiseGain.gain.setValueAtTime(0.4, ctx.currentTime)
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.025)
       
-      // Extremely quick decay for a 'tick' sound, lower volume
-      gainNode.gain.setValueAtTime(0.04, ctx.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001, ctx.currentTime + 0.015
-      )
+      noiseSource.connect(noiseFilter)
+      noiseFilter.connect(noiseGain)
+      noiseGain.connect(ctx.destination)
       
-      oscillator.start(ctx.currentTime)
-      oscillator.stop(ctx.currentTime + 0.02)
+      // 2. The heavy "Thump" (Low frequency transient)
+      const osc = ctx.createOscillator()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(100 + (Math.random() * 40), ctx.currentTime)
+      
+      const oscGain = ctx.createGain()
+      oscGain.gain.setValueAtTime(0.3, ctx.currentTime)
+      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.02)
+      
+      osc.connect(oscGain)
+      oscGain.connect(ctx.destination)
+      
+      // Fire both components
+      noiseSource.start(ctx.currentTime)
+      osc.start(ctx.currentTime)
+      
+      noiseSource.stop(ctx.currentTime + 0.03)
+      osc.stop(ctx.currentTime + 0.03)
     } catch (e) {
       // Silently fail if audio not supported
     }
   }
 
-  // Slightly longer pause sound for punctuation
+  // Slightly heavier mechanical sound for punctuation
   playPause() {
     if (!this.isEnabled) return
     try {
       const ctx = this.getContext()
-      const oscillator = ctx.createOscillator()
-      const gainNode = ctx.createGain()
       
-      oscillator.connect(gainNode)
-      gainNode.connect(ctx.destination)
+      // Heavier clack
+      const noiseSource = ctx.createBufferSource()
+      noiseSource.buffer = this.getNoiseBuffer(ctx)
       
-      oscillator.frequency.setValueAtTime(200, ctx.currentTime)
-      oscillator.type = 'sine'
+      const noiseFilter = ctx.createBiquadFilter()
+      noiseFilter.type = 'bandpass'
+      noiseFilter.frequency.value = 1500
       
-      gainNode.gain.setValueAtTime(0.02, ctx.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001, ctx.currentTime + 0.03
-      )
+      const noiseGain = ctx.createGain()
+      noiseGain.gain.setValueAtTime(0.6, ctx.currentTime)
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04)
       
-      oscillator.start(ctx.currentTime)
-      oscillator.stop(ctx.currentTime + 0.04)
+      noiseSource.connect(noiseFilter)
+      noiseFilter.connect(noiseGain)
+      noiseGain.connect(ctx.destination)
+      
+      // Heavier thump
+      const osc = ctx.createOscillator()
+      osc.type = 'square'
+      osc.frequency.setValueAtTime(80, ctx.currentTime)
+      
+      const oscGain = ctx.createGain()
+      oscGain.gain.setValueAtTime(0.2, ctx.currentTime)
+      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04)
+      
+      osc.connect(oscGain)
+      oscGain.connect(ctx.destination)
+      
+      noiseSource.start(ctx.currentTime)
+      osc.start(ctx.currentTime)
+      
+      noiseSource.stop(ctx.currentTime + 0.05)
+      osc.stop(ctx.currentTime + 0.05)
     } catch (e) {}
   }
 
@@ -82,7 +129,6 @@ class TypewriterSound {
   toggle() { this.isEnabled = !this.isEnabled }
   get enabled() { return this.isEnabled }
 
-  // Resume audio context if suspended (browser autoplay policy)
   async resume() {
     if (this.audioContext?.state === 'suspended') {
       await this.audioContext.resume()
