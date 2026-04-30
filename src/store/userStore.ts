@@ -113,23 +113,36 @@ export const useUserStore = create<UserState>()(
                 };
             }),
 
-            // ── Theme (3-way) ────────────────────────────────────────────────
-            mapTheme: (localStorage.getItem('aya_map_theme') as MapTheme) || 'city_dark',
+            // ── Theme (2-way: city_dark | light) ─────────────────────────────
+            // 'solar' is preserved in the type but hidden from UI until re-enabled.
+            // On app load, any stored 'solar' value is silently reset to 'city_dark'.
+            mapTheme: (() => {
+                const stored = localStorage.getItem('aya_map_theme') as MapTheme | null;
+                if (!stored || stored === 'solar') {
+                    localStorage.setItem('aya_map_theme', 'city_dark');
+                    return 'city_dark';
+                }
+                return stored;
+            })(),
             setMapTheme: (theme) => {
-                localStorage.setItem('aya_map_theme', theme);
-                set({ mapTheme: theme });
+                // Guard: if someone tries to set solar programmatically, silently redirect to city_dark
+                const safeTheme: MapTheme = theme === 'solar' ? 'city_dark' : theme;
+                localStorage.setItem('aya_map_theme', safeTheme);
+                set({ mapTheme: safeTheme });
             },
             cycleMapTheme: () => set((state) => {
-                const order: MapTheme[] = ['city_dark', 'solar', 'light'];
-                const next = order[(order.indexOf(state.mapTheme) + 1) % order.length];
+                const order: MapTheme[] = ['city_dark', 'light']; // solar removed from cycle
+                const safeCurrentIndex = order.indexOf(state.mapTheme) === -1 ? 0 : order.indexOf(state.mapTheme);
+                const next = order[(safeCurrentIndex + 1) % order.length];
                 localStorage.setItem('aya_map_theme', next);
                 return { mapTheme: next };
             }),
             // Deprecated shims — kept for backward compatibility
             get isCandyMode(): boolean { return (useUserStore.getState().mapTheme === 'light'); },
             toggleCandyMode: () => set((state) => {
-                const order: MapTheme[] = ['city_dark', 'solar', 'light'];
-                const next = order[(order.indexOf(state.mapTheme) + 1) % order.length];
+                const order: MapTheme[] = ['city_dark', 'light']; // solar removed
+                const safeCurrentIndex = order.indexOf(state.mapTheme) === -1 ? 0 : order.indexOf(state.mapTheme);
+                const next = order[(safeCurrentIndex + 1) % order.length];
                 localStorage.setItem('aya_map_theme', next);
                 return { mapTheme: next };
             }),
