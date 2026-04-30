@@ -997,6 +997,87 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
             coreValue: 'Excellence'
         },
         avatarUrl: '/assets/avatar_anand.jpg'
+    },
+    "Zendaya": {
+        name: "Zendaya",
+        archetypeTitle: "The Producer",
+        quote: "I feel the most beautiful when I'm really in control of my own image.",
+        voice: {
+            tone: "Bold, Self-Assured, Creative",
+            intro: "You have more power than they're letting you believe. Take it."
+        },
+        missions: {
+            discipline: { title: "Own the Set", desc: "Take full ownership of one creative project from start to finish.", xp: "+50 Control" },
+            resilience: { title: "Stereotype Breaker", desc: "Do the thing they said you couldn't — professionally and publicly.", xp: "+50 Identity" },
+            risk: { title: "Demand the Credit", desc: "Ask for a title, role, or recognition you've been earning but not receiving.", xp: "+50 Power" },
+            leadership: { title: "The Youngest in the Room", desc: "Lead a meeting or project even when you're the newest voice there.", xp: "+50 Presence" },
+            creativity: { title: "Character Work", desc: "Study one icon outside your field and absorb their approach.", xp: "+50 Craft" },
+            empathy: { title: "Amplify Others", desc: "Use your platform to spotlight someone who deserves recognition.", xp: "+50 Generosity" },
+            vision: { title: "Producer Mindset", desc: "Plan the next 3 'moves' in your career like a chess game.", xp: "+50 Strategy" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Bold',
+            emotional: 'Resilient',
+            social: 'Leader',
+            passion: 'Creative',
+            coreValue: 'Authenticity'
+        },
+        avatarUrl: '/assets/avatar_zendaya.jpg'
+    },
+    "Neeraj Chopra": {
+        name: "Neeraj Chopra",
+        archetypeTitle: "The Monk",
+        quote: "Focus on your lane. The gold comes to those who block out the noise.",
+        voice: {
+            tone: "Quiet, Focused, Relentless",
+            intro: "I trained for years in silence. The roar of the crowd is earned, not chased."
+        },
+        missions: {
+            discipline: { title: "The Solitary Practice", desc: "Work on your most important skill completely alone, with no audience.", xp: "+50 Mastery" },
+            resilience: { title: "Injury Protocol", desc: "When you're set back, return smarter — not just harder.", xp: "+50 Grit" },
+            risk: { title: "The World Stage Throw", desc: "Perform your best work in the highest-pressure moment possible.", xp: "+50 Clutch" },
+            leadership: { title: "National Pride", desc: "Do something today that makes your community proud.", xp: "+50 Honor" },
+            creativity: { title: "Study the Biomechanics", desc: "Break down a skill you do well into its smallest components.", xp: "+50 Precision" },
+            empathy: { title: "Respect the Process", desc: "Acknowledge the behind-the-scenes people who helped you win.", xp: "+50 Gratitude" },
+            vision: { title: "Olympic Gold Standard", desc: "Define what your personal 'gold medal' looks like — specifically.", xp: "+50 Clarity" }
+        },
+        profile: {
+            motivation: 'Mastery',
+            risk: 'Calculated',
+            emotional: 'Stoic',
+            social: 'Introverted',
+            passion: 'Physical',
+            coreValue: 'Excellence'
+        },
+        avatarUrl: '/assets/avatar_neeraj.jpg'
+    },
+    "Selena Gomez": {
+        name: "Selena Gomez",
+        archetypeTitle: "The Vulnerable",
+        quote: "Who says you're not perfect? Who says you're not worth it?",
+        voice: {
+            tone: "Warm, Honest, Empowering",
+            intro: "The bravest thing I ever did was admit I wasn't okay. That's where the real strength began."
+        },
+        missions: {
+            discipline: { title: "Boundary Work", desc: "Set one firm boundary today — and keep it.", xp: "+50 Self-Respect" },
+            resilience: { title: "The Health Pivot", desc: "Turn a limitation into a new direction for your energy.", xp: "+50 Strength" },
+            risk: { title: "Tell the Truth", desc: "Share something vulnerable with someone you trust.", xp: "+50 Courage" },
+            leadership: { title: "Build the Community", desc: "Create something that makes your audience feel less alone.", xp: "+50 Connection" },
+            creativity: { title: "Rare Beauty", desc: "Express who you truly are in one creative act today.", xp: "+50 Identity" },
+            empathy: { title: "Mental Health First", desc: "Check in on someone today — genuinely, not performatively.", xp: "+50 Care" },
+            vision: { title: "Legacy Over Likes", desc: "Identify one impact you want to have that transcends your platform.", xp: "+50 Purpose" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Balanced',
+            emotional: 'Sensitive',
+            social: 'Advocate',
+            passion: 'Empathic',
+            coreValue: 'Authenticity'
+        },
+        avatarUrl: '/assets/avatar_selena.jpg'
     }
 };
 
@@ -1036,5 +1117,8 @@ export const IDOL_PROFILES: Record<string, Record<string, number>> = {
     "Default": { analytical: 50, ambitious: 50, risk: 50, creativity: 50, social: 50 },
     "Shubman Gill": { analytical: 80, ambitious: 95, risk: 85, creativity: 70, social: 75 },
     "Prajakta Koli": { analytical: 80, ambitious: 90, risk: 85, creativity: 95, social: 90 },
-    "Viswanathan Anand": { analytical: 100, ambitious: 85, risk: 70, creativity: 90, social: 60 }
+    "Viswanathan Anand": { analytical: 100, ambitious: 85, risk: 70, creativity: 90, social: 60 },
+    "Zendaya": { analytical: 75, ambitious: 90, risk: 100, creativity: 95, social: 85 },
+    "Neeraj Chopra": { analytical: 80, ambitious: 95, risk: 85, creativity: 75, social: 70 },
+    "Selena Gomez": { analytical: 70, ambitious: 85, risk: 90, creativity: 90, social: 100 }
 };
