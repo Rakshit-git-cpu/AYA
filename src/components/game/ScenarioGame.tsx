@@ -9,8 +9,6 @@ import { supabase } from '../../utils/supabase';
 import { IDOL_PROFILES } from '../../data/idolMindsets';
 import { calculateLevelInfo } from '../../utils/levelSystem';
 import { calculateLifeTraits, matchFutureArchetype } from '../../utils/futureSelfMatch';
-import { typewriterSound } from '../../utils/typewriterSound';
-import { Volume2, VolumeX } from 'lucide-react';
 
 // Floating Text Animation Interface
 interface FloatText {
@@ -87,23 +85,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
-    
-    // Typewriter Sound Toggle State
-    const [isSoundEnabled, setIsSoundEnabled] = useState(true);
-
-    useEffect(() => {
-        const saved = localStorage.getItem('aya_typewriter_sound');
-        if (saved === 'false') {
-            typewriterSound.disable();
-            setIsSoundEnabled(false);
-        }
-    }, []);
-
-    const toggleTypewriterSound = () => {
-        typewriterSound.toggle();
-        setIsSoundEnabled(typewriterSound.enabled);
-        localStorage.setItem('aya_typewriter_sound', typewriterSound.enabled.toString());
-    };
     
     // Timing State for Source 3 Matching
     const [frameStartTime, setFrameStartTime] = useState<number>(Date.now());
@@ -185,22 +166,13 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             timer = setInterval(() => {
                 i++;
                 if (i <= activeText.length) {
-                    const char = activeText[i - 1];
                     setDisplayedText(activeText.slice(0, i));
-                    
-                    // Typewriter sound
-                    typewriterSound.resume();
-                    if (['.', '!', '?'].includes(char)) {
-                        typewriterSound.playPause();
-                    } else if (char !== ' ' && char !== '\n') {
-                        typewriterSound.playClick(char);
-                    }
                 } else {
                     setIsTyping(false);
                     setFrameStartTime(Date.now()); // Restart timer once question is readable
                     clearInterval(timer);
                 }
-            }, 35); // Softer, more readable typing speed
+            }, 20); // Slightly faster typing
         }, 100);
 
         return () => {
@@ -630,20 +602,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     <ChevronRight className="rotate-180 w-3 h-3" /> Exit
                 </button>
                 <div className="flex gap-4 items-center">
-                    {/* Typewriter Sound Toggle */}
-                    <button
-                        onClick={toggleTypewriterSound}
-                        className={clsx(
-                            "p-2 rounded-full transition-all border",
-                            isSoundEnabled 
-                                ? "bg-black/60 border-green-500/50 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]" 
-                                : "bg-black/40 border-red-500/30 text-red-400/80"
-                        )}
-                        title="Toggle Typewriter Sound"
-                    >
-                        {isSoundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-                    </button>
-
                     {/* Theme Toggle for Testing */}
                     <button
                         onClick={() => toggleCandyMode()}

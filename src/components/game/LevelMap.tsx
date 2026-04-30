@@ -27,8 +27,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     // New stories that should be visible to ALL users regardless of interests.
     const alwaysShowPersonalities = new Set([
         'Billie Eilish', 'MrBeast', 'Ritesh Agarwal', 'Muhammad Ali',
-        'Dhruv Rathee', 'Falguni Nayar', 'Nikola Tesla',
-        'Zendaya', 'Neeraj Chopra', 'Selena Gomez', 'Shubman Gill', 'Prajakta Koli', 'Viswanathan Anand'
+        'Dhruv Rathee', 'Falguni Nayar', 'Nikola Tesla'
     ]);
 
     if (profile?.psychologicalProfile) {
