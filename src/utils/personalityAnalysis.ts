@@ -27,7 +27,7 @@ export const PersonalityAnalysisEngine = {
         const rText = riskMap[profile.risk] || "a balanced approach to risk";
         const eText = emotionalMap[profile.emotional] || "a resilient nature";
 
-        return `Your match with ${idolName} isn't just about surface traits. It’s because you are driven by ${mText}. Your choices reveal that ${rText}, and when the pressure mounts, ${eText}. This specific combination of ${dominantTrait} and ${profile.coreValue} creates a mindset pattern we call the "${IDOL_MINDSETS[idolName]?.archetypeTitle || 'Visionary'}".`;
+        return `Your match with ${idolName} isn't just about surface traits. It's because you are driven by ${mText}. Your choices reveal that ${rText}, and when the pressure mounts, ${eText}. This specific combination of ${dominantTrait} and ${profile.coreValue} creates a mindset pattern we call the "${IDOL_MINDSETS[idolName.trim()]?.archetypeTitle || 'Visionary'}".`;
     },
 
     // 2. Core Strengths
@@ -87,7 +87,8 @@ export const PersonalityAnalysisEngine = {
 
     // 4. Legendary Comparison
     getComparison: (userProfile: PsychologicalProfile, idolName: string) => {
-        const idolData = IDOL_MINDSETS[idolName] || IDOL_MINDSETS["Default"];
+        const cleanName = (idolName || "Default").trim();
+        const idolData = IDOL_MINDSETS[cleanName] || IDOL_MINDSETS["Default"];
         if (!idolData.profile) return null;
 
         const matches: string[] = [];
