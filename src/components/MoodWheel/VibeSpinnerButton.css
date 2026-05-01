@@ -1,93 +1,108 @@
 /* ══════════════════════════════════════════════════════════
    VibeSpinnerButton.css — Premium dark glass pill button
-   with spinning 3D mini-wheel
+   with spinning 3D mini-wheel and glowing neon effects
    ══════════════════════════════════════════════════════════ */
+
+.vsb-wrapper {
+  position: relative;
+  display: inline-block;
+}
 
 /* ── Pill container ──────────────────────────────────────── */
 .vsb-pill {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 16px 0 10px;
-  height: 48px;
+  gap: 12px;
+  padding: 0 20px 0 6px;
+  height: 46px; /* Mobile */
   border-radius: 999px;
-  border: 1px solid rgba(0, 229, 255, 0.35);
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(10, 15, 25, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   white-space: nowrap;
-  /* 3D bevel via layered shadows */
-  box-shadow:
-    0 0 14px rgba(0, 229, 255, 0.18),
-    0 0 28px rgba(0, 229, 255, 0.08),
-    0 2px 0 rgba(255, 255, 255, 0.06) inset,
-    0 -2px 0 rgba(0, 0, 0, 0.4) inset,
-    0 4px 12px rgba(0, 0, 0, 0.6);
-  transition: transform 0.15s, box-shadow 0.2s, opacity 0.3s;
+  
+  /* Double neon border: inner 1px cyan + outer 2px gold */
+  box-shadow: 
+    inset 0 0 0 1px #00E5FF,
+    0 0 0 2px #FFD700,
+    0 0 8px #00E5FF;
+  animation: vsb-breathing-glow 2s ease-in-out infinite;
+
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.3s;
   -webkit-tap-highlight-color: transparent;
   font-family: 'Space Grotesk', sans-serif;
+  z-index: 10;
+  border: none; /* overriding user agent stylesheet */
+}
+
+@media (min-width: 768px) {
+  .vsb-pill {
+    height: 52px;
+    padding: 0 24px 0 8px;
+    gap: 14px;
+  }
+}
+
+@keyframes vsb-breathing-glow {
+  0%, 100% {
+    box-shadow: 
+      inset 0 0 0 1px #00E5FF,
+      0 0 0 2px #FFD700,
+      0 0 8px #00E5FF;
+  }
+  50% {
+    box-shadow: 
+      inset 0 0 0 1px #00E5FF,
+      0 0 0 2px #FFD700,
+      0 0 24px #00E5FF,
+      0 0 40px #FFD700;
+  }
 }
 
 .vsb-pill:not(:disabled):hover {
-  transform: scale(1.05);
-  box-shadow:
-    0 0 22px rgba(0, 229, 255, 0.35),
-    0 0 50px rgba(0, 229, 255, 0.15),
-    0 2px 0 rgba(255, 255, 255, 0.08) inset,
-    0 -2px 0 rgba(0, 0, 0, 0.4) inset,
-    0 6px 18px rgba(0, 0, 0, 0.7);
+  transform: scale(1.04);
+  animation: none;
+  box-shadow: 
+    inset 0 0 0 1px #00E5FF,
+    0 0 0 2px #FFD700,
+    0 0 30px #00E5FF,
+    0 0 50px #FFD700;
 }
 
-/* Hover: mini-wheel spins faster — handled via CSS variable */
+/* On hover: mini wheel jumps to 1s duration */
 .vsb-pill:not(:disabled):hover .vsb-wheel-face {
-  animation-duration: 1.5s;
+  animation: mini-wheel-spin 1s linear infinite;
 }
-
-.vsb-pill:not(:disabled):active { transform: scale(0.96); }
 
 .vsb-pill:disabled,
 .vsb-pill.vsb-completed {
   opacity: 0.7;
   cursor: default;
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  filter: grayscale(0.8);
+  animation: none;
+  box-shadow: inset 0 0 0 1px #555, 0 0 0 2px #333;
 }
 
-/* ── Mini wheel wrapper ───────────────────────────────────── */
+/* ── Mini wheel ───────────────────────────────────── */
 .vsb-mini-wheel-wrap {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
 }
-
-@media (min-width: 768px) {
-  .vsb-mini-wheel-wrap { width: 40px; height: 40px; }
-  .vsb-pill            { height: 52px; padding: 0 18px 0 12px; }
-}
-
-.vsb-mini-wheel-wrap.vsb-wheel-dim { opacity: 0.4; filter: grayscale(0.5); }
-
-/* ── Mini wheel disk ─────────────────────────────────────── */
 .vsb-mini-wheel {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   position: relative;
-  animation: mini-wheel-spin 8s linear infinite;
 }
 
-@keyframes mini-wheel-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* ── Wheel face — 6-segment conic gradient ───────────────── */
+/* The spinning face */
 .vsb-wheel-face {
   position: absolute;
-  inset: 3px;
+  inset: 0;
   border-radius: 50%;
   background: conic-gradient(
     #8B0030 0deg 60deg,
@@ -97,80 +112,87 @@
     #004D2A 240deg 300deg,
     #3D0080 300deg 360deg
   );
-  /* Subtle inner highlight for premium look */
-  box-shadow: inset 0 1px 3px rgba(255,255,255,0.2);
+  animation: mini-wheel-spin 6s linear infinite;
+  box-shadow: inset 0 1px 3px rgba(255,255,255,0.4);
 }
 
-/* ── Gold ring rim ───────────────────────────────────────── */
+@keyframes mini-wheel-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Gold ring rim */
 .vsb-wheel-rim {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2.5px solid #FFD700;
-  box-shadow:
-    0 0 5px #FFD70080,
-    inset 0 0 4px #FFD70040;
+  border: 2px solid #FFD700;
+  box-shadow: 0 0 6px #FFD70080, inset 0 0 4px #FFD70060;
+  pointer-events: none;
 }
 
-/* ── Center hub ──────────────────────────────────────────── */
+/* Center hub */
 .vsb-wheel-hub {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 28%;
-  height: 28%;
+  width: 25%;
+  height: 25%;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff 0%, #FFD700 40%, #1a0800 100%);
   border: 1px solid #FFD700;
   box-shadow: 0 0 4px #FFD70080;
+  pointer-events: none;
 }
 
-/* ── Bottom depth edge (3D cylinder illusion) ────────────── */
-.vsb-mini-wheel-edge {
-  position: absolute;
-  bottom: -4px;
-  left: 8%;
-  right: 8%;
-  height: 4px;
-  background: linear-gradient(to bottom, #2a1800, #0a0500);
-  border-radius: 0 0 50% 50%;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.6);
-}
-
-/* ── Text column ─────────────────────────────────────────── */
-.vsb-text-col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1;
-  gap: 3px;
-}
-
+/* ── Text ─────────────────────────────────────────── */
 .vsb-title {
-  font-size: clamp(9px, 2.8vw, 11px);
+  font-size: clamp(14px, 4vw, 17px);
   font-weight: 900;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #00E5FF;
-  text-shadow: 0 0 8px #00E5FF, 0 0 20px #00E5FF60;
-}
-
-.vsb-streak {
-  font-size: clamp(8px, 2.4vw, 9px);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #FF8C00;
-  text-shadow: 0 0 6px #FF8C0080;
+  color: #ffffff;
+  text-shadow: 0 0 10px #00E5FF, 0 0 20px #00E5FF;
 }
 
 /* Completed state overrides */
 .vsb-completed .vsb-title {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.4);
   text-shadow: none;
 }
-.vsb-completed .vsb-streak {
-  color: rgba(255, 255, 255, 0.25);
-  text-shadow: none;
+
+/* ── Sparkles ────────────────────────────────────────────── */
+.vsb-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #fff, 0 0 12px #00E5FF;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.vsb-sp1 {
+  top: -6px;
+  left: 15%;
+  animation: vsb-blink 1.2s infinite alternate;
+}
+
+.vsb-sp2 {
+  bottom: -4px;
+  left: 45%;
+  animation: vsb-blink 1.8s infinite alternate;
+}
+
+.vsb-sp3 {
+  top: 50%;
+  right: -8px;
+  animation: vsb-blink 2.4s infinite alternate;
+}
+
+@keyframes vsb-blink {
+  0%   { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1.2); }
 }

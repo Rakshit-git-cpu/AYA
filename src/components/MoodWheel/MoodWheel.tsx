@@ -391,16 +391,12 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
         {/* ── Header row ── */}
         <div className="mw-header">
           <button className="mw-back-btn" onClick={onClose} aria-label="Back to map">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            BACK
+            ← BACK
           </button>
 
           <div className={`mw-spins-counter${phase === 'no-spins' ? ' locked' : ''}`}>
             {phase === 'no-spins'
-              ? `🔒 ${fmtCountdown(countdown)}`
+              ? `🔒 NO SPINS LEFT`
               : phase === 'result' && winIdx !== null
                 ? `${SEGMENTS[winIdx].emoji} ${SEGMENTS[winIdx].label}`
                 : `${spinsLeft} SPIN${spinsLeft === 1 ? '' : 'S'} LEFT TODAY`

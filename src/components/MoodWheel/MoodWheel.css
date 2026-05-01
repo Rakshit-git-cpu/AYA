@@ -47,60 +47,52 @@
 
 /* ── Header row (back + spins counter) ───────────────────────────── */
 .mw-header {
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  flex-shrink: 0;
-  gap: 8px;
+  pointer-events: none;
 }
 
 /* ── Back button ─────────────────────────────────────────────────── */
 .mw-back-btn {
   min-height: 44px;
   min-width: 44px;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  padding: 16px;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.6);
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.18em;
   text-transform: uppercase;
   -webkit-tap-highlight-color: transparent;
   transition: color 0.2s;
+  pointer-events: auto;
 }
-.mw-back-btn:hover { color: rgba(255,255,255,0.85); }
-.mw-back-btn svg { flex-shrink: 0; }
+.mw-back-btn:hover { color: rgba(255,255,255,1); }
 
 /* ── Spins counter ───────────────────────────────────────────────── */
 .mw-spins-counter {
-  font-size: clamp(9px, 2.8vw, 12px);
-  font-weight: 800;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
   color: #00E5FF;
-  text-shadow: 0 0 10px #00E5FF, 0 0 22px #00E5FF60;
-  padding: 7px 16px;
-  border: 1px solid #00E5FF35;
-  border-radius: 999px;
-  background: rgba(0,229,255,0.06);
-  backdrop-filter: blur(8px);
+  padding: 16px;
   white-space: nowrap;
-  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  text-shadow: none;
+  pointer-events: auto;
 }
 .mw-spins-counter.locked {
-  color: #ff4455;
-  text-shadow: 0 0 10px #ff4455;
-  border-color: #ff445535;
-  background: rgba(255,68,85,0.06);
+  color: #FF2D78;
 }
 
 /* ── Wheel area wrapper ──────────────────────────────────────────── */
