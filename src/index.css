@@ -620,4 +620,45 @@ body, #root {
   padding-left: max(20px, env(safe-area-inset-left));
   padding-right: max(20px, env(safe-area-inset-right));
 }
-
+
+/* Node Label Constraints */
+.personality-name-label {
+  max-width: min(180px, 45vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .personality-name-label {
+    max-width: 140px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .story-title-label {
+    max-width: 140px;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+
+.map-content {
+  padding-top: max(70px, env(safe-area-inset-top) + 60px);
+}
+
+
+@media (max-width: 480px) {
+  .map-right-buttons {
+    top: 160px !important; /* push below header */
+    right: 8px !important;
+  }
+  .map-right-buttons button {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+    min-width: unset !important;
+  }
+}
+

@@ -134,7 +134,16 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             ? NODE_OFFSETS[index]
             : Math.sin(index) * (isMobile ? 30 : 60);
 
-        return { x: xOffset, y };
+        const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
+        const centerX = windowWidth / 2;
+        let absoluteX = centerX + xOffset;
+
+        if (isMobile) {
+            absoluteX = Math.min(Math.max(absoluteX, windowWidth * 0.15), windowWidth * 0.75);
+            absoluteX = Math.min(Math.max(absoluteX, 60), windowWidth - 60);
+        }
+
+        return { x: absoluteX, y };
     };
 
     // Scroll refs and values
@@ -514,7 +523,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             </div>
 
             {/* Journal Toggle & DNA Profile */}
-            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] flex flex-col gap-2 items-end">
+            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] flex flex-col gap-2 items-end map-right-buttons">
                 <button
                     onClick={() => { audioSynth.playClick(); setShowJournal(true); }}
                     className="group flex items-center gap-1.5 md:gap-3 pr-3 md:pr-6 pl-1.5 py-1 md:py-2 rounded-full shadow-2xl transition-all border-2 bg-slate-900 border-[#FFB347]/50 hover:border-[#FFB347] hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(255,179,71,0.2)]"
@@ -655,10 +664,11 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                             return (
                                 <motion.div
                                     key={level.id}
-                                    className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto"
+                                    className="absolute flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto personality-node-container"
                                     style={{
                                         top: pos.y,
-                                        transform: `translate(calc(-50% + ${pos.x}px), -50%)`,
+                                        left: pos.x,
+                                        transform: `translate(-50%, -50%)`,
                                         zIndex: 20 + i
                                     }}
                                     whileHover={{ scale: 1.1, y: -5 }}
@@ -710,7 +720,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                         ? (isCurrent ? "bg-[#FFB347] border-[#fff0d4] text-[#4a2e00] shadow-[0_0_15px_rgba(255,179,71,0.6)]" : "bg-[rgba(15,10,5,0.8)] border-[#FFB347]/50 text-[#FFB347] backdrop-blur-md shadow-[0_0_10px_rgba(255,179,71,0.2)]")
                                                         : "bg-slate-900 border-slate-700 text-slate-500"
                                                 )}>
-                                                    <span className="text-[10px] md:text-sm font-black uppercase drop-shadow-sm tracking-widest">
+                                                    <span className="text-[10px] md:text-sm font-black uppercase drop-shadow-sm tracking-widest personality-name-label">
                                                         {level.personality}
                                                     </span>
                                                 </div>
@@ -724,7 +734,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                     : "bg-slate-900/90 border-b-[3px] md:border-b-4 border-slate-950"
                                             )}>
                                                 <span className={clsx(
-                                                    "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center",
+                                                    "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center story-title-label",
                                                     isUnlocked 
                                                         ? (isCurrent ? "text-white drop-shadow-md" : "text-[#fff0d4] drop-shadow-[0_0_5px_rgba(255,179,71,0.5)]")
                                                         : "text-slate-500"
@@ -735,7 +745,7 @@ export function SolarMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                         </div>
 
                                         {isCompleted && (
-                                            <div className="absolute -top-4 md:-top-6 left-1/2 -translate-x-1/2 flex gap-1">
+                                            <div className="absolute -top-4 md:-top-6 flex gap-1 justify-center w-full">
                                                 {[1, 2, 3].map(s => (
                                                     <Star key={s} size={16} className="fill-[#FFB347] text-[#ffdd99] drop-shadow-[0_0_8px_rgba(255,179,71,0.8)] animate-bounce md:w-5 md:h-5" style={{ animationDelay: `${s * 100}ms` }} />
                                                 ))}

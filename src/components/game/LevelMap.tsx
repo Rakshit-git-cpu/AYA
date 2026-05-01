@@ -137,9 +137,19 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         // Use defined offsets if available, otherwise sinusoid
         const xOffset = index < NODE_OFFSETS.length
             ? NODE_OFFSETS[index]
-            : Math.sin(index) * (isMobile ? 30 : 60); // Reduced amplitude for mobile
+            : Math.sin(index) * (isMobile ? 30 : 60);
 
-        return { x: xOffset, y };
+        // Calculate absolute X (clamped on mobile to prevent label bleed)
+        const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
+        const centerX = windowWidth / 2;
+        let absoluteX = centerX + xOffset;
+
+        if (isMobile) {
+            absoluteX = Math.min(Math.max(absoluteX, windowWidth * 0.15), windowWidth * 0.75);
+            absoluteX = Math.min(Math.max(absoluteX, 60), windowWidth - 60);
+        }
+
+        return { x: absoluteX, y };
     };
 
     // Scroll refs and values
@@ -271,7 +281,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             </div>
 
             {/* Top Right Controls */}
-            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] animate-fade-in-delayed flex flex-col gap-2 items-end">
+            <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] animate-fade-in-delayed flex flex-col gap-2 items-end map-right-buttons">
                 
                 {/* BGM Toggle Button */}
                 <button
@@ -407,7 +417,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     className="fixed top-0 left-0 w-full layer-mid pb-32 pointer-events-none z-20"
                     style={{ height: totalHeight, y: hudY, opacity: canvasReady ? 1 : 0 }}
                 >
-                    <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full">
+                    <div className="relative w-full max-w-md mx-auto mt-24 md:mt-32 pointer-events-none h-full map-content">
                         {/* NODES */}
 
                         {/* LEVEL NODES */}
@@ -420,10 +430,11 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                             return (
                                 <div
                                     key={level.id}
-                                    className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto"
+                                    className="absolute flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto personality-node-container"
                                     style={{
                                         top: pos.y,
-                                        transform: `translate(calc(-50% + ${pos.x}px), -50%)`,
+                                        left: pos.x,
+                                        transform: `translate(-50%, -50%)`,
                                         zIndex: 20 + i
                                     }}
                                 >
@@ -498,7 +509,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                             ? (isCurrent ? "bg-amber-500 border-amber-300 text-amber-950 shadow-[0_0_10px_rgba(245,158,11,0.5)]" : "bg-[rgba(10,15,40,0.75)] border-[#4DD9FF]/70 text-[#E8E0FF] backdrop-blur-md shadow-[0_0_8px_rgba(77,217,255,0.3)]")
                                                             : "bg-slate-800 border-slate-700 text-slate-500")
                                                 )}>
-                                                    <span className="text-[10px] md:text-sm font-black uppercase tracking-blacker drop-shadow-sm">
+                                                    <span className="text-[10px] md:text-sm font-black uppercase tracking-blacker drop-shadow-sm personality-name-label">
                                                         {level.personality}
                                                     </span>
                                                 </div>
@@ -516,7 +527,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                         : "bg-slate-800/80 border-b-[3px] md:border-b-4 border-slate-900")
                                             )}>
                                                 <span className={clsx(
-                                                    "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center",
+                                                    "text-[10px] md:text-xs font-bold uppercase tracking-wider leading-none text-center story-title-label",
                                                     isCandyMode
                                                         ? (isUnlocked ? "text-white drop-shadow-md" : "text-slate-500")
                                                         : (isUnlocked 
@@ -529,7 +540,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                         </div>
 
                                         {isCompleted && (
-                                            <div className="absolute -top-4 md:-top-6 left-1/2 -translate-x-1/2 flex gap-1">
+                                            <div className="absolute -top-4 md:-top-6 flex gap-1 justify-center w-full">
                                                 {[1, 2, 3].map(s => (
                                                     <Star key={s} size={16} className="fill-yellow-400 text-yellow-600 drop-shadow-sm animate-bounce md:w-5 md:h-5" style={{ animationDelay: `${s * 100}ms` }} />
                                                 ))}
