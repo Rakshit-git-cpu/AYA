@@ -14,14 +14,15 @@ const NeonRainLayer = () => {
         let isVisible = true;
         let drops: any[] = [];
         let frames = 0;
+        let frameCount = 0;
         let lastFpsTime = performance.now();
 
         const initDrops = () => {
             const isMobile = window.innerWidth <= 768;
-            const count = isMobile ? 80 : 150;
+            const count = isMobile ? 80 : 90;
             drops = [];
             for (let i = 0; i < count; i++) {
-                const isClose = Math.random() < 0.2;
+                const isClose = Math.random() < (isMobile ? 0.2 : 0.1);
                 const rColor = Math.random();
                 let baseColorStr = '0, 240, 255';
                 if (rColor > 0.5 && rColor <= 0.8) baseColorStr = '180, 0, 255';
@@ -31,7 +32,7 @@ const NeonRainLayer = () => {
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     length: isClose ? 80 + Math.random() * 40 : 40 + Math.random() * 50,
-                    speed: 3 + Math.random() * 5,
+                    speed: isMobile ? 3 + Math.random() * 5 : 2 + Math.random() * 3,
                     opacity: isClose ? 0.7 : 0.15 + Math.random() * 0.5,
                     baseColorStr,
                     width: isClose ? 3 + Math.random() : 1.5 + Math.random() * 1.5,
@@ -52,6 +53,13 @@ const NeonRainLayer = () => {
         const render = () => {
             if (!isVisible) return;
             
+            const isDesktop = window.innerWidth > 768;
+            frameCount++;
+            if (isDesktop && frameCount % 2 !== 0) {
+                animationFrameId = requestAnimationFrame(render);
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.save();
             

@@ -1,141 +1,188 @@
 class BGMManager {
-  private tracks: Record<string, HTMLAudioElement> = {}
+  private audioContext: AudioContext | null = null
+  private buffers: Map<string, AudioBuffer> = new Map()
+  private currentSource: AudioBufferSourceNode | null = null
+  private gainNode: GainNode | null = null
   private currentTrack: string | null = null
   private isEnabled: boolean = true
   private masterVolume: number = 0.3
-  private unlocked: boolean = false
+  private isUnlocked: boolean = false
+  private pendingTrack: string | null = null
+  private mapReady: boolean = false
 
-  constructor() {
-    const TRACK_LIST = [
-      'onboarding', 'quiz', 'neon-map',
-      'triumph', 'grief', 'tension', 'joy',
-      'hope', 'love', 'mystery', 'calm'
-    ]
-    
-    TRACK_LIST.forEach(name => {
-      const audio = new Audio(`/music/bgm-${name}.mp3`)
-      audio.loop = true
-      audio.volume = 0
-      audio.preload = 'auto'
-      audio.onerror = () => 
-        console.error(`BGM failed: bgm-${name}.mp3`)
-      audio.oncanplaythrough = () => 
-        console.log(`BGM ready: ${name}`)
-      this.tracks[name] = audio
-    })
-  }
-
-  // Call this on first user interaction anywhere in app.
-  // ONLY unlocks the AudioContext — does NOT start any music.
-  // Each screen component is responsible for calling play() on mount.
-  unlock() {
-    if (this.unlocked) return
-    this.unlocked = true
-    // Warm up a single track at volume 0 to satisfy browser autoplay policy
-    const warmup = Object.values(this.tracks)[0]
-    if (warmup) {
-      warmup.play()
-        .then(() => { warmup.pause(); warmup.currentTime = 0 })
-        .catch(() => {})
+  private getContext(): AudioContext {
+    if (!this.audioContext) {
+      this.audioContext = new (
+        window.AudioContext || 
+        (window as any).webkitAudioContext
+      )()
     }
-    console.log('BGM unlocked')
+    return this.audioContext
   }
 
-  play(trackName: string, fadeInDuration: number = 1500) {
+  // Preload all tracks as ArrayBuffers
+  async preload(tracks: Record<string, string>) {
+    const ctx = this.getContext()
+    const promises = Object.entries(tracks).map(
+      async ([name, url]) => {
+        try {
+          const response = await fetch(url)
+          const arrayBuffer = await response.arrayBuffer()
+          const audioBuffer = await ctx.decodeAudioData(
+            arrayBuffer
+          )
+          this.buffers.set(name, audioBuffer)
+          console.log(`BGM loaded: ${name}`)
+        } catch (e) {
+          console.error(`BGM failed to load: ${name}`, e)
+          try {
+            const audio = new Audio(url)
+            audio.crossOrigin = 'anonymous'
+            console.warn(`Fallback for Safari fetch crossOrigin block on: ${name}`)
+          } catch (err) {}
+        }
+      }
+    )
+    await Promise.all(promises)
+    console.log('All BGM tracks loaded')
+  }
+
+  // Must be called on first user gesture
+  async unlock() {
+    if (this.isUnlocked) return
+    const ctx = this.getContext()
+    
+    // Safari requires resume after user gesture
+    if (ctx.state === 'suspended') {
+      await ctx.resume()
+    }
+    
+    this.isUnlocked = true
+    console.log('BGM unlocked, context state:', ctx.state)
+    
+    // Only auto-play pending if map is ready
+    if (this.pendingTrack && this.mapReady) {
+      const track = this.pendingTrack
+      this.pendingTrack = null
+      await this.play(track)
+    }
+  }
+
+  setMapReady() { 
+    this.mapReady = true 
+  }
+
+  async play(trackName: string, fadeDuration = 1.5) {
     if (!this.isEnabled) return
-    if (!this.unlocked) return
     if (this.currentTrack === trackName) return
     
-    const prevTrack = this.currentTrack
-    this.currentTrack = trackName
-    
-    // Fade out previous track
-    if (prevTrack && this.tracks[prevTrack]) {
-      this.fadeOut(this.tracks[prevTrack], 1500)
-    }
-    
-    // Fade in new track
-    const newAudio = this.tracks[trackName]
-    if (!newAudio) {
-      console.error(`Track not found: ${trackName}`)
+    // If not unlocked yet, queue the track
+    if (!this.isUnlocked) {
+      this.pendingTrack = trackName
       return
     }
-    newAudio.currentTime = 0
-    newAudio.volume = 0
-    newAudio.play().catch(e => 
-      console.error(`BGM play failed: ${trackName}`, e)
-    )
-    this.fadeIn(newAudio, fadeInDuration)
-  }
 
-  stop(fadeOutDuration: number = 1500) {
-    if (this.currentTrack && this.tracks[this.currentTrack]) {
-      this.fadeOut(this.tracks[this.currentTrack], fadeOutDuration)
+    const ctx = this.getContext()
+    const buffer = this.buffers.get(trackName)
+    
+    if (!buffer) {
+      console.error(`Buffer not found: ${trackName}`)
+      return
     }
+
+    // Fade out current track
+    if (this.gainNode && this.currentSource) {
+      const oldGain = this.gainNode
+      const oldSource = this.currentSource
+      this.fadeOut(oldGain, fadeDuration, () => {
+        try { oldSource.stop() } catch(e) {}
+      })
+    }
+
+    // Create new gain node for new track
+    const newGain = ctx.createGain()
+    newGain.gain.setValueAtTime(0, ctx.currentTime)
+    newGain.connect(ctx.destination)
+
+    // Create new source
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+    source.loop = true
+    source.connect(newGain)
+    source.start(0)
+
+    // Fade in
+    newGain.gain.linearRampToValueAtTime(
+      this.masterVolume,
+      ctx.currentTime + fadeDuration
+    )
+
+    this.gainNode = newGain
+    this.currentSource = source
+    this.currentTrack = trackName
+    
+    console.log(`BGM playing: ${trackName}`)
+  }
+
+  private fadeOut(
+    gain: GainNode, 
+    duration: number,
+    onComplete?: () => void
+  ) {
+    const ctx = this.getContext()
+    gain.gain.linearRampToValueAtTime(
+      0,
+      ctx.currentTime + duration
+    )
+    setTimeout(
+      () => onComplete?.(), 
+      duration * 1000
+    )
+  }
+
+  stop(fadeDuration = 1.5) {
+    if (!this.gainNode || !this.currentSource) return
+    const source = this.currentSource
+    this.fadeOut(this.gainNode, fadeDuration, () => {
+      try { source.stop() } catch(e) {}
+    })
     this.currentTrack = null
-  }
-
-  private fadeOut(audio: HTMLAudioElement, duration: number) {
-    const steps = 30
-    const interval = duration / steps
-    const step = audio.volume / steps
-    
-    const timer = setInterval(() => {
-      if (audio.volume <= step) {
-        audio.volume = 0
-        audio.pause()
-        clearInterval(timer)
-      } else {
-        audio.volume = Math.max(0, audio.volume - step)
-      }
-    }, interval)
-  }
-
-  private fadeIn(audio: HTMLAudioElement, duration: number) {
-    const steps = 30
-    const interval = duration / steps
-    const step = this.masterVolume / steps
-    
-    const timer = setInterval(() => {
-      if (audio.volume >= this.masterVolume - step) {
-        audio.volume = this.masterVolume
-        clearInterval(timer)
-      } else {
-        audio.volume = Math.min(
-          this.masterVolume, 
-          audio.volume + step
-        )
-      }
-    }, interval)
+    this.currentSource = null
+    this.gainNode = null
+    this.pendingTrack = null
   }
 
   toggle() {
     this.isEnabled = !this.isEnabled
     if (!this.isEnabled) {
-      this.stop(800)
-    } else if (this.currentTrack) {
-      const audio = this.tracks[this.currentTrack]
-      if (audio) {
-        audio.play().catch(() => {})
-        this.fadeIn(audio, 800)
+      this.stop(0.8)
+    } else {
+      // Resume whatever should be playing
+      if (this.pendingTrack) {
+        this.play(this.pendingTrack)
       }
     }
-    localStorage.setItem('aya_bgm', 
+    localStorage.setItem(
+      'aya_bgm', 
       this.isEnabled.toString()
     )
   }
 
   setVolume(v: number) {
     this.masterVolume = Math.max(0, Math.min(1, v))
-    if (this.currentTrack) {
-      const audio = this.tracks[this.currentTrack]
-      if (audio) audio.volume = this.masterVolume
+    if (this.gainNode && this.audioContext) {
+      this.gainNode.gain.setValueAtTime(
+        this.masterVolume,
+        this.audioContext.currentTime
+      )
     }
   }
 
   loadPreference() {
     const saved = localStorage.getItem('aya_bgm')
     if (saved === 'false') this.isEnabled = false
+    const vol = localStorage.getItem('aya_bgm_volume')
+    if (vol) this.masterVolume = parseFloat(vol)
   }
 
   get enabled() { return this.isEnabled }
@@ -143,3 +190,18 @@ class BGMManager {
 }
 
 export const bgmManager = new BGMManager()
+
+// Track list for preloading
+export const BGM_TRACKS: Record<string, string> = {
+  'onboarding': '/music/bgm-onboarding.mp3',
+  'quiz':       '/music/bgm-quiz.mp3',
+  'neon-map':   '/music/bgm-neon-map.mp3',
+  'triumph':    '/music/bgm-triumph.mp3',
+  'grief':      '/music/bgm-grief.mp3',
+  'tension':    '/music/bgm-tension.mp3',
+  'joy':        '/music/bgm-joy.mp3',
+  'hope':       '/music/bgm-hope.mp3',
+  'love':       '/music/bgm-love.mp3',
+  'mystery':    '/music/bgm-mystery.mp3',
+  'calm':       '/music/bgm-calm.mp3',
+}

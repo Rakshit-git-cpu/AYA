@@ -100,6 +100,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         window.addEventListener('resize', handleResize);
 
         // Play neon-map BGM on initial mount
+        bgmManager.setMapReady();
         bgmManager.play('neon-map');
 
         return () => window.removeEventListener('resize', handleResize);

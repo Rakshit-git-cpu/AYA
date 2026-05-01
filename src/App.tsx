@@ -3,17 +3,23 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './layouts/AppLayout';
 import { HomePage } from './pages/Home';
 import { GameRoot } from './pages/GameRoot';
-import { bgmManager } from './utils/bgmManager';
+import { bgmManager, BGM_TRACKS } from './utils/bgmManager';
 
 function App() {
   useEffect(() => {
     bgmManager.loadPreference()
     
-    const unlock = () => {
-      bgmManager.unlock()
+    // Preload all tracks immediately on app start
+    // This happens silently in background
+    bgmManager.preload(BGM_TRACKS)
+    
+    // Unlock on first user interaction
+    const unlock = async () => {
+      await bgmManager.unlock()
       document.removeEventListener('click', unlock)
       document.removeEventListener('touchstart', unlock)
     }
+    
     document.addEventListener('click', unlock)
     document.addEventListener('touchstart', unlock)
     
