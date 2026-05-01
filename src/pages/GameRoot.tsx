@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabase';
 import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { CinematicOnboarding } from '../components/game/CinematicOnboarding';
@@ -41,7 +42,118 @@ export function GameRoot() {
         syncLevels();
     }, [syncLevels]);
 
-    const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>('map');
+    const initialView = (localStorage.getItem('aya_last_view') as any) || 'map';
+    const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>(initialView);
+    const [sessionStatus, setSessionStatus] = useState<'checking' | 'found' | 'not_found'>('checking');
+
+    useEffect(() => {
+        if (sessionStatus === 'found' && view) {
+            if (['map', 'dna', 'journal'].includes(view)) {
+                localStorage.setItem('aya_last_view', view)
+            }
+        }
+    }, [view, sessionStatus]);
+
+    useEffect(() => {
+        const restoreSession = async () => {
+            console.log('[Session] Checking for existing session...')
+            
+            const userId = localStorage.getItem('aya_user_id') || sessionStorage.getItem('aya_user_id')
+            const userMobile = localStorage.getItem('aya_user_mobile') || sessionStorage.getItem('aya_user_mobile')
+            
+            console.log('[Session] Found in storage:', { userId, userMobile })
+            
+            if (!userId || !userMobile) {
+                console.log('[Session] No session found — showing registration')
+                setSessionStatus('not_found')
+                return
+            }
+            
+            try {
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .maybeSingle()
+                
+                if (error) {
+                    console.error('[Session] Supabase error:', error)
+                    setSessionStatus('not_found')
+                    return
+                }
+                
+                if (!user) {
+                    console.log('[Session] User not in DB — clearing storage')
+                    localStorage.removeItem('aya_user_id')
+                    localStorage.removeItem('aya_user_mobile')
+                    sessionStorage.removeItem('aya_user_id')
+                    sessionStorage.removeItem('aya_user_mobile')
+                    setSessionStatus('not_found')
+                    return
+                }
+                
+                console.log('[Session] User found:', user.name)
+                
+                const { data: profileData } = await supabase
+                    .from('personality_profiles')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .maybeSingle()
+                
+                const store = useUserStore.getState()
+                
+                store.setProfile({
+                    id: user.id,
+                    name: user.name,
+                    age: user.age,
+                    mobile: user.mobile,
+                    total_xp: user.total_xp || 0,
+                    level: user.level || 1,
+                    current_streak: user.current_streak || 0,
+                    longest_streak: user.longest_streak || 0,
+                    stories_completed: user.stories_completed || 0,
+                    daily_challenge_completed: user.daily_challenge_completed || false,
+                    preferred_theme: user.preferred_theme || 'city_dark',
+                    ...(profileData ? {
+                        trait_risk_taker: profileData.trait_risk_taker,
+                        trait_creative: profileData.trait_creative,
+                        trait_analytical: profileData.trait_analytical,
+                        trait_social: profileData.trait_social,
+                        trait_ambitious: profileData.trait_ambitious,
+                        future_archetype: profileData.future_archetype,
+                        interest_goal: profileData.interest_goal,
+                        interest_struggle: profileData.interest_struggle,
+                        interest_domain: profileData.interest_domain,
+                    } : {})
+                } as any)
+                
+                if (profileData) {
+                    store.completeAssessment(
+                        {
+                            discipline: 50, resilience: 50, risk: profileData.trait_risk_taker || 50,
+                            leadership: profileData.trait_ambitious || 50, creativity: profileData.trait_creative || 50, empathy: profileData.trait_social || 50, vision: 50
+                        },
+                        {
+                            motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
+                            social: 'Supporter', passion: 'Creative', coreValue: 'Success'
+                        }
+                    );
+                }
+                
+                const savedTheme = user.preferred_theme || localStorage.getItem('aya_map_theme') || 'city_dark'
+                store.setMapTheme(savedTheme as any)
+                
+                console.log('[Session] Session restored successfully!')
+                setSessionStatus('found')
+                
+            } catch (err) {
+                console.error('[Session] Unexpected error:', err)
+                setSessionStatus('not_found')
+            }
+        }
+        
+        restoreSession()
+    }, [])
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
 
@@ -65,7 +177,18 @@ export function GameRoot() {
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
 
-    if (!profile) {
+    if (sessionStatus === 'checking') {
+        return (
+            <div className="w-full h-screen bg-[#0d0d16] flex flex-col items-center justify-center gap-4">
+                <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                <p className="text-cyan-400 text-lg font-bold tracking-widest animate-pulse">
+                    LOADING YOUR UNIVERSE...
+                </p>
+            </div>
+        )
+    }
+
+    if (sessionStatus === 'not_found' || !profile) {
         return <OnboardingWizard />;
     }
 

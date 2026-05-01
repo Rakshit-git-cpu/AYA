@@ -358,7 +358,7 @@ export const useUserStore = create<UserState>()(
             })
         }),
         {
-            name: 'aya-user-storage-v10', // v10: session tracking and improved persistence
+            name: 'aya-user-store', // renamed for consistency with boot logs
             partialize: (state) => ({
                 profile: state.profile,
                 completedOnboarding: state.completedOnboarding,
@@ -380,6 +380,31 @@ export const useUserStore = create<UserState>()(
                         console.log('[Store] Hydration complete. Profile:', rehydratedState?.profile?.name || 'none');
                     }
                 };
+            },
+            storage: {
+                getItem: (name) => {
+                    try {
+                        return JSON.parse(
+                            localStorage.getItem(name) || 
+                            sessionStorage.getItem(name) || 
+                            'null'
+                        );
+                    } catch { return null; }
+                },
+                setItem: (name, value) => {
+                    try {
+                        localStorage.setItem(name, JSON.stringify(value));
+                        sessionStorage.setItem(name, JSON.stringify(value));
+                    } catch (e) {
+                        try {
+                            sessionStorage.setItem(name, JSON.stringify(value));
+                        } catch {}
+                    }
+                },
+                removeItem: (name) => {
+                    try { localStorage.removeItem(name); } catch {}
+                    try { sessionStorage.removeItem(name); } catch {}
+                }
             }
         }
     ));

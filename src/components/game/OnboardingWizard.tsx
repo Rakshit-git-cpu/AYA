@@ -3,7 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
-import { safeStorage } from '../../utils/storage';
+
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 
 // Horizontal Drag Strip for Age
@@ -116,8 +116,23 @@ export function OnboardingWizard() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const saveSession = (user: any) => {
+        try {
+            localStorage.setItem('aya_user_id', user.id)
+            localStorage.setItem('aya_user_mobile', user.mobile)
+            localStorage.setItem('aya_user_name', user.name)
+            localStorage.setItem('aya_user_age', user.age.toString())
+            // Also save to sessionStorage as backup (Safari private mode)
+            sessionStorage.setItem('aya_user_id', user.id)
+            sessionStorage.setItem('aya_user_mobile', user.mobile)
+            console.log('[Session] Saved successfully:', user.id)
+        } catch (e) {
+            console.error('[Session] Failed to save:', e)
+        }
+    }
+
     const handleComplete = async () => {
-        if (!name.trim() || !mobile.trim()) return;
+        if (!name.trim() || !mobile.trim() || age < 13) return;
         audioSynth.playClick();
         setIsLoading(true);
         setError("");
@@ -154,11 +169,8 @@ export function OnboardingWizard() {
 
                 if (profileError) throw profileError;
 
-                safeStorage.set('aya_user_id', user.id);
-                safeStorage.set('aya_user_mobile', mobile);
-                safeStorage.set('aya_user_name', name);
-                safeStorage.set('aya_user_age', age.toString());
-                console.log('[Register] safeStorage saved for returning user');
+                saveSession(user);
+                console.log('[Register] Session saved for returning user');
 
                 const baseProfile = {
                     id: user.id,
@@ -207,11 +219,8 @@ export function OnboardingWizard() {
                     throw insertError;
                 }
 
-                safeStorage.set('aya_user_id', newUser.id);
-                safeStorage.set('aya_user_mobile', mobile);
-                safeStorage.set('aya_user_name', name);
-                safeStorage.set('aya_user_age', age.toString());
-                console.log('[Register] safeStorage saved for new user');
+                saveSession(newUser);
+                console.log('[Register] Session saved for new user');
 
                 setProfile({
                     id: newUser.id,

@@ -18,6 +18,12 @@ if ('serviceWorker' in navigator) {
 
 // Global Error Handler moved to index.html for better coverage
 
+console.log('[AYA Boot] localStorage aya_user_id:', 
+  localStorage.getItem('aya_user_id'))
+console.log('[AYA Boot] sessionStorage aya_user_id:', 
+  sessionStorage.getItem('aya_user_id'))
+console.log('[AYA Boot] Zustand persisted store:', 
+  localStorage.getItem('aya-user-store'))
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>

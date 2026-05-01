@@ -17,25 +17,18 @@ self.addEventListener('install', event => {
   );
 });
 
-self.addEventListener('fetch', event => {
+// Don't cache API calls — only static assets
+self.addEventListener('fetch', (event) => {
+  // Skip Supabase API calls — always fetch fresh
+  if (event.request.url.includes('supabase.co')) {
+    return
+  }
+  // Cache everything else
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached response if found
-        if (response) {
-          return response;
-        }
-        
-        // Otherwise fetch from network
-        return fetch(event.request).catch(() => {
-          // If network fetch fails, maybe return a fallback page
-          // For now returning the root which should load the offline bundle if cached
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-        });
-      })
-  );
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request)
+    })
+  )
 });
 
 // Push Notification Support
