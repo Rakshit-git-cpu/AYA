@@ -12,6 +12,7 @@ import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
+import { MapAmbience } from './MapAmbience';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -143,6 +144,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const containerRef = useRef<HTMLDivElement>(null);
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
     const [canvasReady, setCanvasReady] = useState(false);
+    const [scrollY, setScrollY] = useState(0);
 
     const handleCanvasReady = useCallback(() => {
         setCanvasReady(true);
@@ -397,6 +399,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             {/* --- SCROLLABLE MAP CONTENT --- */}
             <div
                 ref={containerRef}
+                onScroll={(e) => setScrollY(e.currentTarget.scrollTop)}
                 className="w-full h-full overflow-y-auto overflow-x-hidden relative scroll-smooth"
             >
                 {/* Dummy div to enforce native scroll height */}
@@ -407,6 +410,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     progress={smoothProgress}
                     onReady={handleCanvasReady}
                 />
+
+                <MapAmbience scrollY={scrollY} />
 
                 {!isMobile && canvasReady && (
                     <div className="fixed inset-0 bg-gradient-to-t from-pink-200/20 via-transparent to-slate-900/50 mix-blend-overlay pointer-events-none z-10" />
