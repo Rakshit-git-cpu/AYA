@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
+import { detectEmotion, EMOTION_THEMES } from '../../utils/storyEmotion';
+import type { EmotionTheme } from '../../utils/storyEmotion';
+import { bgmManager } from '../../utils/bgmManager';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
@@ -83,6 +86,13 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Floating Text State
     const [floatTexts, setFloatTexts] = useState<FloatText[]>([]);
 
+    // Emotion / Cinematic Theme State
+    const [currentTheme, setCurrentTheme] = useState<EmotionTheme>(EMOTION_THEMES['calm']);
+    const [bgmEnabled, setBgmEnabled] = useState<boolean>(true);
+    const [typeSoundEnabled, setTypeSoundEnabled] = useState<boolean>(true);
+    // Ref for text scroll container — allows auto-scroll-to-top on frame change
+    const textContainerRef = useRef<HTMLDivElement>(null);
+
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     
@@ -117,6 +127,16 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         }, 1500);
     };
 
+    // Load preferences from localStorage on mount
+    useEffect(() => {
+        if (localStorage.getItem('aya_bgm') === 'false') {
+            setBgmEnabled(false);
+        }
+        if (localStorage.getItem('aya_typewriter_sound') === 'false') {
+            setTypeSoundEnabled(false);
+        }
+    }, []);
+
     // Load Scenario dynamically
     const scenario = STORY_DATABASE[level.scenarioId] || STORY_DATABASE['lvl_age_19'];
     const frame = scenario.frames.find((f: any) => f.id === currentFrameId) || scenario.frames[0];
@@ -142,13 +162,51 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         return [...frame.choices].sort(() => Math.random() - 0.5);
     }, [currentFrameId]); // Re-shuffle only when moving to a new frame
 
-    // Determine what text to show
+    // Determine what text to show — on lesson screen show only the body (not the full LESSON: prefix)
+    // lessonBody is computed near the return statement where lessonFrame is available.
+    // On learning screens activeText is overridden just before typewriter useEffect via a ref trick,
+    // but the simplest correct approach: compute a stable activeText from frame.text and let the
+    // lesson card render lessonBody directly (not via displayedText).
     const activeText = feedbackChoice ? feedbackChoice.feedback : frame.text;
 
     // Reset bg loaded state when background changes
     useEffect(() => {
         setIsBgLoaded(false);
     }, [frame.bg]);
+
+    // Emotion detection + ambient music when frame changes
+    useEffect(() => {
+        const textToAnalyse = frame.emotion
+            ? (frame.emotion as string)  // explicit override in story data: use emotion string directly
+            : frame.text;
+        
+        const badgeLabel = feedbackChoice ? feedbackChoice.feedbackTitle : (frame.id === 'intro' ? 'Narrator' : 'You');
+        
+        // If frame has an explicit emotion field matching a theme key, use it directly
+        const emotion = (frame.emotion && EMOTION_THEMES[frame.emotion as keyof typeof EMOTION_THEMES])
+            ? frame.emotion as keyof typeof EMOTION_THEMES
+            : detectEmotion(textToAnalyse, badgeLabel);
+        
+        const theme = EMOTION_THEMES[emotion];
+        setCurrentTheme(theme);
+
+        // Play matching ambient music — unlock listener in bgmManager handles autoplay policy
+        bgmManager.play(theme.emotion);
+
+        // Scroll text container back to top on every new frame
+        textContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+
+        return () => {
+            // Don't fade out on every frame change — let crossfade handle it
+        };
+    }, [currentFrameId, feedbackChoice]);
+
+    // Stop music when component unmounts (user exits story)
+    useEffect(() => {
+        return () => {
+            bgmManager.stop(1500);
+        };
+    }, []);
 
     // Reset typewriter when text changes
     useEffect(() => {
@@ -508,6 +566,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             
             // Queue transition out allowing particles to run
             setTimeout(() => {
+                bgmManager.stop(1000);
+                setTimeout(() => bgmManager.play('neon-map'), 1000);
                 handleLevelComplete(starCount);
             }, delayMs);
             return;
@@ -541,13 +601,22 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         }
     };
 
-    // Extract Lesson Keyword dynamically
-    // Now looks for the current frame if it is a learning screen, or falls back to searching
-    const lessonFrame = isLearningScreen ? frame : scenario.frames.find((f: any) => f.id.startsWith('LEARNING'));
-    const lessonKeyword = lessonFrame?.text.match(/LESSON:\s*([^.]+)/)?.[1]?.toUpperCase() || "LESSON";
+    // Extract Lesson Title and Body separately from the LESSON: field
+    // Data format: "LESSON: KEYWORD. Body text here."
+    const lessonFrame = isLearningScreen ? frame : scenario.frames.find((f: any) => f.id.startsWith('LEARNING') || f.id === 'lesson');
+    const lessonRawText: string = lessonFrame?.text || '';
+    // Title: the word(s) after "LESSON:" and before the first full stop
+    const lessonKeyword = lessonRawText.match(/LESSON:\s*([^.]+)/i)?.[1]?.trim().toUpperCase() || 'LESSON';
+    // Body: everything after "LESSON: KEYWORD." — strip the prefix
+    const lessonBody = lessonRawText.replace(/^LESSON:\s*[^.]+\.\s*/i, '').trim() || lessonRawText;
 
     return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center overflow-hidden font-sans">
+        <div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden font-sans cinematic-container"
+            style={{
+                backgroundColor: isCandyMode ? '#0f172a' : '#000',
+            }}
+        >
             {/* Background Layer */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
@@ -576,6 +645,16 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         ? "from-pink-500/30 via-purple-500/10 to-transparent mix-blend-overlay" // Candy vibe
                         : "from-slate-950 via-slate-900/60 to-slate-900/30" // Original Dark vibe
                 )} />
+
+                {/* Emotion vignette overlay */}
+                {!isCandyMode && (
+                    <div
+                        className="cinematic-vignette absolute inset-0 pointer-events-none"
+                        style={{
+                            background: `radial-gradient(ellipse at center, transparent 40%, ${currentTheme.vignette} 100%)`,
+                        }}
+                    />
+                )}
             </div>
 
             {!isBgLoaded && (
@@ -587,6 +666,38 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 </div>
             )}
 
+            {/* Sound Controls — Top Right Corner */}
+            <div className="fixed top-4 right-4 z-50 flex gap-2">
+                {/* BGM toggle */}
+                <button
+                    onClick={() => {
+                        bgmManager.toggle();
+                        const nowEnabled = bgmManager.enabled;
+                        setBgmEnabled(nowEnabled);
+                        localStorage.setItem('aya_bgm', nowEnabled.toString());
+                    }}
+                    className="cinematic-toggle flex items-center justify-center w-10 h-10 rounded-full border border-white/15 hover:bg-white/10 text-base shadow-lg"
+                    style={{ borderColor: `${currentTheme.badgeColor}80` }}
+                    title="Background Music"
+                >
+                    {bgmEnabled ? '🎵' : '🔇'}
+                </button>
+
+                {/* Typewriter sound toggle */}
+                <button
+                    onClick={() => {
+                        const next = !typeSoundEnabled;
+                        setTypeSoundEnabled(next);
+                        localStorage.setItem('aya_typewriter_sound', next.toString());
+                    }}
+                    className="cinematic-toggle flex items-center justify-center w-10 h-10 rounded-full border border-white/15 hover:bg-white/10 text-base shadow-lg"
+                    style={{ borderColor: `${currentTheme.badgeColor}80` }}
+                    title="Typewriter Sound"
+                >
+                    {typeSoundEnabled ? '⌨️' : '🔕'}
+                </button>
+            </div>
+
             {/* Top Bar (Stats) - shifted down to avoid overlapping with PwaHeader */}
             <div className={clsx(
                 "absolute top-[60px] left-0 w-full pt-8 px-6 pb-6 z-20 flex justify-between items-center text-white/80 transition-opacity duration-500",
@@ -595,6 +706,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 <button
                     onClick={() => {
                         audioSynth.playClick();
+                        bgmManager.stop(1000);
+                        setTimeout(() => bgmManager.play('neon-map'), 1000);
                         onBack();
                     }}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
@@ -619,7 +732,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         isCandyTheme
                             ? "bg-white/90 border-yellow-400 text-yellow-900"
                             : "bg-slate-900/80 border-yellow-500/50 text-yellow-500"
-                    )}>
+                    )} style={!isCandyMode ? { borderColor: `${currentTheme.badgeColor}80`, color: currentTheme.badgeColor } : {}}>
                         <Star className={clsx("w-6 h-6", isCandyTheme ? "text-yellow-500 fill-yellow-500" : "fill-current")} />
                         <span className="text-2xl font-black">{score} XP</span>
                     </div>
@@ -632,96 +745,220 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 isBgLoaded ? "opacity-100 delay-300" : "opacity-0 pointer-events-none"
             )}>
 
-                {/* LEARNING SCREEN HEADER */}
-                {isLearningScreen && (
-                    <div className="absolute top-[20%] text-center animate-slide-up-fade">
-                        <div className="text-yellow-400 font-bold tracking-[0.5em] text-sm mb-4 uppercase">Key Takeaway</div>
-                        <h1 className={clsx(
-                            "text-5xl md:text-7xl font-black mb-2 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]",
-                            isCandyTheme ? "text-white drop-shadow-[0_4px_0_#ec4899] text-stroke-2" : "text-white"
-                        )}>
-                            {lessonKeyword}
-                        </h1>
-                    </div>
-                )}
+                {/* LEARNING SCREEN — decorative giant text removed, card handles everything */}
 
                 {/* --- BOTTOM ALIGNED CONTENT --- */}
-                <div className="w-full flex flex-col mt-auto items-center min-h-0">
-                    {/* Speaker Label */}
-                    {!isLearningScreen && (
-                        <div className="self-start mb-[-12px] ml-4 relative z-20 shrink-0">
-                            <div className={clsx(
-                                "text-black font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
-                                feedbackChoice
-                                    ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200" : "bg-red-400 border-red-200"
-                                    : "bg-yellow-400 border-yellow-200"
-                            )}>
-                                {feedbackChoice
-                                    ? feedbackChoice.feedbackTitle
-                                    : (frame.id === 'intro' ? 'Narrator' : 'You')}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Dialogue Box */}
+                <div className="w-full flex flex-col mt-auto items-center min-h-0 relative z-20">
+                    {/* Dialogue Box — Bug 1 fix: explicit dark glass background */}
                     <div
                         className={clsx(
-                            "w-full max-h-[75dvh] overflow-y-auto overscroll-contain touch-pan-y custom-scrollbar backdrop-blur-xl rounded-3xl p-6 md:p-8 transform transition-all duration-300",
+                            "w-full rounded-2xl p-5 cinematic-card flex flex-col",
                             isCandyTheme
                                 ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
-                                : isLearningScreen
-                                    ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
-                                    : "bg-slate-950/90 border-2 border-white/10 shadow-2xl rounded-tl-none"
+                                : "border"
                         )}
+                        style={!isCandyMode ? {
+                            background: 'rgba(10, 10, 20, 0.88)',
+                            borderColor: currentTheme.cardBorder,
+                            boxShadow: `0 20px 60px rgba(0,0,0,0.6), 0 0 30px ${currentTheme.badgeColor}22`,
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
+                            maxHeight: '75vh',
+                            overflow: 'hidden',
+                            width: '90%',
+                            maxWidth: '680px',
+                            margin: '0 auto',
+                            gap: '16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        } : {}}
                         onClick={handleTextClick}
                     >
-                        <div className="min-h-[80px]">
+                        {/* Bug 2 — Lesson card: single clean layout, no decorative overlap */}
+                        {isLearningScreen ? (
+                            <>
+                                {/* KEY TAKEAWAY label */}
+                                <div className="text-center shrink-0" style={{ color: currentTheme.badgeColor, letterSpacing: '3px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                                    Key Takeaway
+                                </div>
+                                {/* Lesson title */}
+                                <h2 className="text-center font-black text-white shrink-0" style={{ fontSize: '1.4rem', lineHeight: 1.3, maxHeight: '3rem', overflow: 'hidden' }}>
+                                    {lessonKeyword}
+                                </h2>
+                                {/* Lesson body text — shows lessonBody directly, no LESSON: prefix */}
+                                <div
+                                    ref={textContainerRef}
+                                    className="overflow-y-auto custom-scrollbar"
+                                    style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
+                                >
+                                    <p className={clsx(
+                                        "leading-relaxed text-center",
+                                        isCandyTheme
+                                            ? "text-lg font-serif italic text-pink-900"
+                                            : "text-sm text-white/80"
+                                    )}
+                                    style={{ fontSize: '0.95rem' }}>
+                                        {lessonBody}
+                                    </p>
+                                </div>
+                                {/* Finish Chapter button — always visible on lesson screen */}
+                                <div className="mt-2 shrink-0">
+                                        {displayedChoices.map((choice, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleChoiceClick(choice as Choice)}
+                                                className="cinematic-continue w-full py-4 rounded-full font-bold uppercase tracking-widest text-white transition-all active:scale-95"
+                                                style={!isCandyMode ? {
+                                                    backgroundColor: currentTheme.badgeColor,
+                                                    boxShadow: `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`,
+                                                    border: `1px solid ${currentTheme.cardBorder}`,
+                                                } : { backgroundColor: '#f59e0b' }}
+                                                onMouseEnter={(e) => {
+                                                    if (!isCandyMode) e.currentTarget.style.boxShadow = `0 12px 24px rgba(0,0,0,0.5), 0 0 30px ${currentTheme.badgeColor}cc`;
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (!isCandyMode) e.currentTarget.style.boxShadow = `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`;
+                                                }}
+                                            >
+                                                {choice.text}
+                                            </button>
+                                        ))}
+                                    </div>
+                            </>
+                        ) : (
+                        <>
+                        {/* Speaker Label INSIDE the card */}
+                        {!isLearningScreen && (
+                            <div className="self-start shrink-0">
+                                <div
+                                    className={clsx(
+                                        "cinematic-badge font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-full border shadow-lg",
+                                        feedbackChoice
+                                            ? feedbackChoice.score > 0 ? "bg-green-400/20 border-green-400 text-green-400" : "bg-red-400/20 border-red-400 text-red-400"
+                                            : isCandyMode ? "bg-yellow-400/20 border-yellow-400 text-yellow-400" : "bg-transparent text-white"
+                                    )}
+                                    style={!isCandyMode && !feedbackChoice ? {
+                                        borderColor: currentTheme.badgeColor,
+                                        color: currentTheme.badgeColor,
+                                        boxShadow: currentTheme.badgeGlow,
+                                        backgroundColor: `${currentTheme.badgeColor}33`,
+                                    } : {}}
+                                >
+                                    {feedbackChoice
+                                        ? feedbackChoice.feedbackTitle
+                                        : (frame.id === 'intro' ? 'Narrator' : 'You')}
+                                </div>
+                            </div>
+                        )}
+                        {/* Bug 3 — Text container: scrollable, auto-scrolls to top on frame change */}
+                        <div
+                            ref={textContainerRef}
+                            className="overflow-y-auto custom-scrollbar pb-3 relative"
+                            style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
+                        >
+                            {/* Fade gradient at bottom of text area */}
+                            <div
+                                className="sticky bottom-0 left-0 right-0 pointer-events-none"
+                                style={{
+                                    height: '40px',
+                                    background: `linear-gradient(transparent, rgba(10,10,20,0.88))`,
+                                    marginTop: '-40px',
+                                    position: 'sticky',
+                                    bottom: 0,
+                                }}
+                            />
+                            {level.age_mirror_text && (frame.id === 'intro') && !feedbackChoice && (
+                                <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
+                                    At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
+                                </p>
+                            )}
                             <p className={clsx(
                                 "leading-relaxed",
-                                isLearningScreen
-                                    ? isCandyTheme
-                                        ? "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-pink-900" // Candy Lesson
-                                        : "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-yellow-100" // Standard Lesson
-                                    : isCandyTheme
-                                        ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
-                                        : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
+                                isCandyTheme
+                                    ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
+                                    : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
                             )}>
                                 {displayedText}
                                 {isTyping && <span className={clsx("inline-block w-2 h-6 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
                             </p>
                         </div>
 
+                        {/* Choice buttons — flex-shrink-0 so they never get compressed */}
                         {!isTyping && !feedbackChoice && (
-                            <div className="mt-8 flex flex-col gap-3 animate-fade-in">
+                            <div
+                                className="mt-3 animate-fade-in"
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '12px',
+                                    width: '100%',
+                                    flexShrink: 0,
+                                }}
+                            >
                                 {displayedChoices.map((choice, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => handleChoiceClick(choice as Choice)}
                                         className={clsx(
-                                            "group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
+                                            "cinematic-choice group w-full text-left border-2 transition-all flex items-center justify-between shadow-lg",
                                             isCandyTheme
-                                                ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
-                                                : "border border-white/10 hover:border-yellow-400 bg-white/5 hover:bg-white/15"
+                                                ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg rounded-full"
+                                                : "border-white/10 rounded-2xl"
                                         )}
+                                        style={{
+                                            minHeight: '56px',
+                                            padding: '14px 16px',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word',
+                                            ...(isCandyMode ? {} : { borderColor: currentTheme.choiceBorder }),
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!isCandyMode) {
+                                                e.currentTarget.style.boxShadow = currentTheme.badgeGlow;
+                                                e.currentTarget.style.borderColor = currentTheme.badgeColor;
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isCandyMode) {
+                                                e.currentTarget.style.boxShadow = 'none';
+                                                e.currentTarget.style.borderColor = currentTheme.choiceBorder;
+                                            }
+                                        }}
                                     >
-                                        <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-yellow-300")}>
+                                        <span className={clsx("font-medium text-base leading-snug transition-colors flex-1 mr-3", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-white")}>
                                             {choice.text}
                                         </span>
-                                        {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/30 group-hover:text-yellow-400")} />}
+                                        {!isLearningScreen && <ChevronRight className={clsx("shrink-0 group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/40")} />}
                                     </button>
                                 ))}
                             </div>
                         )}
 
                         {feedbackChoice && (
-                            <div className="mt-4 animate-fade-in flex justify-end">
+                            <div className="mt-8 flex justify-center animate-fade-in">
                                 <button
                                     onClick={handleFeedbackContinue}
-                                    className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2"
+                                    className="cinematic-continue px-10 py-4 rounded-full font-bold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 flex items-center gap-2 hover:scale-105"
+                                    style={!isCandyMode ? {
+                                        backgroundColor: currentTheme.badgeColor,
+                                        boxShadow: `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`,
+                                    } : { backgroundColor: '#f59e0b' }}
+                                    onMouseEnter={(e) => {
+                                        if (!isCandyMode) {
+                                            e.currentTarget.style.boxShadow = `0 12px 24px rgba(0,0,0,0.5), 0 0 30px ${currentTheme.badgeColor}cc`;
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isCandyMode) {
+                                            e.currentTarget.style.boxShadow = `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`;
+                                        }
+                                    }}
                                 >
                                     Continue <ChevronRight size={18} />
                                 </button>
                             </div>
+                        )}
+                        </>
                         )}
                     </div>
                 </div>

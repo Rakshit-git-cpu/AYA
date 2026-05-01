@@ -11,7 +11,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 17: Shah Rukh Khan
         {
             id: 'lvl_17_srk', title: 'The Stage or The Books', description: 'At 17, SRK faces an impossible choice — grieve, study, or chase the stage.',
-            requiredStars: 0, year: 1982, age: 17, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1982, age: 17, theme: 'Arts', age_mirror_text: 'performing in school plays in Delhi, dreaming of being seen', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A grieving 17-year-old with a rare theatrical gift, torn between financial duty and a burning passion for the stage.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -196,7 +196,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Shah Rukh Khan
         {
             id: 'lvl_19_srk', title: 'A Stage For Grief', description: 'At 19, you lose your father and immerse yourself in the chaotic world of theatre.',
-            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', age_mirror_text: 'studying economics while sneaking into theatre rehearsals every evening', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A grieving economics student who finds solace and explosive energy under the lights of Delhi theatre.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -207,7 +207,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Shah Rukh Khan (Story 2)
         {
             id: 'lvl_19_srk_2', title: 'Leave Delhi or Stay', description: 'At 19, SRK must choose between family duty and the pull of Mumbai.',
-            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1984, age: 19, theme: 'Arts', age_mirror_text: 'studying economics while sneaking into theatre rehearsals every evening', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A rising theatre star whose family needs him in Delhi while Mumbai beckons with opportunity.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -357,7 +357,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 21: Shah Rukh Khan
         {
             id: 'lvl_21_srk', title: 'The Role That Could Destroy You', description: 'At 21, SRK faces a villain role that could define or end his career.',
-            requiredStars: 0, year: 1986, age: 21, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1986, age: 21, theme: 'Arts', age_mirror_text: 'doing small TV roles, completely broke, sharing a tiny Delhi flat', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A young performer offered a psychologically complex villain role that everyone warns against.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -389,7 +389,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 23: Shah Rukh Khan
         {
             id: 'lvl_23_srk', title: 'Gauri or Career', description: 'At 23, SRK must choose between love and the career opportunity of a lifetime.',
-            requiredStars: 0, year: 1988, age: 23, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1988, age: 23, theme: 'Arts', age_mirror_text: 'newly married, juggling love and an uncertain acting career in Mumbai', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A young actor in love, facing family resistance, while Mumbai\'s Bollywood doors are finally opening.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -421,7 +421,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 25: Shah Rukh Khan
         {
             id: 'lvl_25_srk', title: 'Mumbai Is Eating Me Alive', description: 'At 25, SRK is running out of money in Mumbai. One bet could change everything.',
-            requiredStars: 0, year: 1990, age: 25, theme: 'Arts', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
+            requiredStars: 0, year: 1990, age: 25, theme: 'Arts', age_mirror_text: 'struggling in Mumbai with a handful of films, not yet a star', archetype: 'The Entertainer', personality: 'Shah Rukh Khan',
             bio: 'A struggling actor in Mumbai with dwindling funds and one last high-stakes decision to make.',
             fame: 'The King of Bollywood. Global Icon.',
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
@@ -432,7 +432,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Billie Eilish
         {
             id: 'lvl_19_billie', title: 'Fame Is Eating Me Alive', description: 'At 19, Billie won 5 Grammys and was falling apart inside.',
-            requiredStars: 0, year: 2020, age: 19, theme: 'Music', archetype: 'The Vulnerable', personality: 'Billie Eilish',
+            requiredStars: 0, year: 2020, age: 19, theme: 'Music', age_mirror_text: 'recording her debut album in her childhood bedroom, battling depression', archetype: 'The Vulnerable', personality: 'Billie Eilish',
             bio: 'The most streamed artist on the planet, battling body dysmorphia and depression behind closed doors.',
             fame: 'Grammy record-holder. Gen Z\'s most honest voice.',
             achievements: ['5 Grammys at age 18', 'Youngest artist to record a Bond theme', 'TIME100 Most Influential'],
@@ -443,7 +443,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: MrBeast
         {
             id: 'lvl_19_mrbeast', title: 'Drop Out or Keep Uploading', description: 'At 19, Jimmy had 30K subscribers and a ridiculous idea. College apps were due tomorrow.',
-            requiredStars: 0, year: 2017, age: 19, theme: 'Media', archetype: 'The Disruptor', personality: 'MrBeast',
+            requiredStars: 0, year: 2017, age: 19, theme: 'Media', age_mirror_text: 'uploading YouTube videos daily to an audience of almost nobody', archetype: 'The Disruptor', personality: 'MrBeast',
             bio: 'Five years of uploading with almost no success. One absurd idea that nobody thought would work.',
             fame: '200M+ YouTube subscribers. Gave away $100M+.',
             achievements: ['Largest YouTube channel by subscribers', 'Created MrBeast Burger', 'Planted 20 million trees'],
@@ -454,7 +454,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Ritesh Agarwal
         {
             id: 'lvl_19_ritesh', title: 'The Dropout Founder', description: 'At 19, Ritesh had ₹2,000, a dropout status, and a world-changing idea.',
-            requiredStars: 0, year: 2012, age: 19, theme: 'Business', archetype: 'The Audacious', personality: 'Ritesh Agarwal',
+            requiredStars: 0, year: 2012, age: 19, theme: 'Business', age_mirror_text: 'dropping out of college to build OYO from a single rented room', archetype: 'The Audacious', personality: 'Ritesh Agarwal',
             bio: 'A college dropout from Odisha who personally lived the problem he was about to solve.',
             fame: 'World\'s youngest billionaire at 25. Founder of OYO Rooms.',
             achievements: ['Thiel Fellowship winner', 'OYO became one of world\'s largest hotel chains', 'Forbes 30 Under 30'],
@@ -465,7 +465,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Muhammad Ali
         {
             id: 'lvl_19_ali', title: 'Throw The Medal Away', description: 'At 19, Ali won Olympic gold — then was refused service at a restaurant because of his race.',
-            requiredStars: 0, year: 1960, age: 19, theme: 'Activism', archetype: 'The Defiant', personality: 'Muhammad Ali',
+            requiredStars: 0, year: 1960, age: 19, theme: 'Activism', age_mirror_text: 'training 6 hours a day after winning Olympic gold, turning professional', archetype: 'The Defiant', personality: 'Muhammad Ali',
             bio: 'Olympic champion. Refused entry to a restaurant in his own hometown. A decision awaited.',
             fame: 'Greatest boxer of all time. Greatest activist of his generation.',
             achievements: ['3-time World Heavyweight Champion', 'Olympic Gold Medalist', 'Presidential Medal of Freedom'],
@@ -476,7 +476,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 20: Dhruv Rathee
         {
             id: 'lvl_20_dhruv', title: 'Germany or India', description: 'At 20, an engineering scholar in Germany felt India needed his voice more than his degree.',
-            requiredStars: 6, year: 2014, age: 20, theme: 'Media', archetype: 'The Educator', personality: 'Dhruv Rathee',
+            requiredStars: 6, year: 2014, age: 20, theme: 'Media', age_mirror_text: 'studying engineering in Germany while making political videos on the side', archetype: 'The Educator', personality: 'Dhruv Rathee',
             bio: 'A scholarship student in Germany watching misinformation spread in India, with 500 YouTube subscribers.',
             fame: 'India\'s most influential YouTube journalist. 20M+ subscribers.',
             achievements: ['20M+ YouTube subscribers', 'Covered 2024 Indian elections extensively', 'CNN-News18 Digital Influencer Award'],
@@ -487,7 +487,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Falguni Nayar (shown at 19 as college beginning)
         {
             id: 'lvl_19_falguni', title: 'Science or Business', description: 'At 19 at IIM Ahmedabad, Falguni had a fire inside her — but the world said wait.',
-            requiredStars: 0, year: 1982, age: 19, theme: 'Business', archetype: 'The Patient Founder', personality: 'Falguni Nayar',
+            requiredStars: 0, year: 1982, age: 19, theme: 'Business', age_mirror_text: 'studying commerce in Mumbai, quietly watching how businesses were built', archetype: 'The Patient Founder', personality: 'Falguni Nayar',
             bio: 'One of few women at IIM in 1982, told to play it safe. Her real company was 30 years away.',
             fame: 'India\'s first self-made female billionaire. Founder of Nykaa.',
             achievements: ['Founded Nykaa at age 49', 'India\'s first self-made female billionaire (2021)', 'Nykaa IPO at $13B valuation'],
@@ -498,7 +498,7 @@ export function generateLevels(_age: number): Level[] {
         // Age 19: Nikola Tesla
         {
             id: 'lvl_19_tesla', title: 'Trust Your Visions', description: 'At 19, Tesla\'s professors called his mental visualizations a breakdown. They were his superpower.',
-            requiredStars: 0, year: 1875, age: 19, theme: 'Science', archetype: 'The Visionary', personality: 'Nikola Tesla',
+            requiredStars: 0, year: 1875, age: 19, theme: 'Science', age_mirror_text: 'studying physics in Austria, obsessed with alternating current theory', archetype: 'The Visionary', personality: 'Nikola Tesla',
             bio: 'A 19-year-old engineering student in Austria whose mind could build and test machines before touching a single component.',
             fame: 'His alternating current system powers the entire modern world.',
             achievements: ['Invented AC power system', 'Pioneered radio technology', 'Holds 300+ patents'],

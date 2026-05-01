@@ -6,6 +6,7 @@ import { supabase } from '../../utils/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
+import { bgmManager } from '../../utils/bgmManager';
 
 const QUESTIONS = [
     {
@@ -146,7 +147,13 @@ export function PersonalityAssessment() {
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        
+        bgmManager.play('quiz');
+        
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            bgmManager.stop();
+        };
     }, []);
 
     const toggleOption = (option: any) => {

@@ -6,6 +6,7 @@ import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTy
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 
+
 interface MatchReportProps {
     userTraits: PersonalityTraits;
     userProfile?: PsychologicalProfile;
@@ -304,6 +305,9 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
     };
 
     useEffect(() => {
+        // Personality match card is SILENT — no BGM plays here.
+        // ScenarioGame.stop() already faded out the story BGM.
+        // LevelMap will resume bgm-neon-map.mp3 when the user returns.
         if (audioSynth.playWin) audioSynth.playWin();
         let start = 0;
         const animate = () => {

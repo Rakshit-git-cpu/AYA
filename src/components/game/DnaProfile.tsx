@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { audioSynth } from '../../utils/audioSynth';
 import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList, Flame } from 'lucide-react';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
@@ -9,6 +9,7 @@ import { InstagramCard } from './InstagramCard';
 import { FutureSelfCard } from './FutureSelfCard';
 import { FutureSelfShareCard } from './FutureSelfShareCard';
 import { calculateLifeTraits, matchFutureArchetype } from '../../utils/futureSelfMatch';
+import { bgmManager } from '../../utils/bgmManager';
 
 interface DnaProfileProps {
     onBack: () => void;
@@ -82,6 +83,11 @@ const NeonTraitBar = ({ label, value, neonColor }: { label: string, value: numbe
 
 export function DnaProfile({ onBack }: DnaProfileProps) {
     const profile = useUserStore((state) => state.profile);
+
+    // DNA Report mounts → bgm-neon-map.mp3
+    useEffect(() => {
+        bgmManager.play('neon-map');
+    }, []);
 
     // Fallback traits if profile missing completely
     const userTraits = profile?.traits || {

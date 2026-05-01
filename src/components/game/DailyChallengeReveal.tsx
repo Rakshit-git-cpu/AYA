@@ -12,6 +12,7 @@ interface DailyChallengeRevealProps {
 
 export function DailyChallengeReveal({ mood, onComplete, onClose }: DailyChallengeRevealProps) {
     const levels = useUserStore((state) => state.levels);
+    const userAge = useUserStore((state) => state.profile?.age) || 18;
     const [matchedLevel, setMatchedLevel] = useState<Level | null>(null);
     const [revealPhase, setRevealPhase] = useState<'analyzing' | 'revealed'>('analyzing');
 
@@ -115,6 +116,12 @@ export function DailyChallengeReveal({ mood, onComplete, onClose }: DailyChallen
                         <p className="relative z-10 text-xl text-slate-300 font-medium mb-8">
                             {matchedLevel.title}
                         </p>
+                        
+                        {matchedLevel.age_mirror_text && (
+                            <p className="relative z-10 italic text-sm md:text-base mb-8 text-center px-4" style={{ color: '#00f1fe' }}>
+                                At YOUR age ({userAge}), {matchedLevel.personality} was {matchedLevel.age_mirror_text}.
+                            </p>
+                        )}
 
                         <button
                             onClick={() => {

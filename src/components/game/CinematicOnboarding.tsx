@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
@@ -7,7 +7,7 @@ import { Brain, Gamepad2, Dna, ChevronRight, Check } from 'lucide-react';
 import { NotificationPrompt } from '../ui/NotificationPrompt';
 import { subscribeUserToPush } from '../../utils/pushNotifications';
 import { safeStorage } from '../../utils/storage';
-
+import { bgmManager } from '../../utils/bgmManager';
 
 const STRUGGLES = [
   { id: 'heartbreak', label: 'Heartbreak & Relationships', icon: '💔' },
@@ -25,6 +25,10 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
   const [isSaving, setIsSaving] = useState(false);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
+  useEffect(() => {
+    bgmManager.play('onboarding');
+    return () => bgmManager.stop();
+  }, []);
 
   const nextSlide = () => {
     audioSynth.playClick();
