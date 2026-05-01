@@ -10,8 +10,11 @@ function App() {
     bgmManager.loadPreference()
     
     // Preload all tracks immediately on app start
-    // This happens silently in background
-    bgmManager.preload(BGM_TRACKS)
+    // This happens silently in background (only on non-mobile devices)
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+    if (!isMobile) {
+      bgmManager.preload(BGM_TRACKS)
+    }
     
     // Unlock on first user interaction
     const unlock = async () => {

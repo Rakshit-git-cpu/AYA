@@ -105,11 +105,20 @@ class BGMManager {
     if (this.targetTrack !== trackName) return
 
     const ctx = this.getContext()
-    const buffer = this.buffers.get(trackName)
+    let buffer = this.buffers.get(trackName)
     
     if (!buffer) {
-      console.error(`Buffer not found: ${trackName}`)
-      return
+      console.log(`BGM lazy loading: ${trackName}`)
+      try {
+          const url = BGM_TRACKS[trackName] || `/music/bgm-${trackName}.mp3`
+          const response = await fetch(url)
+          const arrayBuffer = await response.arrayBuffer()
+          buffer = await ctx.decodeAudioData(arrayBuffer)
+          this.buffers.set(trackName, buffer)
+      } catch (e) {
+          console.error(`BGM lazy load failed: ${trackName}`, e)
+          return
+      }
     }
 
     // Fade out current track

@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { NotificationPrompt } from '../components/ui/NotificationPrompt';
 import { subscribeUserToPush } from '../utils/pushNotifications';
 import { safeStorage } from '../utils/storage';
+import { useUserStore } from '../store/userStore';
 
 const NOTIF_KEY = 'notificationPromptShown';
 
 export function HomePage() {
     const navigate = useNavigate();
     const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+    const profile = useUserStore((state) => state.profile);
 
     useEffect(() => {
         // Show the modal only if:
@@ -19,13 +21,13 @@ export function HomePage() {
         const permission =
             'Notification' in window ? Notification.permission : 'denied';
 
-        if (!alreadyShown && permission === 'default') {
+        if (!alreadyShown && permission === 'default' && (profile?.stories_completed || 0) > 0) {
             const timer = setTimeout(() => {
                 setShowNotificationPrompt(true);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [profile?.stories_completed]);
 
     const handleAccept = async () => {
         await subscribeUserToPush();
