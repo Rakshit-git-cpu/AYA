@@ -87,16 +87,15 @@ class BGMManager {
   }
 
   async play(trackName: string, fadeDuration = 1.5) {
-    if (!this.isEnabled) return
-    if (this.targetTrack === trackName) return
-    
-    this.targetTrack = trackName
-    
     // If not unlocked yet, queue the track
     if (!this.isUnlocked) {
       this.pendingTrack = trackName
       return
     }
+
+    if (this.targetTrack === trackName) return
+    
+    this.targetTrack = trackName
 
     if (this.preloadPromise) {
         await this.preloadPromise;
