@@ -676,6 +676,11 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         onClick={handleTextClick}
                     >
                         <div className="min-h-[80px]">
+                            {level.age_mirror_text && (frame.id === 'intro' || isLearningScreen) && !feedbackChoice && (
+                                <p className="text-[#00f1fe] italic text-sm md:text-base mb-4 text-center">
+                                    At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
+                                </p>
+                            )}
                             <p className={clsx(
                                 "leading-relaxed",
                                 isLearningScreen

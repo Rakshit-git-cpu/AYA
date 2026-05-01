@@ -92,6 +92,7 @@ export interface Level {
     year: number; // e.g. 2018 (When user was 18)
     age: number;  // e.g. 18
     theme: string; // e.g. "Technology", "Art"
+    age_mirror_text?: string;
     personality?: string; // e.g. "Steve Jobs"
     bio?: string; // Short "About me"
     fame?: string; // "Known for..."
