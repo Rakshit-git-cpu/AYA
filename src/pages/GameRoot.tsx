@@ -16,6 +16,7 @@ import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
 import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 import { useRef } from 'react';
+import { safeStorage } from '../utils/storage';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
@@ -29,7 +30,7 @@ export function GameRoot() {
 
     // Sync theme from localStorage on mount; reset 'solar' → 'city_dark'
     useEffect(() => {
-        const raw = localStorage.getItem('aya_map_theme') as any;
+        const raw = safeStorage.get('aya_map_theme') as any;
         const storedTheme = (!raw || raw === 'solar') ? 'city_dark' : raw;
         if (storedTheme !== mapTheme) {
             setMapTheme(storedTheme);

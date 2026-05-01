@@ -3,6 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { safeStorage } from '../../utils/storage';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 
 // Horizontal Drag Strip for Age
@@ -121,27 +122,43 @@ export function OnboardingWizard() {
         setIsLoading(true);
         setError("");
 
+        console.log('[Register] Starting registration...');
+        console.log('[Register] Name:', name.trim());
+        console.log('[Register] Mobile:', mobile.trim());
+        console.log('[Register] Age:', age);
+        console.log('[Register] Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+        console.log('[Register] Has Anon Key:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+
         try {
+            console.log('[Register] Checking if user exists...');
             const { data: existingUsers, error: fetchError } = await supabase
                 .from('users')
                 .select('*')
                 .eq('mobile', mobile.trim());
 
+            console.log('[Register] Existing users:', existingUsers);
+            console.log('[Register] Fetch error:', fetchError);
+
             if (fetchError) throw fetchError;
 
             if (existingUsers && existingUsers.length > 0) {
+                console.log('[Register] Returning user found, loading profile...');
                 const user = existingUsers[0];
                 const { data: profiles, error: profileError } = await supabase
                     .from('personality_profiles')
                     .select('*')
                     .eq('user_id', user.id);
                     
+                console.log('[Register] Personality profiles:', profiles);
+                console.log('[Register] Profile fetch error:', profileError);
+
                 if (profileError) throw profileError;
 
-                localStorage.setItem('aya_user_id', user.id);
-                localStorage.setItem('aya_user_mobile', mobile);
-                localStorage.setItem('aya_user_name', name);
-                localStorage.setItem('aya_user_age', age.toString());
+                safeStorage.set('aya_user_id', user.id);
+                safeStorage.set('aya_user_mobile', mobile);
+                safeStorage.set('aya_user_name', name);
+                safeStorage.set('aya_user_age', age.toString());
+                console.log('[Register] safeStorage saved for returning user');
 
                 const baseProfile = {
                     id: user.id,
@@ -175,18 +192,26 @@ export function OnboardingWizard() {
                     setProfile(baseProfile);
                 }
             } else {
+                console.log('[Register] New user, creating account...');
                 const { data: newUser, error: insertError } = await supabase
                     .from('users')
                     .insert([{ name: name.trim(), age: age, mobile: mobile.trim() }])
                     .select()
                     .single();
 
-                if (insertError) throw insertError;
+                console.log('[Register] New user created:', newUser);
+                console.log('[Register] Insert error:', insertError);
 
-                localStorage.setItem('aya_user_id', newUser.id);
-                localStorage.setItem('aya_user_mobile', mobile);
-                localStorage.setItem('aya_user_name', name);
-                localStorage.setItem('aya_user_age', age.toString());
+                if (insertError) {
+                    console.error('[Register] FAILED:', insertError.message, insertError.details);
+                    throw insertError;
+                }
+
+                safeStorage.set('aya_user_id', newUser.id);
+                safeStorage.set('aya_user_mobile', mobile);
+                safeStorage.set('aya_user_name', name);
+                safeStorage.set('aya_user_age', age.toString());
+                console.log('[Register] safeStorage saved for new user');
 
                 setProfile({
                     id: newUser.id,
@@ -203,8 +228,8 @@ export function OnboardingWizard() {
                 });
             }
         } catch (err: any) {
-            console.error(err);
-            setError(err.message || "Database error occurred");
+            console.error('[Register] Unexpected error:', err);
+            setError(err.message || 'Registration failed. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -305,7 +330,8 @@ export function OnboardingWizard() {
                                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                                 className="mt-4 p-4 bg-red-900/40 text-red-100 rounded-xl border border-red-500/50 backdrop-blur-md text-center font-bold"
                             >
-                                {error}
+                                <p>{error}</p>
+                                <p className="text-red-300 text-xs font-normal mt-1">Please try again or check your connection.</p>
                             </motion.div>
                         )}
                     </AnimatePresence>

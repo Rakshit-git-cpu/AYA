@@ -6,6 +6,7 @@ import { supabase } from '../../utils/supabase';
 import { Brain, Gamepad2, Dna, ChevronRight, Check } from 'lucide-react';
 import { NotificationPrompt } from '../ui/NotificationPrompt';
 import { subscribeUserToPush } from '../../utils/pushNotifications';
+import { safeStorage } from '../../utils/storage';
 
 
 const STRUGGLES = [
@@ -59,13 +60,13 @@ export function CinematicOnboarding({ onComplete }: { onComplete: () => void }) 
 
   const onAcceptNotifications = async () => {
     await subscribeUserToPush();
-    localStorage.setItem('notificationPromptShown', 'true');
+    safeStorage.set('notificationPromptShown', 'true');
     setShowNotificationPrompt(false);
     onComplete();
   };
 
   const onDeclineNotifications = () => {
-    localStorage.setItem('notificationPromptShown', 'true');
+    safeStorage.set('notificationPromptShown', 'true');
     setShowNotificationPrompt(false);
     onComplete();
   };

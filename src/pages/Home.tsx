@@ -3,6 +3,7 @@ import { Gamepad2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { NotificationPrompt } from '../components/ui/NotificationPrompt';
 import { subscribeUserToPush } from '../utils/pushNotifications';
+import { safeStorage } from '../utils/storage';
 
 const NOTIF_KEY = 'notificationPromptShown';
 
@@ -14,7 +15,7 @@ export function HomePage() {
         // Show the modal only if:
         //  1. The user has NOT been prompted before (localStorage key absent/falsy)
         //  2. The browser permission is still 'default' (not yet granted or denied)
-        const alreadyShown = localStorage.getItem(NOTIF_KEY);
+        const alreadyShown = safeStorage.get(NOTIF_KEY);
         const permission =
             'Notification' in window ? Notification.permission : 'denied';
 
@@ -28,12 +29,12 @@ export function HomePage() {
 
     const handleAccept = async () => {
         await subscribeUserToPush();
-        localStorage.setItem(NOTIF_KEY, 'true');
+        safeStorage.set(NOTIF_KEY, 'true');
         setShowNotificationPrompt(false);
     };
 
     const handleDecline = () => {
-        localStorage.setItem(NOTIF_KEY, 'true');
+        safeStorage.set(NOTIF_KEY, 'true');
         setShowNotificationPrompt(false);
     };
 

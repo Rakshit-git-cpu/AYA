@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { UserProfile, Level, Lesson, PersonalityTraits, PsychologicalProfile } from '../types/gameTypes';
 import { generateLevels } from '../utils/levelGenerator';
 import { calculateLevelInfo } from '../utils/levelSystem';
+import { safeStorage } from '../utils/storage';
 
 export type MapTheme = 'city_dark' | 'solar' | 'light';
 
@@ -117,9 +118,9 @@ export const useUserStore = create<UserState>()(
             // 'solar' is preserved in the type but hidden from UI until re-enabled.
             // On app load, any stored 'solar' value is silently reset to 'city_dark'.
             mapTheme: (() => {
-                const stored = localStorage.getItem('aya_map_theme') as MapTheme | null;
+                const stored = safeStorage.get('aya_map_theme') as MapTheme | null;
                 if (!stored || stored === 'solar') {
-                    localStorage.setItem('aya_map_theme', 'city_dark');
+                    safeStorage.set('aya_map_theme', 'city_dark');
                     return 'city_dark';
                 }
                 return stored;
@@ -127,14 +128,14 @@ export const useUserStore = create<UserState>()(
             setMapTheme: (theme) => {
                 // Guard: if someone tries to set solar programmatically, silently redirect to city_dark
                 const safeTheme: MapTheme = theme === 'solar' ? 'city_dark' : theme;
-                localStorage.setItem('aya_map_theme', safeTheme);
+                safeStorage.set('aya_map_theme', safeTheme);
                 set({ mapTheme: safeTheme });
             },
             cycleMapTheme: () => set((state) => {
                 const order: MapTheme[] = ['city_dark', 'light']; // solar removed from cycle
                 const safeCurrentIndex = order.indexOf(state.mapTheme) === -1 ? 0 : order.indexOf(state.mapTheme);
                 const next = order[(safeCurrentIndex + 1) % order.length];
-                localStorage.setItem('aya_map_theme', next);
+                safeStorage.set('aya_map_theme', next);
                 return { mapTheme: next };
             }),
             // Deprecated shims — kept for backward compatibility
@@ -143,7 +144,7 @@ export const useUserStore = create<UserState>()(
                 const order: MapTheme[] = ['city_dark', 'light']; // solar removed
                 const safeCurrentIndex = order.indexOf(state.mapTheme) === -1 ? 0 : order.indexOf(state.mapTheme);
                 const next = order[(safeCurrentIndex + 1) % order.length];
-                localStorage.setItem('aya_map_theme', next);
+                safeStorage.set('aya_map_theme', next);
                 return { mapTheme: next };
             }),
 
