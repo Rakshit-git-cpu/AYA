@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 import { supabase } from '../../utils/supabase';
 import './MoodWheel.css';
@@ -332,7 +333,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     phase === 'no-spins'  ? 'NO SPINS LEFT' :
     '🎰  SPIN';
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         className="mw-root"
@@ -606,6 +607,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
           {btnLabel}
         </button>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
