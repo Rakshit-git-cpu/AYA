@@ -13,21 +13,29 @@ const NeonRainLayer = () => {
         let animationFrameId: number;
         let isVisible = true;
         let drops: any[] = [];
+        let frames = 0;
+        let lastFpsTime = performance.now();
 
         const initDrops = () => {
             const isMobile = window.innerWidth <= 768;
-            const count = isMobile ? 40 : 80;
+            const count = isMobile ? 80 : 150;
             drops = [];
             for (let i = 0; i < count; i++) {
-                const opacity = 0.1 + Math.random() * 0.25; // max 0.35
+                const isClose = Math.random() < 0.2;
+                const rColor = Math.random();
+                let baseColorStr = '0, 240, 255';
+                if (rColor > 0.5 && rColor <= 0.8) baseColorStr = '180, 0, 255';
+                else if (rColor > 0.8) baseColorStr = '255, 0, 180';
+
                 drops.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    length: 15 + Math.random() * 25,
-                    speed: 2 + Math.random() * 4,
-                    opacity: opacity,
-                    baseColorStr: Math.random() < 0.7 ? '0, 240, 255' : '180, 0, 255',
-                    width: 1 + Math.random()
+                    length: isClose ? 80 + Math.random() * 40 : 40 + Math.random() * 50,
+                    speed: 3 + Math.random() * 5,
+                    opacity: isClose ? 0.7 : 0.15 + Math.random() * 0.5,
+                    baseColorStr,
+                    width: isClose ? 3 + Math.random() : 1.5 + Math.random() * 1.5,
+                    isClose
                 });
             }
         };
@@ -55,10 +63,11 @@ const NeonRainLayer = () => {
                 if (drop.y > canvas.height + drop.length) {
                     drop.y = -drop.length;
                     drop.x = Math.random() * canvas.width;
-                    drop.speed = 2 + Math.random() * 4;
-                    drop.opacity = 0.1 + Math.random() * 0.25;
-                    drop.baseColorStr = Math.random() < 0.7 ? '0, 240, 255' : '180, 0, 255';
-                    drop.width = 1 + Math.random();
+                    const rColor = Math.random();
+                    let baseColorStr = '0, 240, 255';
+                    if (rColor > 0.5 && rColor <= 0.8) baseColorStr = '180, 0, 255';
+                    else if (rColor > 0.8) baseColorStr = '255, 0, 180';
+                    drop.baseColorStr = baseColorStr;
                 }
 
                 ctx.beginPath();
@@ -68,11 +77,24 @@ const NeonRainLayer = () => {
                 
                 ctx.strokeStyle = grad;
                 ctx.lineWidth = drop.width;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = `rgba(${drop.baseColorStr}, ${drop.opacity})`;
                 ctx.moveTo(drop.x, drop.y - drop.length);
                 ctx.lineTo(drop.x, drop.y);
                 ctx.stroke();
+                ctx.shadowBlur = 0;
             });
             ctx.restore();
+
+            if (import.meta.env.DEV) {
+                frames++;
+                const now = performance.now();
+                if (now - lastFpsTime >= 5000) {
+                    console.log(`[NeonRain FPS] ${(frames / ((now - lastFpsTime) / 1000)).toFixed(1)}`);
+                    frames = 0;
+                    lastFpsTime = now;
+                }
+            }
 
             animationFrameId = requestAnimationFrame(render);
         };
@@ -115,7 +137,7 @@ const ShootingStarsLayer = () => {
         let isVisible = true;
         let stars: any[] = [];
         let nextStarTime = 0;
-        const maxStars = 3;
+        const maxStars = 5;
 
         const resize = () => {
             canvas.width = window.innerWidth;
@@ -127,22 +149,24 @@ const ShootingStarsLayer = () => {
         window.addEventListener('resize', resize);
         resize();
 
-        const spawnStar = () => {
+        const spawnStar = (isSecondary = false) => {
             const isMobile = window.innerWidth <= 768;
+            const isMega = !isSecondary && Math.random() < 0.05;
             const isWhite = Math.random() < 0.4;
-            const baseColor = isWhite ? '255, 255, 255' : '255, 215, 0';
-            const vx = (isMobile ? 6 + Math.random() * 4 : 8 + Math.random() * 6);
-
+            const baseColor = isMega ? '255, 215, 0' : (isWhite ? '255, 255, 255' : '255, 215, 0');
+            const vx = isMega ? (18 + Math.random() * 4) : (isMobile ? 6 + Math.random() * 4 : 8 + Math.random() * 6);
+            
             stars.push({
-                x: -200,
-                y: Math.random() * (canvas.height * 0.4),
+                x: -200 - (isSecondary ? Math.random() * 100 : 0),
+                y: Math.random() * (canvas.height * 0.6),
                 vx: vx,
                 vy: vx * 0.3,
-                length: 80 + Math.random() * 100,
+                length: isMega ? 400 : 150 + Math.random() * 150,
                 opacity: 0,
                 active: true,
                 phase: 'fadein',
-                baseColor: baseColor
+                baseColor: baseColor,
+                isMega: isMega
             });
         };
 
@@ -152,13 +176,14 @@ const ShootingStarsLayer = () => {
 
             if (now > nextStarTime && stars.length < maxStars) {
                 spawnStar();
-                nextStarTime = now + 4000 + Math.random() * 4000;
+                if (Math.random() < 0.3) spawnStar(true);
+                nextStarTime = now + 2000 + Math.random() * 2000;
             }
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.save();
             
-            const maxOpacity = 0.9;
+            const maxOpacity = 1.0;
             
             for (let i = stars.length - 1; i >= 0; i--) {
                 const star = stars[i];
@@ -212,11 +237,28 @@ const ShootingStarsLayer = () => {
 
                 // Glow head
                 ctx.beginPath();
-                ctx.arc(star.x, star.y, 3, 0, Math.PI * 2);
+                ctx.arc(star.x, star.y, 6, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = star.isMega ? 30 : 15;
                 ctx.shadowColor = `rgba(${star.baseColor}, ${star.opacity})`;
                 ctx.fill();
+
+                // Outer ring
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, 12, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${star.baseColor}, ${star.opacity * 0.3})`;
+                ctx.fill();
+                
+                // If mega star, draw an extra trail component
+                if (star.isMega) {
+                    ctx.beginPath();
+                    ctx.moveTo(star.x, star.y);
+                    ctx.lineTo(tailX - dx*10, tailY - dy*10);
+                    ctx.strokeStyle = `rgba(${star.baseColor}, ${star.opacity * 0.5})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
                 ctx.shadowBlur = 0;
             }
 
@@ -271,7 +313,7 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
 
         const initMap = () => {
             const isMobile = window.innerWidth <= 768;
-            const starCount = isMobile ? 20 : 35;
+            const starCount = isMobile ? 35 : 60;
             
             stars = [];
             lines = [];
@@ -279,22 +321,19 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
             // Place stars in a wide vertical space to account for scroll parallax
             for (let i = 0; i < starCount; i++) {
                 let x = Math.random() * canvas.width;
-                const centerLeft = canvas.width * 0.35;
-                const centerRight = canvas.width * 0.65;
-                if (x > centerLeft && x < centerRight) {
-                    x = Math.random() > 0.5 ? (Math.random() * centerLeft) : (centerRight + Math.random() * centerLeft);
-                }
+                const isAnchor = Math.random() < 0.1;
 
                 stars.push({
                     id: i,
                     x: x,
                     y: -1000 + Math.random() * (canvas.height + 3000), // Spanned for scroll space
-                    radius: 1 + Math.random() * 2,
-                    opacity: 0.2 + Math.random() * 0.55, // max 0.75
-                    targetOpacity: 0.2 + Math.random() * 0.55,
+                    radius: isAnchor ? 5 + Math.random() * 2 : 2 + Math.random() * 3,
+                    opacity: isAnchor ? 0.9 + Math.random() * 0.1 : 0.4 + Math.random() * 0.6,
+                    targetOpacity: isAnchor ? 0.9 + Math.random() * 0.1 : 0.4 + Math.random() * 0.6,
                     pulseSpeed: 0.002 + Math.random() * 0.003,
                     color: Math.random() > 0.3 ? '0, 242, 255' : '255, 255, 255',
-                    depth: 0.3 + Math.random() * 0.7
+                    depth: 0.3 + Math.random() * 0.7,
+                    isAnchor: isAnchor
                 });
             }
 
@@ -306,13 +345,13 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                     const dy = stars[i].y - stars[j].y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
-                    if (dist < 180) {
+                    if (dist < 220) {
                         lines.push({
                             starA: i,
                             starB: j,
                             opacity: 0,
-                            targetOpacity: 0.05 + Math.random() * 0.07, // max 0.12
-                            phase: Math.random() > 0.4 ? 'visible' : 'hidden',
+                            targetOpacity: 0.15 + Math.random() * 0.20, // max 0.35
+                            phase: Math.random() > 0.25 ? 'visible' : 'hidden',
                             timer: Date.now() + Math.random() * 5000
                         });
                         connections++;
@@ -377,28 +416,33 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                     if (ya < -50 || ya > canvas.height + 50 || yb < -50 || yb > canvas.height + 50) return;
 
                     ctx.beginPath();
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = `rgba(0, 242, 255, 0.5)`;
                     ctx.moveTo(sa.x, ya);
                     ctx.lineTo(sb.x, yb);
                     ctx.strokeStyle = `rgba(0, 242, 255, ${line.opacity})`;
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1.5;
                     ctx.stroke();
+                    ctx.shadowBlur = 0;
                 }
             });
 
             stars.forEach(star => {
-                if (Math.abs(star.opacity - star.targetOpacity) < star.pulseSpeed) {
-                    star.targetOpacity = 0.2 + Math.random() * 0.55;
-                } else if (star.opacity < star.targetOpacity) {
-                    star.opacity += star.pulseSpeed;
-                } else {
-                    star.opacity -= star.pulseSpeed;
+                if (!star.isAnchor) {
+                    if (Math.abs(star.opacity - star.targetOpacity) < star.pulseSpeed) {
+                        star.targetOpacity = 0.4 + Math.random() * 0.6;
+                    } else if (star.opacity < star.targetOpacity) {
+                        star.opacity += star.pulseSpeed;
+                    } else {
+                        star.opacity -= star.pulseSpeed;
+                    }
                 }
 
                 const sy = star.y - (currentScrollY * star.depth * 0.1);
 
                 if (sy > -50 && sy < canvas.height + 50) {
                     ctx.beginPath();
-                    ctx.shadowBlur = star.radius * 8;
+                    ctx.shadowBlur = star.isAnchor ? 24 : star.radius * 16;
                     ctx.shadowColor = `rgba(${star.color}, ${star.opacity})`;
                     ctx.fillStyle = `rgba(${star.color}, ${star.opacity})`;
                     ctx.arc(star.x, sy, star.radius, 0, Math.PI * 2);
@@ -439,6 +483,12 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
 export const MapAmbience = ({ scrollY }: { scrollY: number }) => {
     return (
         <div className="fixed inset-0 w-full h-full pointer-events-none z-[15]">
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0, 0, 20, 0.25)',
+                pointerEvents: 'none'
+            }} />
             <ConstellationLayer scrollY={scrollY} />
             <NeonRainLayer />
             <ShootingStarsLayer />
