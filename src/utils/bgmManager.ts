@@ -25,15 +25,19 @@ class BGMManager {
     })
   }
 
-  // Call this on first user interaction anywhere in app
+  // Call this on first user interaction anywhere in app.
+  // ONLY unlocks the AudioContext — does NOT start any music.
+  // Each screen component is responsible for calling play() on mount.
   unlock() {
     if (this.unlocked) return
     this.unlocked = true
-    Object.values(this.tracks).forEach(audio => {
-      audio.play()
-        .then(() => { audio.pause(); audio.currentTime = 0 })
+    // Warm up a single track at volume 0 to satisfy browser autoplay policy
+    const warmup = Object.values(this.tracks)[0]
+    if (warmup) {
+      warmup.play()
+        .then(() => { warmup.pause(); warmup.currentTime = 0 })
         .catch(() => {})
-    })
+    }
     console.log('BGM unlocked')
   }
 

@@ -96,11 +96,20 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
-        
+
+        // Play neon-map BGM on initial mount
         bgmManager.play('neon-map');
-        
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // Resume neon-map whenever the map becomes the active view again
+    // (LevelMap never unmounts, so we watch the isMapActive prop instead)
+    useEffect(() => {
+        if (isMapActive) {
+            bgmManager.play('neon-map');
+        }
+    }, [isMapActive]);
 
     // Configuration
     const NODE_SPACING_DESKTOP = 220;
