@@ -163,7 +163,11 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         return [...frame.choices].sort(() => Math.random() - 0.5);
     }, [currentFrameId]); // Re-shuffle only when moving to a new frame
 
-    // Determine what text to show
+    // Determine what text to show — on lesson screen show only the body (not the full LESSON: prefix)
+    // lessonBody is computed near the return statement where lessonFrame is available.
+    // On learning screens activeText is overridden just before typewriter useEffect via a ref trick,
+    // but the simplest correct approach: compute a stable activeText from frame.text and let the
+    // lesson card render lessonBody directly (not via displayedText).
     const activeText = feedbackChoice ? feedbackChoice.feedback : frame.text;
 
     // Reset bg loaded state when background changes
@@ -596,10 +600,14 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         }
     };
 
-    // Extract Lesson Keyword dynamically
-    // Now looks for the current frame if it is a learning screen, or falls back to searching
-    const lessonFrame = isLearningScreen ? frame : scenario.frames.find((f: any) => f.id.startsWith('LEARNING'));
-    const lessonKeyword = lessonFrame?.text.match(/LESSON:\s*([^.]+)/)?.[1]?.toUpperCase() || "LESSON";
+    // Extract Lesson Title and Body separately from the LESSON: field
+    // Data format: "LESSON: KEYWORD. Body text here."
+    const lessonFrame = isLearningScreen ? frame : scenario.frames.find((f: any) => f.id.startsWith('LEARNING') || f.id === 'lesson');
+    const lessonRawText: string = lessonFrame?.text || '';
+    // Title: the word(s) after "LESSON:" and before the first full stop
+    const lessonKeyword = lessonRawText.match(/LESSON:\s*([^.]+)/i)?.[1]?.trim().toUpperCase() || 'LESSON';
+    // Body: everything after "LESSON: KEYWORD." — strip the prefix
+    const lessonBody = lessonRawText.replace(/^LESSON:\s*[^.]+\.\s*/i, '').trim() || lessonRawText;
 
     return (
         <div
@@ -774,7 +782,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 <h2 className="text-center font-black text-white shrink-0" style={{ fontSize: '1.4rem', lineHeight: 1.3, maxHeight: '3rem', overflow: 'hidden' }}>
                                     {lessonKeyword}
                                 </h2>
-                                {/* Lesson body text — scrollable */}
+                                {/* Lesson body text — shows lessonBody directly, no LESSON: prefix */}
                                 <div
                                     ref={textContainerRef}
                                     className="overflow-y-auto custom-scrollbar"
@@ -783,16 +791,15 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                     <p className={clsx(
                                         "leading-relaxed text-center",
                                         isCandyTheme
-                                            ? "text-xl font-serif italic text-pink-900"
-                                            : "text-base text-white/85"
-                                    )}>
-                                        {displayedText}
-                                        {isTyping && <span className={clsx("inline-block w-2 h-5 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
+                                            ? "text-lg font-serif italic text-pink-900"
+                                            : "text-sm text-white/80"
+                                    )}
+                                    style={{ fontSize: '0.95rem' }}>
+                                        {lessonBody}
                                     </p>
                                 </div>
-                                {/* Finish Chapter button */}
-                                {!isTyping && (
-                                    <div className="mt-2 shrink-0">
+                                {/* Finish Chapter button — always visible on lesson screen */}
+                                <div className="mt-2 shrink-0">
                                         {displayedChoices.map((choice, idx) => (
                                             <button
                                                 key={idx}
@@ -814,7 +821,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                             </button>
                                         ))}
                                     </div>
-                                )}
                             </>
                         ) : (
                         <>
