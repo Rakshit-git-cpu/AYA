@@ -1,164 +1,180 @@
-// BGM files are in /public/assets/ — served as static URLs (not imported)
-// Correct paths confirmed from public/assets directory listing
-const BGM_FILES: Record<string, string> = {
-  triumph: '/assets/bgm-triumph.mp3',
-  grief:   '/assets/bgm-grief.mp3',
-  tension: '/assets/bgm-tension.mp3',
-  joy:     '/assets/bgm-joy.mp3',
-  hope:    '/assets/bgm-hope.mp3',
-  love:    '/assets/romantic emotional.mp3',  // no bgm-love.mp3, use this file
-  mystery: '/assets/bgm-mystery.mp3',
-  calm:    '/assets/bgm-calm.mp3',
+// Audio files are in /public/music/ — served directly by Vite at /music/*.mp3
+// No import statements needed. No hashing applied to files in /public/.
+
+const TRACKS: Record<string, string> = {
+  triumph: '/music/bgm-triumph.mp3',
+  grief:   '/music/bgm-grief.mp3',
+  tension: '/music/bgm-tension.mp3',
+  joy:     '/music/bgm-joy.mp3',
+  hope:    '/music/bgm-hope.mp3',
+  love:    '/music/bgm-love.mp3',
+  mystery: '/music/bgm-mystery.mp3',
+  calm:    '/music/bgm-calm.mp3',
 };
 
+const audioMap: Record<string, HTMLAudioElement> = {};
+
+// Preload all tracks on engine init
+Object.entries(TRACKS).forEach(([mood, src]) => {
+  const audio = new Audio(src);
+  audio.loop = true;
+  audio.volume = 0;
+  audio.preload = 'auto';
+  audio.onerror = () => console.error(`[BGM] Failed to load: ${mood} at ${src}`);
+  audio.oncanplaythrough = () => console.log(`[BGM] Ready: ${mood}`);
+  audioMap[mood] = audio;
+});
+
+console.log('[BGM] Audio engine initialized with tracks:', Object.keys(TRACKS));
+
 class AmbientMusicEngine {
-  private audios: Record<string, HTMLAudioElement> = {};
   private currentMood: string | null = null;
   private isEnabled: boolean = true;
-  private hasInteracted: boolean = false;
+  private isUnlocked: boolean = false;
   private pendingMood: string | null = null;
   private targetVolume: number = 0.25;
-  private activeIntervals: Record<string, ReturnType<typeof setInterval>> = {};
+  private fadeIntervals: Record<string, ReturnType<typeof setInterval>> = {};
 
   constructor() {
-    // Log all resolved paths so Vite/browser resolution is visible in console
-    console.log('[AmbientMusic] BGM file paths:', BGM_FILES);
+    // One-time unlock listener: plays+pauses all tracks to unlock AudioContext
+    const unlockAudio = () => {
+      if (this.isUnlocked) return;
+      this.isUnlocked = true;
 
-    Object.entries(BGM_FILES).forEach(([mood, src]) => {
-      const audio = new Audio(src);
-      audio.loop = true;
-      audio.volume = 0;
-      audio.preload = 'none'; // Don't preload until needed
-      audio.onerror = (e) => console.error('[AmbientMusic] BGM load failed:', mood, src, e);
-      this.audios[mood] = audio;
-    });
-  }
+      // Play and immediately pause every audio element to satisfy browser autoplay policy
+      const unlockPromises = Object.values(audioMap).map(audio =>
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(() => { /* ignore — may already be unlocked */ })
+      );
 
-  // Call this on first user interaction to unlock browser autoplay
-  unlockAndPlay(mood: string) {
-    this.hasInteracted = true;
-    this.pendingMood = null;
-    this.play(mood);
+      Promise.all(unlockPromises).then(() => {
+        console.log('[BGM] Audio unlocked by user interaction');
+        // Now play the mood that was requested but blocked
+        if (this.pendingMood && this.isEnabled) {
+          this._startPlay(this.pendingMood);
+          this.pendingMood = null;
+        }
+      });
+
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+    };
+
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
   }
 
   play(mood: string) {
     if (!this.isEnabled) return;
+    if (this.currentMood === mood) return; // Don't restart same track
 
-    // If no user interaction yet, queue the mood and wait
-    if (!this.hasInteracted) {
+    if (!this.isUnlocked) {
+      // Queue for after first interaction
       this.pendingMood = mood;
       return;
     }
 
-    if (this.currentMood === mood) return; // Don't restart same track
+    this._startPlay(mood);
+  }
 
-    const prevAudio = this.currentMood ? this.audios[this.currentMood] : null;
-    const prevMood = this.currentMood;
+  private _startPlay(mood: string) {
+    const prev = this.currentMood;
     this.currentMood = mood;
-    const nextAudio = this.audios[mood];
 
-    if (prevAudio && prevMood) {
-      this.fadeOutAudio(prevAudio, prevMood, 1500);
+    if (prev && audioMap[prev]) {
+      this._fadeOut(audioMap[prev], prev, 1500);
     }
-
-    if (nextAudio) {
-      this.fadeInAudio(nextAudio, mood, 1500);
+    if (audioMap[mood]) {
+      this._fadeIn(audioMap[mood], mood, 1500);
     }
   }
 
-  private clearIntervalForMood(mood: string) {
-    if (this.activeIntervals[mood]) {
-      clearInterval(this.activeIntervals[mood]);
-      delete this.activeIntervals[mood];
+  private _clearFade(key: string) {
+    if (this.fadeIntervals[key]) {
+      clearInterval(this.fadeIntervals[key]);
+      delete this.fadeIntervals[key];
     }
   }
 
-  private fadeOutAudio(audio: HTMLAudioElement, mood: string, durationMs: number) {
-    this.clearIntervalForMood(mood);
-    const startVolume = audio.volume;
-    if (startVolume <= 0) {
-      audio.pause();
-      audio.currentTime = 0;
-      return;
-    }
-    const steps = 20;
-    const stepTime = durationMs / steps;
-    const stepVolume = startVolume / steps;
+  private _fadeOut(audio: HTMLAudioElement, key: string, durationMs: number) {
+    this._clearFade(key);
+    const startVol = audio.volume;
+    if (startVol <= 0) { audio.pause(); audio.currentTime = 0; return; }
 
-    let currentStep = 0;
-    this.activeIntervals[mood] = setInterval(() => {
-      currentStep++;
-      const newVol = startVolume - (stepVolume * currentStep);
-      if (newVol <= 0 || currentStep >= steps) {
+    const steps = Math.ceil(durationMs / 50);
+    const step = startVol / steps;
+    let n = 0;
+
+    this.fadeIntervals[key] = setInterval(() => {
+      n++;
+      const v = startVol - step * n;
+      if (v <= 0 || n >= steps) {
         audio.volume = 0;
         audio.pause();
         audio.currentTime = 0;
-        this.clearIntervalForMood(mood);
+        this._clearFade(key);
       } else {
-        audio.volume = newVol;
+        audio.volume = v;
       }
-    }, stepTime);
+    }, 50);
   }
 
-  private fadeInAudio(audio: HTMLAudioElement, mood: string, durationMs: number) {
-    this.clearIntervalForMood(mood);
+  private _fadeIn(audio: HTMLAudioElement, key: string, durationMs: number) {
+    this._clearFade(key);
     audio.volume = 0;
-    audio.play().catch(e => console.warn('[AmbientMusic] play() blocked (autoplay policy):', mood, e));
+    audio.play().catch(e => console.warn('[BGM] play() blocked:', key, e));
 
-    const steps = 20;
-    const stepTime = durationMs / steps;
-    const stepVolume = this.targetVolume / steps;
+    const steps = Math.ceil(durationMs / 50);
+    const step = this.targetVolume / steps;
+    let n = 0;
 
-    let currentStep = 0;
-    this.activeIntervals[mood] = setInterval(() => {
-      currentStep++;
-      const newVol = stepVolume * currentStep;
-      if (newVol >= this.targetVolume || currentStep >= steps) {
+    this.fadeIntervals[key] = setInterval(() => {
+      n++;
+      const v = step * n;
+      if (v >= this.targetVolume || n >= steps) {
         audio.volume = this.targetVolume;
-        this.clearIntervalForMood(mood);
+        this._clearFade(key);
       } else {
-        audio.volume = newVol;
+        audio.volume = v;
       }
-    }, stepTime);
+    }, 50);
   }
 
-  fadeOut(duration: number = 1.5) {
-    this.stop(duration * 1000);
-  }
-
-  stop(durationMs: number = 1500) {
-    if (this.currentMood && this.audios[this.currentMood]) {
-      this.fadeOutAudio(this.audios[this.currentMood], this.currentMood, durationMs);
+  fadeOut(durationSec: number = 1.5) {
+    if (this.currentMood && audioMap[this.currentMood]) {
+      this._fadeOut(audioMap[this.currentMood], this.currentMood, durationSec * 1000);
     }
     this.currentMood = null;
+  }
+
+  stop() {
+    this.fadeOut();
   }
 
   toggle() {
     this.isEnabled = !this.isEnabled;
     if (!this.isEnabled) {
-      this.stop();
+      this.fadeOut(0.5);
     } else if (this.pendingMood) {
-      // Resume if something was pending
-      this.unlockAndPlay(this.pendingMood);
+      this.play(this.pendingMood);
     }
   }
 
   disable() {
     this.isEnabled = false;
-    this.stop();
+    this.fadeOut(0.5);
   }
-
-  // Returns the pending mood so ScenarioGame can pass it on first interaction
-  get pending() { return this.pendingMood; }
-  get interacted() { return this.hasInteracted; }
-  get enabled() { return this.isEnabled; }
 
   setVolume(v: number) {
     this.targetVolume = Math.max(0, Math.min(1, v));
-    if (this.currentMood && this.audios[this.currentMood]) {
-      this.audios[this.currentMood].volume = this.targetVolume;
+    if (this.currentMood && audioMap[this.currentMood]) {
+      audioMap[this.currentMood].volume = this.targetVolume;
     }
   }
+
+  get enabled() { return this.isEnabled; }
 }
 
 export const ambientMusic = new AmbientMusicEngine();

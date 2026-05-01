@@ -90,8 +90,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     const [currentTheme, setCurrentTheme] = useState<EmotionTheme>(EMOTION_THEMES['calm']);
     const [bgmEnabled, setBgmEnabled] = useState<boolean>(true);
     const [typeSoundEnabled, setTypeSoundEnabled] = useState<boolean>(true);
-    // Bug 3 fix: track first user interaction to unlock browser autoplay
-    const hasInteractedRef = useRef(false);
+    // Ref for text scroll container — allows auto-scroll-to-top on frame change
+    const textContainerRef = useRef<HTMLDivElement>(null);
 
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
@@ -187,8 +187,11 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         const theme = EMOTION_THEMES[emotion];
         setCurrentTheme(theme);
 
-        // Play matching ambient music — deferred until first interaction
+        // Play matching ambient music — unlock listener in ambientMusic handles autoplay policy
         ambientMusic.play(theme.emotion);
+
+        // Scroll text container back to top on every new frame
+        textContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
         return () => {
             // Don't fade out on every frame change — let crossfade handle it
@@ -286,17 +289,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         return impacts;
     };
 
-    // First interaction handler — unlocks browser autoplay then proceeds
-    const handleFirstInteraction = () => {
-        if (!hasInteractedRef.current) {
-            hasInteractedRef.current = true;
-            // Unlock audio: play whatever mood is currently pending
-            ambientMusic.unlockAndPlay(currentTheme.emotion);
-        }
-    };
-
     const handleChoiceClick = async (choice: Choice) => {
-        handleFirstInteraction();
         audioSynth.playClick();
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
@@ -597,7 +590,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     };
 
     const handleFeedbackContinue = () => {
-        handleFirstInteraction();
         if (feedbackChoice) {
             setCurrentFrameId(feedbackChoice.next);
             setFeedbackChoice(null);
@@ -742,41 +734,93 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 isBgLoaded ? "opacity-100 delay-300" : "opacity-0 pointer-events-none"
             )}>
 
-                {/* LEARNING SCREEN HEADER */}
-                {isLearningScreen && (
-                    <div className="absolute top-[20%] text-center animate-slide-up-fade">
-                        <div className="text-yellow-400 font-bold tracking-[0.5em] text-sm mb-4 uppercase">Key Takeaway</div>
-                        <h1 className={clsx(
-                            "text-5xl md:text-7xl font-black mb-2 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]",
-                            isCandyTheme ? "text-white drop-shadow-[0_4px_0_#ec4899] text-stroke-2" : "text-white"
-                        )}>
-                            {lessonKeyword}
-                        </h1>
-                    </div>
-                )}
+                {/* LEARNING SCREEN — decorative giant text removed, card handles everything */}
 
                 {/* --- BOTTOM ALIGNED CONTENT --- */}
                 <div className="w-full flex flex-col mt-auto items-center min-h-0 relative z-20">
-                    {/* Dialogue Box */}
+                    {/* Dialogue Box — Bug 1 fix: explicit dark glass background */}
                     <div
                         className={clsx(
-                            "w-full max-h-[75dvh] overflow-y-auto overscroll-contain touch-pan-y custom-scrollbar rounded-3xl p-6 md:p-8 cinematic-card flex flex-col",
+                            "w-full rounded-2xl p-5 cinematic-card flex flex-col",
                             isCandyTheme
                                 ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
-                                : isLearningScreen
-                                    ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
-                                    : "border-2"
+                                : "border"
                         )}
                         style={!isCandyMode ? {
+                            background: 'rgba(10, 10, 20, 0.88)',
                             borderColor: currentTheme.cardBorder,
-                            background: isLearningScreen ? undefined : `rgba(0, 0, 0, 0.75)`,
-                            boxShadow: `inset 0 0 20px ${currentTheme.cardOverlay}, 0 20px 60px rgba(0,0,0,0.5)`,
+                            boxShadow: `0 20px 60px rgba(0,0,0,0.6), 0 0 30px ${currentTheme.badgeColor}22`,
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
+                            maxHeight: '75vh',
+                            overflow: 'hidden',
+                            width: '90%',
+                            maxWidth: '680px',
+                            margin: '0 auto',
+                            gap: '16px',
+                            display: 'flex',
+                            flexDirection: 'column',
                         } : {}}
                         onClick={handleTextClick}
                     >
+                        {/* Bug 2 — Lesson card: single clean layout, no decorative overlap */}
+                        {isLearningScreen ? (
+                            <>
+                                {/* KEY TAKEAWAY label */}
+                                <div className="text-center shrink-0" style={{ color: currentTheme.badgeColor, letterSpacing: '3px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                                    Key Takeaway
+                                </div>
+                                {/* Lesson title */}
+                                <h2 className="text-center font-black text-white shrink-0" style={{ fontSize: '1.4rem', lineHeight: 1.3, maxHeight: '3rem', overflow: 'hidden' }}>
+                                    {lessonKeyword}
+                                </h2>
+                                {/* Lesson body text — scrollable */}
+                                <div
+                                    ref={textContainerRef}
+                                    className="overflow-y-auto custom-scrollbar"
+                                    style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
+                                >
+                                    <p className={clsx(
+                                        "leading-relaxed text-center",
+                                        isCandyTheme
+                                            ? "text-xl font-serif italic text-pink-900"
+                                            : "text-base text-white/85"
+                                    )}>
+                                        {displayedText}
+                                        {isTyping && <span className={clsx("inline-block w-2 h-5 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
+                                    </p>
+                                </div>
+                                {/* Finish Chapter button */}
+                                {!isTyping && (
+                                    <div className="mt-2 shrink-0">
+                                        {displayedChoices.map((choice, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleChoiceClick(choice as Choice)}
+                                                className="cinematic-continue w-full py-4 rounded-full font-bold uppercase tracking-widest text-white transition-all active:scale-95"
+                                                style={!isCandyMode ? {
+                                                    backgroundColor: currentTheme.badgeColor,
+                                                    boxShadow: `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`,
+                                                    border: `1px solid ${currentTheme.cardBorder}`,
+                                                } : { backgroundColor: '#f59e0b' }}
+                                                onMouseEnter={(e) => {
+                                                    if (!isCandyMode) e.currentTarget.style.boxShadow = `0 12px 24px rgba(0,0,0,0.5), 0 0 30px ${currentTheme.badgeColor}cc`;
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (!isCandyMode) e.currentTarget.style.boxShadow = `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`;
+                                                }}
+                                            >
+                                                {choice.text}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                        <>
                         {/* Speaker Label INSIDE the card */}
                         {!isLearningScreen && (
-                            <div className="self-start mb-4 shrink-0">
+                            <div className="self-start shrink-0">
                                 <div
                                     className={clsx(
                                         "cinematic-badge font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-full border shadow-lg",
@@ -797,26 +841,33 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 </div>
                             </div>
                         )}
-                        {/* Bug 1 & 2 fix: scrollable text area + pinned choices */}
-                        {/* Scrollable text region — max 35vh so choices always visible */}
+                        {/* Bug 3 — Text container: scrollable, auto-scrolls to top on frame change */}
                         <div
-                            className="overflow-y-auto custom-scrollbar pb-3"
-                            style={{ maxHeight: '35vh', scrollbarWidth: 'thin' }}
+                            ref={textContainerRef}
+                            className="overflow-y-auto custom-scrollbar pb-3 relative"
+                            style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
                         >
-                            {level.age_mirror_text && (frame.id === 'intro' || isLearningScreen) && !feedbackChoice && (
+                            {/* Fade gradient at bottom of text area */}
+                            <div
+                                className="sticky bottom-0 left-0 right-0 pointer-events-none"
+                                style={{
+                                    height: '40px',
+                                    background: `linear-gradient(transparent, rgba(10,10,20,0.88))`,
+                                    marginTop: '-40px',
+                                    position: 'sticky',
+                                    bottom: 0,
+                                }}
+                            />
+                            {level.age_mirror_text && (frame.id === 'intro') && !feedbackChoice && (
                                 <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
                                     At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
                                 </p>
                             )}
                             <p className={clsx(
                                 "leading-relaxed",
-                                isLearningScreen
-                                    ? isCandyTheme
-                                        ? "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-pink-900" // Candy Lesson
-                                        : "text-2xl md:text-3xl font-serif italic text-center leading-loose py-4 text-yellow-100" // Standard Lesson
-                                    : isCandyTheme
-                                        ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
-                                        : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
+                                isCandyTheme
+                                    ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
+                                    : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
                             )}>
                                 {displayedText}
                                 {isTyping && <span className={clsx("inline-block w-2 h-6 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
@@ -897,6 +948,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                     Continue <ChevronRight size={18} />
                                 </button>
                             </div>
+                        )}
+                        </>
                         )}
                     </div>
                 </div>
