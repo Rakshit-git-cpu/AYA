@@ -3,7 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { detectEmotion, EMOTION_THEMES } from '../../utils/storyEmotion';
 import type { EmotionTheme } from '../../utils/storyEmotion';
-import { ambientMusic } from '../../utils/ambientMusic';
+import { bgmManager } from '../../utils/bgmManager';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
@@ -130,7 +130,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Load preferences from localStorage on mount
     useEffect(() => {
         if (localStorage.getItem('aya_bgm') === 'false') {
-            ambientMusic.disable();
             setBgmEnabled(false);
         }
         if (localStorage.getItem('aya_typewriter_sound') === 'false') {
@@ -191,8 +190,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         const theme = EMOTION_THEMES[emotion];
         setCurrentTheme(theme);
 
-        // Play matching ambient music — unlock listener in ambientMusic handles autoplay policy
-        ambientMusic.play(theme.emotion);
+        // Play matching ambient music — unlock listener in bgmManager handles autoplay policy
+        bgmManager.play(theme.emotion);
 
         // Scroll text container back to top on every new frame
         textContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -205,7 +204,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Stop music when component unmounts (user exits story)
     useEffect(() => {
         return () => {
-            ambientMusic.fadeOut(1.5);
+            bgmManager.stop(1500);
         };
     }, []);
 
@@ -567,6 +566,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             
             // Queue transition out allowing particles to run
             setTimeout(() => {
+                bgmManager.stop(1000);
+                setTimeout(() => bgmManager.play('neon-map'), 1000);
                 handleLevelComplete(starCount);
             }, delayMs);
             return;
@@ -670,8 +671,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 {/* BGM toggle */}
                 <button
                     onClick={() => {
-                        ambientMusic.toggle();
-                        const nowEnabled = ambientMusic.enabled;
+                        bgmManager.toggle();
+                        const nowEnabled = bgmManager.enabled;
                         setBgmEnabled(nowEnabled);
                         localStorage.setItem('aya_bgm', nowEnabled.toString());
                     }}
@@ -705,6 +706,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 <button
                     onClick={() => {
                         audioSynth.playClick();
+                        bgmManager.stop(1000);
+                        setTimeout(() => bgmManager.play('neon-map'), 1000);
                         onBack();
                     }}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest"

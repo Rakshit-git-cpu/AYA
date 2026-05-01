@@ -11,6 +11,7 @@ import { DailyChallengeModal } from './DailyChallengeModal';
 import type { MoodArchetype } from './DailyChallengeModal';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
+import { bgmManager } from '../../utils/bgmManager';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -89,12 +90,15 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [showThemeSwitcher, setShowThemeSwitcher] = useState(false);
     const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
-    // Mobile Detection
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isBgmEnabled, setIsBgmEnabled] = useState(bgmManager.enabled);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
+        
+        bgmManager.play('neon-map');
+        
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
@@ -270,8 +274,31 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 </button>
             </div>
 
-            {/* Journal Toggle Button - Compact Mobile Layout */}
+            {/* Top Right Controls */}
             <div className="absolute top-20 right-4 md:top-24 md:right-6 z-[100] animate-fade-in-delayed flex flex-col gap-2 items-end">
+                
+                {/* BGM Toggle Button */}
+                <button
+                    onClick={() => {
+                        audioSynth.playClick();
+                        bgmManager.toggle();
+                        setIsBgmEnabled(bgmManager.enabled);
+                    }}
+                    className={clsx(
+                        "group flex items-center justify-center gap-2 px-3 py-1.5 md:py-2 rounded-full shadow-lg border transition-all pointer-events-auto hover:scale-105 active:scale-95",
+                        isCandyMode
+                            ? "bg-white/90 border-pink-200 text-pink-500"
+                            : "bg-slate-900 border-indigo-500/50 text-indigo-400"
+                    )}
+                >
+                    {isBgmEnabled ? <Volume2 size={16} className="md:w-5 md:h-5" /> : <VolumeX size={16} className="md:w-5 md:h-5 text-slate-500" />}
+                    <span className={clsx(
+                        "text-[10px] md:text-xs font-bold uppercase tracking-widest",
+                        !isBgmEnabled && "text-slate-500"
+                    )}>
+                        BGM
+                    </span>
+                </button>
                 <button
                     onClick={() => {
                         audioSynth.playClick();

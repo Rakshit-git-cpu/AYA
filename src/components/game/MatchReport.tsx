@@ -5,6 +5,7 @@ import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw, C
 import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTypes';
 import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
+import { bgmManager } from '../../utils/bgmManager';
 
 interface MatchReportProps {
     userTraits: PersonalityTraits;
@@ -304,6 +305,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
     };
 
     useEffect(() => {
+        bgmManager.play('neon-map');
         if (audioSynth.playWin) audioSynth.playWin();
         let start = 0;
         const animate = () => {
@@ -312,6 +314,10 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
             if (start < matchScore) requestAnimationFrame(animate);
         };
         animate();
+        
+        return () => {
+            bgmManager.stop();
+        };
     }, []);
 
     return (
