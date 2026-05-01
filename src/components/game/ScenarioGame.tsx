@@ -174,20 +174,23 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         const textToAnalyse = frame.emotion
             ? (frame.emotion as string)  // explicit override in story data: use emotion string directly
             : frame.text;
+        
+        const badgeLabel = feedbackChoice ? feedbackChoice.feedbackTitle : (frame.id === 'intro' ? 'Narrator' : 'You');
+        
         // If frame has an explicit emotion field matching a theme key, use it directly
         const emotion = (frame.emotion && EMOTION_THEMES[frame.emotion as keyof typeof EMOTION_THEMES])
             ? frame.emotion as keyof typeof EMOTION_THEMES
-            : detectEmotion(textToAnalyse);
+            : detectEmotion(textToAnalyse, badgeLabel);
+        
         const theme = EMOTION_THEMES[emotion];
         setCurrentTheme(theme);
 
         // Play matching ambient music
-        ambientMusic.resume().then(() => {
-            ambientMusic.play(theme.musicMood);
-        });
+        // We do not need resume() since we use HTML audio now.
+        ambientMusic.play(theme.emotion);
 
         return () => {
-            ambientMusic.fadeOut(1);
+            ambientMusic.fadeOut(1.5);
         };
     }, [currentFrameId, feedbackChoice]);
 
@@ -589,10 +592,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
     return (
         <div
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden font-sans scenario-container"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden font-sans cinematic-container"
             style={{
-                background: isCandyMode ? undefined : currentTheme.bgGradient,
-                backgroundColor: isCandyMode ? '#0f172a' : undefined,
+                backgroundColor: isCandyMode ? '#0f172a' : '#000',
             }}
         >
             {/* Background Layer */}
@@ -627,9 +629,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 {/* Emotion vignette overlay */}
                 {!isCandyMode && (
                     <div
-                        className="vignette-overlay absolute inset-0 pointer-events-none"
+                        className="cinematic-vignette absolute inset-0 pointer-events-none"
                         style={{
-                            background: `radial-gradient(ellipse at center, transparent 40%, ${currentTheme.vignetteColor} 100%)`,
+                            background: `radial-gradient(ellipse at center, transparent 40%, ${currentTheme.vignette} 100%)`,
                         }}
                     />
                 )}
@@ -654,7 +656,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         setBgmEnabled(nowEnabled);
                         localStorage.setItem('aya_bgm', nowEnabled.toString());
                     }}
-                    className="glass-pill-button flex items-center justify-center w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 hover:bg-white/10 transition-all text-base shadow-lg"
+                    className="cinematic-toggle flex items-center justify-center w-10 h-10 rounded-full border border-white/15 hover:bg-white/10 text-base shadow-lg"
+                    style={{ borderColor: `${currentTheme.badgeColor}80` }}
                     title="Background Music"
                 >
                     {bgmEnabled ? '🎵' : '🔇'}
@@ -667,7 +670,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         setTypeSoundEnabled(next);
                         localStorage.setItem('aya_typewriter_sound', next.toString());
                     }}
-                    className="glass-pill-button flex items-center justify-center w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 hover:bg-white/10 transition-all text-base shadow-lg"
+                    className="cinematic-toggle flex items-center justify-center w-10 h-10 rounded-full border border-white/15 hover:bg-white/10 text-base shadow-lg"
+                    style={{ borderColor: `${currentTheme.badgeColor}80` }}
                     title="Typewriter Sound"
                 >
                     {typeSoundEnabled ? '⌨️' : '🔕'}
@@ -706,7 +710,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         isCandyTheme
                             ? "bg-white/90 border-yellow-400 text-yellow-900"
                             : "bg-slate-900/80 border-yellow-500/50 text-yellow-500"
-                    )} style={!isCandyMode ? { borderColor: `${currentTheme.accentColor}80`, color: currentTheme.accentColor } : {}}>
+                    )} style={!isCandyMode ? { borderColor: `${currentTheme.badgeColor}80`, color: currentTheme.badgeColor } : {}}>
                         <Star className={clsx("w-6 h-6", isCandyTheme ? "text-yellow-500 fill-yellow-500" : "fill-current")} />
                         <span className="text-2xl font-black">{score} XP</span>
                     </div>
@@ -733,47 +737,47 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 )}
 
                 {/* --- BOTTOM ALIGNED CONTENT --- */}
-                <div className="w-full flex flex-col mt-auto items-center min-h-0">
-                    {/* Speaker Label */}
-                    {!isLearningScreen && (
-                        <div className="self-start mb-[-12px] ml-4 relative z-20 shrink-0">
-                            <div
-                                className={clsx(
-                                    "narrator-badge font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
-                                    feedbackChoice
-                                        ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200 text-black" : "bg-red-400 border-red-200 text-black"
-                                        : isCandyMode ? "bg-yellow-400 border-yellow-200 text-black" : "bg-transparent text-white"
-                                )}
-                                style={!isCandyMode && !feedbackChoice ? {
-                                    borderColor: currentTheme.accentColor,
-                                    color: currentTheme.narratorColor,
-                                    boxShadow: `0 0 20px ${currentTheme.accentColor}44`,
-                                    background: `${currentTheme.cardColor}`,
-                                } : {}}
-                            >
-                                {feedbackChoice
-                                    ? feedbackChoice.feedbackTitle
-                                    : (frame.id === 'intro' ? 'Narrator' : 'You')}
-                            </div>
-                        </div>
-                    )}
-
+                <div className="w-full flex flex-col mt-auto items-center min-h-0 relative z-20">
                     {/* Dialogue Box */}
                     <div
                         className={clsx(
-                            "w-full max-h-[75dvh] overflow-y-auto overscroll-contain touch-pan-y custom-scrollbar backdrop-blur-xl rounded-3xl p-6 md:p-8 transform transition-all duration-300",
+                            "w-full max-h-[75dvh] overflow-y-auto overscroll-contain touch-pan-y custom-scrollbar rounded-3xl p-6 md:p-8 cinematic-card flex flex-col",
                             isCandyTheme
                                 ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
                                 : isLearningScreen
                                     ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
-                                    : "bg-slate-950/90 border-2 shadow-2xl rounded-tl-none"
+                                    : "border-2"
                         )}
                         style={!isCandyMode ? {
-                            borderColor: `${currentTheme.accentColor}33`,
-                            background: isLearningScreen ? undefined : `rgba(5, 5, 15, 0.92)`,
+                            borderColor: currentTheme.cardBorder,
+                            background: isLearningScreen ? undefined : `rgba(0, 0, 0, 0.75)`,
+                            boxShadow: `inset 0 0 20px ${currentTheme.cardOverlay}, 0 20px 60px rgba(0,0,0,0.5)`,
                         } : {}}
                         onClick={handleTextClick}
                     >
+                        {/* Speaker Label INSIDE the card */}
+                        {!isLearningScreen && (
+                            <div className="self-start mb-4 shrink-0">
+                                <div
+                                    className={clsx(
+                                        "cinematic-badge font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-full border shadow-lg",
+                                        feedbackChoice
+                                            ? feedbackChoice.score > 0 ? "bg-green-400/20 border-green-400 text-green-400" : "bg-red-400/20 border-red-400 text-red-400"
+                                            : isCandyMode ? "bg-yellow-400/20 border-yellow-400 text-yellow-400" : "bg-transparent text-white"
+                                    )}
+                                    style={!isCandyMode && !feedbackChoice ? {
+                                        borderColor: currentTheme.badgeColor,
+                                        color: currentTheme.badgeColor,
+                                        boxShadow: currentTheme.badgeGlow,
+                                        backgroundColor: `${currentTheme.badgeColor}33`,
+                                    } : {}}
+                                >
+                                    {feedbackChoice
+                                        ? feedbackChoice.feedbackTitle
+                                        : (frame.id === 'intro' ? 'Narrator' : 'You')}
+                                </div>
+                            </div>
+                        )}
                         <div className="min-h-[80px]">
                             {level.age_mirror_text && (frame.id === 'intro' || isLearningScreen) && !feedbackChoice && (
                                 <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
@@ -802,15 +806,26 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                         key={idx}
                                         onClick={() => handleChoiceClick(choice as Choice)}
                                         className={clsx(
-                                            "choice-button group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
+                                            "cinematic-choice group w-full text-left p-5 rounded-full border-2 transition-all flex items-center justify-between shadow-lg",
                                             isCandyTheme
                                                 ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
-                                                : "border border-white/10 bg-white/5 hover:bg-white/10"
+                                                : "border-white/10"
                                         )}
                                         style={!isCandyMode ? {
-                                            ['--hover-glow' as string]: currentTheme.accentColor,
-                                            borderColor: `${currentTheme.accentColor}44`,
+                                            borderColor: currentTheme.choiceBorder,
                                         } : {}}
+                                        onMouseEnter={(e) => {
+                                            if (!isCandyMode) {
+                                                e.currentTarget.style.boxShadow = currentTheme.badgeGlow;
+                                                e.currentTarget.style.borderColor = currentTheme.badgeColor;
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isCandyMode) {
+                                                e.currentTarget.style.boxShadow = 'none';
+                                                e.currentTarget.style.borderColor = currentTheme.choiceBorder;
+                                            }
+                                        }}
                                     >
                                         <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-white")}>
                                             {choice.text}
@@ -822,10 +837,24 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         )}
 
                         {feedbackChoice && (
-                            <div className="mt-4 animate-fade-in flex justify-end">
+                            <div className="mt-8 flex justify-center animate-fade-in">
                                 <button
                                     onClick={handleFeedbackContinue}
-                                    className="px-8 py-3 rounded-full bg-white text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2"
+                                    className="cinematic-continue px-10 py-4 rounded-full font-bold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 flex items-center gap-2 hover:scale-105"
+                                    style={!isCandyMode ? {
+                                        backgroundColor: currentTheme.badgeColor,
+                                        boxShadow: `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`,
+                                    } : { backgroundColor: '#f59e0b' }}
+                                    onMouseEnter={(e) => {
+                                        if (!isCandyMode) {
+                                            e.currentTarget.style.boxShadow = `0 12px 24px rgba(0,0,0,0.5), 0 0 30px ${currentTheme.badgeColor}cc`;
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isCandyMode) {
+                                            e.currentTarget.style.boxShadow = `0 8px 16px rgba(0,0,0,0.4), ${currentTheme.badgeGlow}`;
+                                        }
+                                    }}
                                 >
                                     Continue <ChevronRight size={18} />
                                 </button>

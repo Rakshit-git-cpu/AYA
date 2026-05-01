@@ -514,35 +514,56 @@ body {
   animation: subtle-rotate 5s ease-in-out infinite;
 }
 
-/* ─── Cinematic Scenario Game — Emotion Color Transitions ─── */
-.scenario-container {
-  transition: background 1.5s ease,
-              box-shadow 1.5s ease;
+/* ─── Cinematic Scenario Game — 3D Emotion Color Transitions ─── */
+
+.cinematic-container {
+  transition: all 0.8s ease;
 }
 
-.narrator-badge {
-  transition: border-color 1s ease,
-              color 1s ease,
-              box-shadow 1s ease,
-              background 1s ease;
-}
-
-.choice-button {
-  transition: border-color 0.8s ease,
-              box-shadow 0.8s ease,
-              background 0.3s ease;
-}
-
-.choice-button:hover {
-  box-shadow: 0 0 16px var(--hover-glow, transparent);
-}
-
-.vignette-overlay {
-  transition: background 1.5s ease;
-}
-
-.glass-pill-button {
+.cinematic-card {
+  transition: all 0.8s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+.cinematic-badge {
+  transition: all 0.8s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+}
+
+.cinematic-choice {
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.4);
+}
+
+.cinematic-choice:hover {
+  transform: translateY(-2px);
+  /* Box-shadow and border color set dynamically via style props */
+}
+
+.cinematic-continue {
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.cinematic-continue:hover {
+  transform: scale(1.03);
+}
+
+.cinematic-vignette {
+  transition: all 0.8s ease;
+}
+
+.cinematic-toggle {
+  transition: all 0.8s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.4);
 }
 
