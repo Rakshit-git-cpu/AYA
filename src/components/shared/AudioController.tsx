@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
+import { bgmManager } from '../../utils/bgmManager';
 
 export function AudioController({ isMapActive = true }: { isMapActive?: boolean }) {
     // Global State
@@ -28,7 +29,7 @@ export function AudioController({ isMapActive = true }: { isMapActive?: boolean 
 
                 // Start music synchronously within the gesture to appease strict iOS rules
                 if (!state.isMusicMuted && isMapActive) {
-                    audioSynth.startMusic();
+                    bgmManager.setVolume(state.musicVolume);
                 }
             }
         };
@@ -47,24 +48,9 @@ export function AudioController({ isMapActive = true }: { isMapActive?: boolean 
 
     // 2. Manage Music Playback & Volume
     useEffect(() => {
-        // Play/Stop Music based on Mute state and map active status
-        if (hasInteracted && !isMusicMuted && isMapActive) {
-            audioSynth.startMusic();
-        } else {
-            audioSynth.stopMusic();
-        }
-
-        // Always ensure volume is correct (e.g. if slider moves while playing)
-        audioSynth.setMusicVolume(isMusicMuted ? 0 : musicVolume);
-
-    }, [isMusicMuted, musicVolume, hasInteracted, isMapActive]);
-
-    // 4. Cleanup on unmount (leaving the map to start the game)
-    useEffect(() => {
-        return () => {
-            audioSynth.stopMusic();
-        };
-    }, []);
+        // Sync volume with bgmManager
+        bgmManager.setVolume(isMusicMuted ? 0 : musicVolume);
+    }, [isMusicMuted, musicVolume]);
 
     // 3. Manage SFX Volume (Independent of Playback)
     useEffect(() => {

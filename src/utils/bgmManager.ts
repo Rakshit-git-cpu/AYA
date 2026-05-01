@@ -154,13 +154,15 @@ class BGMManager {
   ) {
     const ctx = this.getContext()
     const now = ctx.currentTime
-    // FIX FOR OVERLAPPING AUDIO: Cancel scheduled fade-in ramps and anchor current value
+    // FIX FOR OVERLAPPING AUDIO: Use exponential decay from current actual volume
     gain.gain.cancelScheduledValues(now)
-    gain.gain.setValueAtTime(gain.gain.value, now)
-    gain.gain.linearRampToValueAtTime(0, now + duration)
+    gain.gain.setTargetAtTime(0, now, duration / 3)
     
     setTimeout(
-      () => onComplete?.(), 
+      () => {
+        try { gain.gain.linearRampToValueAtTime(0, ctx.currentTime) } catch(e) {}
+        onComplete?.()
+      }, 
       duration * 1000
     )
   }
@@ -201,9 +203,12 @@ class BGMManager {
   setVolume(v: number) {
     this.masterVolume = Math.max(0, Math.min(1, v))
     if (this.gainNode && this.audioContext) {
-      this.gainNode.gain.setValueAtTime(
+      const now = this.audioContext.currentTime;
+      this.gainNode.gain.cancelScheduledValues(now);
+      this.gainNode.gain.setTargetAtTime(
         this.masterVolume,
-        this.audioContext.currentTime
+        now,
+        0.1
       )
     }
   }
