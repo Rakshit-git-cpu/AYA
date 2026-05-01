@@ -16,16 +16,16 @@ function App() {
     // Unlock on first user interaction
     const unlock = async () => {
       await bgmManager.unlock()
-      document.removeEventListener('click', unlock)
-      document.removeEventListener('touchstart', unlock)
+      document.removeEventListener('click', unlock, { capture: true })
+      document.removeEventListener('touchstart', unlock, { capture: true })
     }
     
-    document.addEventListener('click', unlock)
-    document.addEventListener('touchstart', unlock)
+    document.addEventListener('click', unlock, { capture: true })
+    document.addEventListener('touchstart', unlock, { capture: true })
     
     return () => {
-      document.removeEventListener('click', unlock)
-      document.removeEventListener('touchstart', unlock)
+      document.removeEventListener('click', unlock, { capture: true })
+      document.removeEventListener('touchstart', unlock, { capture: true })
     }
   }, [])
 

@@ -4,11 +4,13 @@ class BGMManager {
   private currentSource: AudioBufferSourceNode | null = null
   private gainNode: GainNode | null = null
   private currentTrack: string | null = null
+  private targetTrack: string | null = null
   private isEnabled: boolean = true
   private masterVolume: number = 0.3
   private isUnlocked: boolean = false
   private pendingTrack: string | null = null
   private mapReady: boolean = false
+  private preloadPromise: Promise<void> | null = null
 
   private getContext(): AudioContext {
     if (!this.audioContext) {
@@ -22,29 +24,32 @@ class BGMManager {
 
   // Preload all tracks as ArrayBuffers
   async preload(tracks: Record<string, string>) {
-    const ctx = this.getContext()
-    const promises = Object.entries(tracks).map(
-      async ([name, url]) => {
-        try {
-          const response = await fetch(url)
-          const arrayBuffer = await response.arrayBuffer()
-          const audioBuffer = await ctx.decodeAudioData(
-            arrayBuffer
-          )
-          this.buffers.set(name, audioBuffer)
-          console.log(`BGM loaded: ${name}`)
-        } catch (e) {
-          console.error(`BGM failed to load: ${name}`, e)
-          try {
-            const audio = new Audio(url)
-            audio.crossOrigin = 'anonymous'
-            console.warn(`Fallback for Safari fetch crossOrigin block on: ${name}`)
-          } catch (err) {}
+    this.preloadPromise = (async () => {
+        const ctx = this.getContext()
+        const promises = Object.entries(tracks).map(
+        async ([name, url]) => {
+            try {
+            const response = await fetch(url)
+            const arrayBuffer = await response.arrayBuffer()
+            const audioBuffer = await ctx.decodeAudioData(
+                arrayBuffer
+            )
+            this.buffers.set(name, audioBuffer)
+            console.log(`BGM loaded: ${name}`)
+            } catch (e) {
+            console.error(`BGM failed to load: ${name}`, e)
+            try {
+                const audio = new Audio(url)
+                audio.crossOrigin = 'anonymous'
+                console.warn(`Fallback for Safari fetch crossOrigin block on: ${name}`)
+            } catch (err) {}
+            }
         }
-      }
-    )
-    await Promise.all(promises)
-    console.log('All BGM tracks loaded')
+        )
+        await Promise.all(promises)
+        console.log('All BGM tracks loaded')
+    })();
+    await this.preloadPromise;
   }
 
   // Must be called on first user gesture
@@ -60,27 +65,45 @@ class BGMManager {
     this.isUnlocked = true
     console.log('BGM unlocked, context state:', ctx.state)
     
-    // Only auto-play pending if map is ready
-    if (this.pendingTrack && this.mapReady) {
-      const track = this.pendingTrack
-      this.pendingTrack = null
-      await this.play(track)
+    // Only auto-play pending if map is ready or if it's not the map track
+    if (this.pendingTrack) {
+        if (this.pendingTrack === 'neon-map' && !this.mapReady) {
+            // wait for map to be ready
+        } else {
+            const track = this.pendingTrack
+            this.pendingTrack = null
+            await this.play(track)
+        }
     }
   }
 
   setMapReady() { 
     this.mapReady = true 
+    if (this.isUnlocked && this.pendingTrack === 'neon-map') {
+        const track = this.pendingTrack
+        this.pendingTrack = null
+        this.play(track)
+    }
   }
 
   async play(trackName: string, fadeDuration = 1.5) {
     if (!this.isEnabled) return
-    if (this.currentTrack === trackName) return
+    if (this.targetTrack === trackName) return
+    
+    this.targetTrack = trackName
     
     // If not unlocked yet, queue the track
     if (!this.isUnlocked) {
       this.pendingTrack = trackName
       return
     }
+
+    if (this.preloadPromise) {
+        await this.preloadPromise;
+    }
+
+    // Abort if target changed while waiting for preload
+    if (this.targetTrack !== trackName) return
 
     const ctx = this.getContext()
     const buffer = this.buffers.get(trackName)
@@ -130,10 +153,12 @@ class BGMManager {
     onComplete?: () => void
   ) {
     const ctx = this.getContext()
-    gain.gain.linearRampToValueAtTime(
-      0,
-      ctx.currentTime + duration
-    )
+    const now = ctx.currentTime
+    // FIX FOR OVERLAPPING AUDIO: Cancel scheduled fade-in ramps and anchor current value
+    gain.gain.cancelScheduledValues(now)
+    gain.gain.setValueAtTime(gain.gain.value, now)
+    gain.gain.linearRampToValueAtTime(0, now + duration)
+    
     setTimeout(
       () => onComplete?.(), 
       duration * 1000
@@ -141,15 +166,18 @@ class BGMManager {
   }
 
   stop(fadeDuration = 1.5) {
+    this.targetTrack = null
+    this.pendingTrack = null
     if (!this.gainNode || !this.currentSource) return
+    
     const source = this.currentSource
     this.fadeOut(this.gainNode, fadeDuration, () => {
       try { source.stop() } catch(e) {}
     })
+    
     this.currentTrack = null
     this.currentSource = null
     this.gainNode = null
-    this.pendingTrack = null
   }
 
   toggle() {
@@ -158,8 +186,10 @@ class BGMManager {
       this.stop(0.8)
     } else {
       // Resume whatever should be playing
-      if (this.pendingTrack) {
-        this.play(this.pendingTrack)
+      if (this.targetTrack) {
+          this.play(this.targetTrack)
+      } else if (this.pendingTrack) {
+          this.play(this.pendingTrack)
       }
     }
     localStorage.setItem(
