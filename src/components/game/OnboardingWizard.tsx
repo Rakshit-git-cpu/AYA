@@ -247,7 +247,7 @@ export function OnboardingWizard() {
     const baseInputClasses = "w-full bg-[#13131c]/80 border-2 border-[#2b2b38] rounded-2xl p-4 text-[#f2effb] placeholder-[#acaab5] font-['Manrope'] font-bold outline-none transition-all duration-300";
 
     return (
-        <div className="min-h-full flex flex-col justify-center p-6 bg-[#0d0d16] relative overflow-hidden font-['Space_Grotesk'] text-[#f2effb] perspective-1000">
+        <div className="login-container bg-[#0d0d16] relative font-['Space_Grotesk'] text-[#f2effb] perspective-1000">
             
             <style dangerouslySetInnerHTML={{__html: `
                 .mask-horizontal-fade {
@@ -325,6 +325,9 @@ export function OnboardingWizard() {
                             <label className="block text-sm font-bold text-[#f2effb] mb-3 uppercase tracking-wider">Access Code (Mobile)</label>
                             <input
                                 type="tel"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                autoComplete="tel"
                                 value={mobile}
                                 onChange={(e) => setMobile(e.target.value)}
                                 className={`${baseInputClasses} focus:ring-4 focus:ring-[#00f1fe]/30 focus:border-[#00f1fe] focus:shadow-[0_0_20px_rgba(0,241,254,0.3)]`}
