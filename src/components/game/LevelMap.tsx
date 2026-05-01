@@ -593,7 +593,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs font-bold text-slate-400 uppercase">Music</span>
                                 <button
-                                    onClick={toggleMusicMute}
+                                    onClick={() => { audioSynth.playClick(); toggleMusicMute(); }}
                                     className={clsx("p-1 rounded transition-colors", isMusicMuted ? "text-red-400 bg-red-900/30" : "text-green-400 bg-green-900/30")}
                                 >
                                     {isMusicMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -612,7 +612,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs font-bold text-slate-400 uppercase">Sound FX</span>
                                 <button
-                                    onClick={toggleSfxMute}
+                                    onClick={() => { audioSynth.playClick(); toggleSfxMute(); }}
                                     className={clsx("p-1 rounded transition-colors", isSfxMuted ? "text-red-400 bg-red-900/30" : "text-green-400 bg-green-900/30")}
                                 >
                                     {isSfxMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -639,14 +639,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             className="w-full bg-slate-800 text-white rounded-lg px-4 py-3 border border-slate-700 font-mono"
                         />
                     </div>
-                    <button onClick={handleAgeSave} className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all">
+                    <button onClick={() => { audioSynth.playClick(); handleAgeSave(); }} className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all">
                         UPDATE TIMELINE
                     </button>
 
                     <hr className="border-slate-700 my-2" />
 
                     <button
-                        onClick={() => resetProgress()}
+                        onClick={() => { audioSynth.playClick(); resetProgress(); }}
                         className="w-full bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-200 border border-slate-700 hover:border-red-800 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all uppercase tracking-wider text-xs"
                     >
                         Restart Journey (Reset)
@@ -654,6 +654,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         onClick={() => {
+                            audioSynth.playClick();
                             localStorage.clear();
                             window.location.reload();
                         }}
@@ -662,7 +663,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                         Sign Out
                     </button>
 
-                    <button onClick={onClose} className="w-full text-slate-500 text-sm py-2 hover:text-white transition-colors">
+                    <button onClick={() => { audioSynth.playClick(); onClose(); }} className="w-full text-slate-500 text-sm py-2 hover:text-white transition-colors">
                         Close Overlay
                     </button>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 import { supabase } from '../../utils/supabase';
+import { unlockAudio, playTick, playWin, playClick } from '../../utils/audioManager';
 import './MoodWheel.css';
 
 // ─── Exported type (re-exported so LevelMap can import from here) ─────────────
@@ -46,52 +47,6 @@ const fmtCountdown = (ms: number) => {
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 };
 
-// ─── Web Audio API ────────────────────────────────────────────────────────────
-let _ctx: AudioContext | null = null;
-const getCtx = (): AudioContext | null => {
-  try {
-    if (!_ctx || _ctx.state === 'closed') _ctx = new AudioContext();
-    if (_ctx.state === 'suspended') _ctx.resume().catch(() => {});
-    return _ctx;
-  } catch { return null; }
-};
-
-const playTick = () => {
-  const ctx = getCtx();
-  if (!ctx) return;
-  try {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 600 + Math.random() * 150;
-    gain.gain.setValueAtTime(0.4, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.045);
-  } catch { /* silent */ }
-};
-
-const playWin = () => {
-  const ctx = getCtx();
-  if (!ctx) return;
-  try {
-    [523, 659, 784].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-      const t0 = ctx.currentTime + i * 0.08;
-      gain.gain.setValueAtTime(0, t0);
-      gain.gain.linearRampToValueAtTime(0.5, t0 + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35);
-      osc.start(t0);
-      osc.stop(t0 + 0.38);
-    });
-  } catch { /* silent */ }
-};
 
 // ─── SVG polar math ───────────────────────────────────────────────────────────
 const polar = (cx: number, cy: number, r: number, deg: number) => {
@@ -161,7 +116,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
   const rotation = useMotionValue(0);
 
   // Tick tracking
-  const lastSegRef = useRef(-1);
+  const lastSegmentRef = useRef(-1);
   const totalRotRef = useRef(0); // kept in sync after each spin
 
   // Wheel sizing
@@ -217,30 +172,23 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     return () => clearInterval(id);
   }, [phase]);
 
-  // Tick sound: subscribe to rotation motion value changes
-  useEffect(() => {
-    const unsub = rotation.on('change', (val) => {
-      if (phase !== 'spinning') return;
-      const norm = ((val % 360) + 360) % 360;
-      // Which segment is at the top (pointer) after this rotation:
-      // Pointer is at 0°. Segment i center = i*60+30. After rotation val,
-      // the part at top is from original position (360 - norm)%360.
-      const atTop = ((360 - norm) % 360);
-      const seg = Math.floor(((atTop + 30) % 360) / 60);
-      if (seg !== lastSegRef.current) {
-        lastSegRef.current = seg;
-        playTick();
-      }
-    });
-    return () => unsub();
-  }, [rotation, phase]);
+  const onWheelUpdate = (latest: { rotate?: number }) => {
+    if (phase !== 'spinning' || latest.rotate === undefined) return;
+    const currentAngle = latest.rotate % 360;
+    const currentSegment = Math.floor(((currentAngle % 360) + 360) % 360 / 60);
+    
+    if (currentSegment !== lastSegmentRef.current) {
+      lastSegmentRef.current = currentSegment;
+      playTick();
+    }
+  };
 
   // ── Spin handler ────────────────────────────────────────────────────────────
   const handleSpin = useCallback(async () => {
     if (phase !== 'idle' || spinsUsed >= 2) return;
 
-    // Initialise AudioContext on user gesture (autoplay policy)
-    getCtx();
+    // FIRST LINE — must be synchronous inside gesture handler for Safari
+    await unlockAudio();
 
     setPhase('spinning');
 
@@ -384,7 +332,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
 
         {/* BUG 1: Back Button */}
         <button
-          onClick={onClose}
+          onClick={() => { playClick(); onClose(); }}
           style={{
             position: 'absolute',
             top: '16px',
@@ -446,6 +394,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
               <div className="mw-outer-ring">
                 {/* Spinning SVG */}
                 <motion.div
+                  onUpdate={onWheelUpdate}
                   style={{
                     rotate: rotation,
                     width: dia,
