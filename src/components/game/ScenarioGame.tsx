@@ -747,10 +747,10 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
                 {/* --- BOTTOM ALIGNED CONTENT --- */}
                 <div className="w-full flex flex-col mt-auto items-center min-h-0 relative z-20">
-                    {/* Dialogue Box — Bug 1 fix: explicit dark glass background */}
+                    {/* Dialogue Box */}
                     <div
                         className={clsx(
-                            "w-full rounded-2xl p-5 cinematic-card flex flex-col",
+                            "w-full rounded-2xl cinematic-card flex flex-col overflow-hidden",
                             isCandyTheme
                                 ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
                                 : "border"
@@ -761,17 +761,27 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                             boxShadow: `0 20px 60px rgba(0,0,0,0.6), 0 0 30px ${currentTheme.badgeColor}22`,
                             backdropFilter: 'blur(12px)',
                             WebkitBackdropFilter: 'blur(12px)',
-                            maxHeight: '75vh',
-                            overflow: 'hidden',
+                            maxHeight: '80vh',
                             width: '90%',
                             maxWidth: '680px',
                             margin: '0 auto',
-                            gap: '16px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        } : {}}
+                        } : {
+                            maxHeight: '80vh',
+                            width: '90%',
+                            maxWidth: '680px',
+                            margin: '0 auto',
+                        }}
                         onClick={handleTextClick}
                     >
+                        <div 
+                            ref={textContainerRef}
+                            className="p-5 overflow-y-auto custom-scrollbar flex flex-col"
+                            style={{ 
+                                scrollbarWidth: 'thin', 
+                                scrollbarColor: `${currentTheme.badgeColor} transparent`,
+                                gap: '16px'
+                            }}
+                        >
                         {/* Bug 2 — Lesson card: single clean layout, no decorative overlap */}
                         {isLearningScreen ? (
                             <>
@@ -783,22 +793,16 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 <h2 className="text-center font-black text-white shrink-0" style={{ fontSize: '1.4rem', lineHeight: 1.3, maxHeight: '3rem', overflow: 'hidden' }}>
                                     {lessonKeyword}
                                 </h2>
-                                {/* Lesson body text — shows lessonBody directly, no LESSON: prefix */}
-                                <div
-                                    ref={textContainerRef}
-                                    className="overflow-y-auto custom-scrollbar"
-                                    style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
-                                >
-                                    <p className={clsx(
-                                        "leading-relaxed text-center",
-                                        isCandyTheme
-                                            ? "text-lg font-serif italic text-pink-900"
-                                            : "text-sm text-white/80"
-                                    )}
-                                    style={{ fontSize: '0.95rem' }}>
-                                        {lessonBody}
-                                    </p>
-                                </div>
+                                {/* Lesson body text */}
+                                <p className={clsx(
+                                    "leading-relaxed text-center",
+                                    isCandyTheme
+                                        ? "text-lg font-serif italic text-pink-900"
+                                        : "text-sm text-white/80"
+                                )}
+                                style={{ fontSize: '0.95rem' }}>
+                                    {lessonBody}
+                                </p>
                                 {/* Finish Chapter button — always visible on lesson screen */}
                                 <div className="mt-2 shrink-0">
                                         {displayedChoices.map((choice, idx) => (
@@ -848,23 +852,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 </div>
                             </div>
                         )}
-                        {/* Bug 3 — Text container: scrollable, auto-scrolls to top on frame change */}
-                        <div
-                            ref={textContainerRef}
-                            className="overflow-y-auto custom-scrollbar pb-3 relative"
-                            style={{ maxHeight: '35vh', scrollbarWidth: 'thin', scrollbarColor: `${currentTheme.badgeColor} transparent` }}
-                        >
-                            {/* Fade gradient at bottom of text area */}
-                            <div
-                                className="sticky bottom-0 left-0 right-0 pointer-events-none"
-                                style={{
-                                    height: '40px',
-                                    background: `linear-gradient(transparent, rgba(10,10,20,0.88))`,
-                                    marginTop: '-40px',
-                                    position: 'sticky',
-                                    bottom: 0,
-                                }}
-                            />
+                        {/* Text Content */}
+                        <div className="pb-2">
                             {level.age_mirror_text && (frame.id === 'intro') && !feedbackChoice && (
                                 <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
                                     At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
@@ -958,6 +947,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         )}
                         </>
                         )}
+                        </div>
                     </div>
                 </div>
             </div>
