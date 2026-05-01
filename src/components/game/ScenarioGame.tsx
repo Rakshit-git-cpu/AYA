@@ -90,6 +90,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     const [currentTheme, setCurrentTheme] = useState<EmotionTheme>(EMOTION_THEMES['calm']);
     const [bgmEnabled, setBgmEnabled] = useState<boolean>(true);
     const [typeSoundEnabled, setTypeSoundEnabled] = useState<boolean>(true);
+    // Bug 3 fix: track first user interaction to unlock browser autoplay
+    const hasInteractedRef = useRef(false);
 
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
@@ -185,14 +187,20 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         const theme = EMOTION_THEMES[emotion];
         setCurrentTheme(theme);
 
-        // Play matching ambient music
-        // We do not need resume() since we use HTML audio now.
+        // Play matching ambient music — deferred until first interaction
         ambientMusic.play(theme.emotion);
 
         return () => {
-            ambientMusic.fadeOut(1.5);
+            // Don't fade out on every frame change — let crossfade handle it
         };
     }, [currentFrameId, feedbackChoice]);
+
+    // Stop music when component unmounts (user exits story)
+    useEffect(() => {
+        return () => {
+            ambientMusic.fadeOut(1.5);
+        };
+    }, []);
 
     // Reset typewriter when text changes
     useEffect(() => {
@@ -278,7 +286,17 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         return impacts;
     };
 
+    // First interaction handler — unlocks browser autoplay then proceeds
+    const handleFirstInteraction = () => {
+        if (!hasInteractedRef.current) {
+            hasInteractedRef.current = true;
+            // Unlock audio: play whatever mood is currently pending
+            ambientMusic.unlockAndPlay(currentTheme.emotion);
+        }
+    };
+
     const handleChoiceClick = async (choice: Choice) => {
+        handleFirstInteraction();
         audioSynth.playClick();
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
@@ -579,6 +597,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     };
 
     const handleFeedbackContinue = () => {
+        handleFirstInteraction();
         if (feedbackChoice) {
             setCurrentFrameId(feedbackChoice.next);
             setFeedbackChoice(null);
@@ -778,7 +797,12 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 </div>
                             </div>
                         )}
-                        <div className="min-h-[80px]">
+                        {/* Bug 1 & 2 fix: scrollable text area + pinned choices */}
+                        {/* Scrollable text region — max 35vh so choices always visible */}
+                        <div
+                            className="overflow-y-auto custom-scrollbar pb-3"
+                            style={{ maxHeight: '35vh', scrollbarWidth: 'thin' }}
+                        >
                             {level.age_mirror_text && (frame.id === 'intro' || isLearningScreen) && !feedbackChoice && (
                                 <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
                                     At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
@@ -799,21 +823,35 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                             </p>
                         </div>
 
+                        {/* Choice buttons — flex-shrink-0 so they never get compressed */}
                         {!isTyping && !feedbackChoice && (
-                            <div className="mt-8 flex flex-col gap-3 animate-fade-in">
+                            <div
+                                className="mt-3 animate-fade-in"
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '12px',
+                                    width: '100%',
+                                    flexShrink: 0,
+                                }}
+                            >
                                 {displayedChoices.map((choice, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => handleChoiceClick(choice as Choice)}
                                         className={clsx(
-                                            "cinematic-choice group w-full text-left p-5 rounded-full border-2 transition-all flex items-center justify-between shadow-lg",
+                                            "cinematic-choice group w-full text-left border-2 transition-all flex items-center justify-between shadow-lg",
                                             isCandyTheme
-                                                ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
-                                                : "border-white/10"
+                                                ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg rounded-full"
+                                                : "border-white/10 rounded-2xl"
                                         )}
-                                        style={!isCandyMode ? {
-                                            borderColor: currentTheme.choiceBorder,
-                                        } : {}}
+                                        style={{
+                                            minHeight: '56px',
+                                            padding: '14px 16px',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word',
+                                            ...(isCandyMode ? {} : { borderColor: currentTheme.choiceBorder }),
+                                        }}
                                         onMouseEnter={(e) => {
                                             if (!isCandyMode) {
                                                 e.currentTarget.style.boxShadow = currentTheme.badgeGlow;
@@ -827,10 +865,10 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                             }
                                         }}
                                     >
-                                        <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-white")}>
+                                        <span className={clsx("font-medium text-base leading-snug transition-colors flex-1 mr-3", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-white")}>
                                             {choice.text}
                                         </span>
-                                        {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/40")} />}
+                                        {!isLearningScreen && <ChevronRight className={clsx("shrink-0 group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/40")} />}
                                     </button>
                                 ))}
                             </div>
