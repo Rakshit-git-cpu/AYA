@@ -9,6 +9,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
 import { MoodWheel } from '../MoodWheel/MoodWheel';
 import type { MoodArchetype } from '../MoodWheel/MoodWheel';
+import { VibeSpinnerButton } from '../MoodWheel/VibeSpinnerButton';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
@@ -225,38 +226,20 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             <AudioController isMapActive={isMapActive} />
             {/* --- FIXED UI LAYER (Stays on Top) --- */}
 
-            {/* Daily Challenge Button (Top Center below Navbar) */}
+            {/* Vibe Spinner Button (Top Center below Navbar) */}
             <div className="absolute top-[70px] left-0 w-full flex justify-center z-[100] pointer-events-none px-2">
-                <div className="relative group w-full max-w-[250px]">
-                    {/* Glowing pulse behind button */}
-                    {!profile?.daily_challenge_completed && (
-                        <div className="absolute -inset-1 bg-orange-500/20 blur-md rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
-                    )}
-                    <button
+                <div className="pointer-events-auto">
+                    <VibeSpinnerButton
+                        streak={profile?.current_streak || 0}
+                        completed={!!profile?.daily_challenge_completed}
                         onClick={() => {
                             audioSynth.playClick();
                             setShowMoodWheel(true);
                         }}
-                        disabled={profile?.daily_challenge_completed}
-                        className={clsx(
-                            "pointer-events-auto relative w-full py-2.5 px-4 rounded-full flex flex-row items-center justify-center gap-3 transition-all duration-500",
-                            profile?.daily_challenge_completed 
-                                ? "bg-[rgba(15,20,30,0.8)] border border-slate-700 text-slate-500 opacity-90 cursor-default backdrop-blur-md" 
-                                : "bg-[rgba(15,20,30,0.9)] backdrop-blur-md border border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:shadow-[0_0_25px_rgba(249,115,22,0.6)] hover:bg-[rgba(25,30,40,0.9)] hover:border-orange-400 hover:scale-105 active:scale-95"
-                        )}
-                    >
-                        <span className={clsx("text-lg", profile?.daily_challenge_completed ? "grayscale opacity-30" : "drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]")}>🔥</span>
-                        <div className="flex flex-col items-start leading-tight">
-                            <span className={clsx("text-[10px] md:text-[11px] font-black uppercase tracking-[0.15em]", profile?.daily_challenge_completed ? "text-slate-500" : "text-white drop-shadow-md")}>
-                                {profile?.daily_challenge_completed ? "COMPLETED" : "TODAY'S CHALLENGE"}
-                            </span>
-                            <span className={clsx("text-[9px] font-bold tracking-widest uppercase", profile?.daily_challenge_completed ? "text-slate-600" : "text-orange-400 drop-shadow-[0_0_5px_rgba(249,115,22,0.5)]")}>
-                                {profile?.current_streak || 0} DAY STREAK
-                            </span>
-                        </div>
-                    </button>
+                    />
                 </div>
             </div>
+
 
             {/* Settings & Theme Buttons */}
             <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[100] flex flex-col gap-2">
