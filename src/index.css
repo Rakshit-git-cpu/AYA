@@ -512,4 +512,37 @@ body {
 
 .animate-subtle-rotate {
   animation: subtle-rotate 5s ease-in-out infinite;
-}
+}
+
+/* ─── Cinematic Scenario Game — Emotion Color Transitions ─── */
+.scenario-container {
+  transition: background 1.5s ease,
+              box-shadow 1.5s ease;
+}
+
+.narrator-badge {
+  transition: border-color 1s ease,
+              color 1s ease,
+              box-shadow 1s ease,
+              background 1s ease;
+}
+
+.choice-button {
+  transition: border-color 0.8s ease,
+              box-shadow 0.8s ease,
+              background 0.3s ease;
+}
+
+.choice-button:hover {
+  box-shadow: 0 0 16px var(--hover-glow, transparent);
+}
+
+.vignette-overlay {
+  transition: background 1.5s ease;
+}
+
+.glass-pill-button {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+

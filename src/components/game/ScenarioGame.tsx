@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
+import { detectEmotion, EMOTION_THEMES } from '../../utils/storyEmotion';
+import type { EmotionTheme } from '../../utils/storyEmotion';
+import { ambientMusic } from '../../utils/ambientMusic';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
@@ -83,6 +86,11 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Floating Text State
     const [floatTexts, setFloatTexts] = useState<FloatText[]>([]);
 
+    // Emotion / Cinematic Theme State
+    const [currentTheme, setCurrentTheme] = useState<EmotionTheme>(EMOTION_THEMES['calm']);
+    const [bgmEnabled, setBgmEnabled] = useState<boolean>(true);
+    const [typeSoundEnabled, setTypeSoundEnabled] = useState<boolean>(true);
+
     // Theme State (Global)
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     
@@ -117,6 +125,17 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         }, 1500);
     };
 
+    // Load preferences from localStorage on mount
+    useEffect(() => {
+        if (localStorage.getItem('aya_bgm') === 'false') {
+            ambientMusic.disable();
+            setBgmEnabled(false);
+        }
+        if (localStorage.getItem('aya_typewriter_sound') === 'false') {
+            setTypeSoundEnabled(false);
+        }
+    }, []);
+
     // Load Scenario dynamically
     const scenario = STORY_DATABASE[level.scenarioId] || STORY_DATABASE['lvl_age_19'];
     const frame = scenario.frames.find((f: any) => f.id === currentFrameId) || scenario.frames[0];
@@ -149,6 +168,28 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     useEffect(() => {
         setIsBgLoaded(false);
     }, [frame.bg]);
+
+    // Emotion detection + ambient music when frame changes
+    useEffect(() => {
+        const textToAnalyse = frame.emotion
+            ? (frame.emotion as string)  // explicit override in story data: use emotion string directly
+            : frame.text;
+        // If frame has an explicit emotion field matching a theme key, use it directly
+        const emotion = (frame.emotion && EMOTION_THEMES[frame.emotion as keyof typeof EMOTION_THEMES])
+            ? frame.emotion as keyof typeof EMOTION_THEMES
+            : detectEmotion(textToAnalyse);
+        const theme = EMOTION_THEMES[emotion];
+        setCurrentTheme(theme);
+
+        // Play matching ambient music
+        ambientMusic.resume().then(() => {
+            ambientMusic.play(theme.musicMood);
+        });
+
+        return () => {
+            ambientMusic.fadeOut(1);
+        };
+    }, [currentFrameId, feedbackChoice]);
 
     // Reset typewriter when text changes
     useEffect(() => {
@@ -547,7 +588,13 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     const lessonKeyword = lessonFrame?.text.match(/LESSON:\s*([^.]+)/)?.[1]?.toUpperCase() || "LESSON";
 
     return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center overflow-hidden font-sans">
+        <div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden font-sans scenario-container"
+            style={{
+                background: isCandyMode ? undefined : currentTheme.bgGradient,
+                backgroundColor: isCandyMode ? '#0f172a' : undefined,
+            }}
+        >
             {/* Background Layer */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
@@ -576,6 +623,16 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         ? "from-pink-500/30 via-purple-500/10 to-transparent mix-blend-overlay" // Candy vibe
                         : "from-slate-950 via-slate-900/60 to-slate-900/30" // Original Dark vibe
                 )} />
+
+                {/* Emotion vignette overlay */}
+                {!isCandyMode && (
+                    <div
+                        className="vignette-overlay absolute inset-0 pointer-events-none"
+                        style={{
+                            background: `radial-gradient(ellipse at center, transparent 40%, ${currentTheme.vignetteColor} 100%)`,
+                        }}
+                    />
+                )}
             </div>
 
             {!isBgLoaded && (
@@ -586,6 +643,36 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     </span>
                 </div>
             )}
+
+            {/* Sound Controls — Top Right Corner */}
+            <div className="fixed top-4 right-4 z-50 flex gap-2">
+                {/* BGM toggle */}
+                <button
+                    onClick={() => {
+                        ambientMusic.toggle();
+                        const nowEnabled = ambientMusic.enabled;
+                        setBgmEnabled(nowEnabled);
+                        localStorage.setItem('aya_bgm', nowEnabled.toString());
+                    }}
+                    className="glass-pill-button flex items-center justify-center w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 hover:bg-white/10 transition-all text-base shadow-lg"
+                    title="Background Music"
+                >
+                    {bgmEnabled ? '🎵' : '🔇'}
+                </button>
+
+                {/* Typewriter sound toggle */}
+                <button
+                    onClick={() => {
+                        const next = !typeSoundEnabled;
+                        setTypeSoundEnabled(next);
+                        localStorage.setItem('aya_typewriter_sound', next.toString());
+                    }}
+                    className="glass-pill-button flex items-center justify-center w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 hover:bg-white/10 transition-all text-base shadow-lg"
+                    title="Typewriter Sound"
+                >
+                    {typeSoundEnabled ? '⌨️' : '🔕'}
+                </button>
+            </div>
 
             {/* Top Bar (Stats) - shifted down to avoid overlapping with PwaHeader */}
             <div className={clsx(
@@ -619,7 +706,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         isCandyTheme
                             ? "bg-white/90 border-yellow-400 text-yellow-900"
                             : "bg-slate-900/80 border-yellow-500/50 text-yellow-500"
-                    )}>
+                    )} style={!isCandyMode ? { borderColor: `${currentTheme.accentColor}80`, color: currentTheme.accentColor } : {}}>
                         <Star className={clsx("w-6 h-6", isCandyTheme ? "text-yellow-500 fill-yellow-500" : "fill-current")} />
                         <span className="text-2xl font-black">{score} XP</span>
                     </div>
@@ -650,12 +737,20 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     {/* Speaker Label */}
                     {!isLearningScreen && (
                         <div className="self-start mb-[-12px] ml-4 relative z-20 shrink-0">
-                            <div className={clsx(
-                                "text-black font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
-                                feedbackChoice
-                                    ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200" : "bg-red-400 border-red-200"
-                                    : "bg-yellow-400 border-yellow-200"
-                            )}>
+                            <div
+                                className={clsx(
+                                    "narrator-badge font-extrabold uppercase tracking-wider text-sm px-6 py-2 rounded-t-2xl shadow-lg border-t-2 border-x-2",
+                                    feedbackChoice
+                                        ? feedbackChoice.score > 0 ? "bg-green-400 border-green-200 text-black" : "bg-red-400 border-red-200 text-black"
+                                        : isCandyMode ? "bg-yellow-400 border-yellow-200 text-black" : "bg-transparent text-white"
+                                )}
+                                style={!isCandyMode && !feedbackChoice ? {
+                                    borderColor: currentTheme.accentColor,
+                                    color: currentTheme.narratorColor,
+                                    boxShadow: `0 0 20px ${currentTheme.accentColor}44`,
+                                    background: `${currentTheme.cardColor}`,
+                                } : {}}
+                            >
                                 {feedbackChoice
                                     ? feedbackChoice.feedbackTitle
                                     : (frame.id === 'intro' ? 'Narrator' : 'You')}
@@ -671,8 +766,12 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 ? "bg-white/95 border-b-8 border-pink-400 shadow-[0_20px_50px_rgba(236,72,153,0.3)] text-slate-800"
                                 : isLearningScreen
                                     ? "bg-slate-900/80 border-2 border-yellow-500/30 shadow-2xl"
-                                    : "bg-slate-950/90 border-2 border-white/10 shadow-2xl rounded-tl-none"
+                                    : "bg-slate-950/90 border-2 shadow-2xl rounded-tl-none"
                         )}
+                        style={!isCandyMode ? {
+                            borderColor: `${currentTheme.accentColor}33`,
+                            background: isLearningScreen ? undefined : `rgba(5, 5, 15, 0.92)`,
+                        } : {}}
                         onClick={handleTextClick}
                     >
                         <div className="min-h-[80px]">
@@ -703,16 +802,20 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                         key={idx}
                                         onClick={() => handleChoiceClick(choice as Choice)}
                                         className={clsx(
-                                            "group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
+                                            "choice-button group w-full text-left p-5 rounded-xl transition-all flex items-center justify-between",
                                             isCandyTheme
                                                 ? "bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold border-b-4 border-teal-700 hover:translate-y-1 hover:border-b-0 active:scale-95 shadow-lg"
-                                                : "border border-white/10 hover:border-yellow-400 bg-white/5 hover:bg-white/15"
+                                                : "border border-white/10 bg-white/5 hover:bg-white/10"
                                         )}
+                                        style={!isCandyMode ? {
+                                            ['--hover-glow' as string]: currentTheme.accentColor,
+                                            borderColor: `${currentTheme.accentColor}44`,
+                                        } : {}}
                                     >
-                                        <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-yellow-300")}>
+                                        <span className={clsx("font-medium text-lg transition-colors", isCandyTheme ? "text-white drop-shadow-md" : "text-white/90 group-hover:text-white")}>
                                             {choice.text}
                                         </span>
-                                        {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/30 group-hover:text-yellow-400")} />}
+                                        {!isLearningScreen && <ChevronRight className={clsx("group-hover:translate-x-1 transition-transform", isCandyTheme ? "text-white" : "text-white/40")} />}
                                     </button>
                                 ))}
                             </div>
