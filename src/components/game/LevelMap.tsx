@@ -7,8 +7,8 @@ import { AudioController } from '../shared/AudioController';
 import { audioSynth } from '../../utils/audioSynth';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
-import { DailyChallengeModal } from './DailyChallengeModal';
-import type { MoodArchetype } from './DailyChallengeModal';
+import { MoodWheel } from '../MoodWheel/MoodWheel';
+import type { MoodArchetype } from '../MoodWheel/MoodWheel';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
@@ -88,7 +88,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     // Modals
     const [showSettings, setShowSettings] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
-    const [showChallengeModal, setShowChallengeModal] = useState(false);
+    const [showMoodWheel, setShowMoodWheel] = useState(false);
     const [showThemeSwitcher, setShowThemeSwitcher] = useState(false);
     const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
@@ -235,7 +235,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <button
                         onClick={() => {
                             audioSynth.playClick();
-                            setShowChallengeModal(true);
+                            setShowMoodWheel(true);
                         }}
                         disabled={profile?.daily_challenge_completed}
                         className={clsx(
@@ -373,14 +373,15 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             <ThemeSwitcherModal isOpen={showThemeSwitcher} onClose={() => setShowThemeSwitcher(false)} />
             {showJournal && <LessonJournal onClose={() => setShowJournal(false)} />}
             {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-            {showChallengeModal && (
-                <DailyChallengeModal 
-                    isOpen={showChallengeModal} 
-                    onClose={() => setShowChallengeModal(false)}
-                    onStartChallenge={(mood) => {
-                        setShowChallengeModal(false);
-                        setChallengeMood(mood);
+            {showMoodWheel && (
+                <MoodWheel
+                    userId={profile?.id || ''}
+                    userAge={profile?.age || 18}
+                    onMoodSelected={(mood) => {
+                        setShowMoodWheel(false);
+                        setChallengeMood(mood as MoodArchetype);
                     }}
+                    onClose={() => setShowMoodWheel(false)}
                 />
             )}
             {challengeMood && (
