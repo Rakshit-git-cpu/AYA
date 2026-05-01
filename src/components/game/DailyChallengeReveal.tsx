@@ -118,7 +118,7 @@ export function DailyChallengeReveal({ mood, onComplete, onClose }: DailyChallen
                         </p>
                         
                         {matchedLevel.age_mirror_text && (
-                            <p className="relative z-10 text-[#00f1fe] italic text-sm md:text-base mb-8 text-center px-4">
+                            <p className="relative z-10 italic text-sm md:text-base mb-8 text-center px-4" style={{ color: '#00f1fe' }}>
                                 At YOUR age ({userAge}), {matchedLevel.personality} was {matchedLevel.age_mirror_text}.
                             </p>
                         )}

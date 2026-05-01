@@ -677,7 +677,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     >
                         <div className="min-h-[80px]">
                             {level.age_mirror_text && (frame.id === 'intro' || isLearningScreen) && !feedbackChoice && (
-                                <p className="text-[#00f1fe] italic text-sm md:text-base mb-4 text-center">
+                                <p className="italic text-sm md:text-base mb-4 text-center" style={{ color: '#00f1fe' }}>
                                     At YOUR age ({useUserStore.getState().profile?.age || 18}), {level.personality} was {level.age_mirror_text}.
                                 </p>
                             )}
