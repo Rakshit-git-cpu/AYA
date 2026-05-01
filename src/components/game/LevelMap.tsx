@@ -132,24 +132,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     // Helper to calculate X/Y for a node based on index
     const getPosition = (index: number) => {
         // TOP-DOWN: Start from Top
-        const y = index * NODE_SPACING + (isMobile ? 120 : 150); // Less top padding on mobile
+        const y = index * NODE_SPACING + (isMobile ? 120 : 150);
 
-        // Use defined offsets if available, otherwise sinusoid
+        // xOffset is used on desktop only; mobile always centers nodes
         const xOffset = index < NODE_OFFSETS.length
             ? NODE_OFFSETS[index]
             : Math.sin(index) * (isMobile ? 30 : 60);
 
-        // Calculate absolute X (clamped on mobile to prevent label bleed)
-        const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
-        const centerX = windowWidth / 2;
-        let absoluteX = centerX + xOffset;
-
-        if (isMobile) {
-            absoluteX = Math.min(Math.max(absoluteX, windowWidth * 0.15), windowWidth * 0.75);
-            absoluteX = Math.min(Math.max(absoluteX, 60), windowWidth - 60);
-        }
-
-        return { x: absoluteX, y };
+        return { x: xOffset, y };
     };
 
     // Scroll refs and values
@@ -430,13 +420,11 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                             return (
                                 <div
                                     key={level.id}
-                                    className="absolute flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto personality-node-container"
-                                    style={{
-                                        top: pos.y,
-                                        left: pos.x,
-                                        transform: `translate(-50%, -50%)`,
-                                        zIndex: 20 + i
-                                    }}
+                                    className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center transition-all duration-500 z-10 pointer-events-auto personality-node-container"
+                                    style={isMobile
+                                        ? { top: pos.y, left: '50%', transform: 'translateX(-50%)', zIndex: 20 + i }
+                                        : { top: pos.y, transform: `translate(calc(-50% + ${pos.x}px), -50%)`, zIndex: 20 + i }
+                                    }
                                 >
                                     <div
                                         className={clsx(
