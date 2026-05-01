@@ -236,48 +236,42 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
 
   // ── Spin handler ────────────────────────────────────────────────────────────
   const handleSpin = useCallback(async () => {
-    if (phase !== 'idle') return;
+    if (phase !== 'idle' || spinsUsed >= 2) return;
 
     // Initialise AudioContext on user gesture (autoplay policy)
     getCtx();
 
     setPhase('spinning');
 
-    // Pick winner (WILD CARD = random from 0-4)
-    let winner = Math.floor(Math.random() * N);
-    if (winner === 5) winner = Math.floor(Math.random() * 5);
+    // Step 1: pick a truly random winning segment fresh every spin
+    let winningIndex = Math.floor(Math.random() * 6); // 0–5, new every time
+    if (winningIndex === 5) winningIndex = Math.floor(Math.random() * 5); // Remap wild card
 
-    // Target rotation so winner lands under pointer (12 o'clock)
-    // Segment winner center = winner*60+30. We need it at 0° after rotation.
-    // R mod 360 = (360 - (winner*60+30)) mod 360 = (330 - winner*60 + 3600)%360
-    const targetMod = (330 - winner * 60 + 3600) % 360;
-    const currentMod = ((totalRotRef.current % 360) + 360) % 360;
-    let diff = (targetMod - currentMod + 360) % 360;
-    if (diff < 30) diff += 360; // ensure meaningful spin
-    const extraSpins = (4 + Math.floor(Math.random() * 3)) * 360;
-    const target = totalRotRef.current + diff + extraSpins;
+    // Step 2: calculate the angle of the center of winning segment
+    const segmentCenter = winningIndex * 60 + 30; // center of that segment in degrees
+    const randomOffsetWithinSegment = (Math.random() - 0.5) * 30; // ±15° wobble
+    const targetSegmentAngle = segmentCenter + randomOffsetWithinSegment;
 
-    // Phase 1: fast burst (0.3s)
-    await animate(rotation, totalRotRef.current + 180, {
-      duration: 0.3,
-      ease: [0.17, 0.67, 0.83, 0.67],
+    // Step 3: calculate total rotation
+    const fullRotations = (4 + Math.floor(Math.random() * 3)) * 360; // 4–6 full spins
+    const totalRotation = totalRotRef.current + fullRotations + targetSegmentAngle;
+
+    // Step 4: update the ref for next spin
+    totalRotRef.current = totalRotation;
+
+    // Step 5: animate to totalRotation
+    await animate(rotation, totalRotation, {
+      duration: 4,
+      ease: [0.2, 0.8, 0.2, 1], // simple 4s deceleration
     });
 
-    // Phase 2: constant fast linear (1.8s)
-    await animate(rotation, target - diff * 0.15, {
-      duration: 1.8,
-      ease: 'linear',
-    });
-
-    // Phase 3: decelerate (1.8s, cubic ease-out)
-    await animate(rotation, target, {
-      duration: 1.8,
-      ease: [0.33, 1, 0.68, 1],
-    });
-
+    // Step 6: after animation completes, derive which segment is under pointer
+    const normalizedAngle = totalRotation % 360;
+    const actualWinningIndex = Math.floor(normalizedAngle / 60) % 6;
+    const wonSegment = SEGMENTS[actualWinningIndex];
+    
     // ── Landing effects ──
-    totalRotRef.current = target;
-    setWinIdx(winner);
+    setWinIdx(actualWinningIndex);
     setPhase('landing');
 
     // Shudder
@@ -289,7 +283,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     setTimeout(() => setPointerLand(false), 500);
 
     // Confetti + vignette
-    const winGlow = SEGMENTS[winner].glow;
+    const winGlow = wonSegment.glow;
     setConfetti(buildConfetti(winGlow));
     setTimeout(() => setConfetti([]), 2200);
     setVignette(true);
@@ -313,8 +307,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
       setPhase('result');
       // After 1.5s in result → trigger callback
       setTimeout(() => {
-        const seg = SEGMENTS[winner];
-        const resolved: MoodArchetype = seg.mood ?? 'Heartbreak';
+        const resolved: MoodArchetype = wonSegment.mood ?? 'Heartbreak';
         onMoodSelected(resolved);
       }, 1500);
     }, 600);
@@ -388,20 +381,54 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
           ))}
         </div>
 
-        {/* ── Header row ── */}
-        <div className="mw-header">
-          <button className="mw-back-btn" onClick={onClose} aria-label="Back to map">
-            ← BACK
-          </button>
+        {/* BUG 1: Back Button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            left: '16px',
+            zIndex: 9999,
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '13px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            cursor: 'pointer',
+            padding: '12px',
+            minHeight: '44px',
+            minWidth: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
+        >
+          ← BACK
+        </button>
 
-          <div className={`mw-spins-counter${phase === 'no-spins' ? ' locked' : ''}`}>
-            {phase === 'no-spins'
-              ? `🔒 NO SPINS LEFT`
-              : phase === 'result' && winIdx !== null
-                ? `${SEGMENTS[winIdx].emoji} ${SEGMENTS[winIdx].label}`
-                : `${spinsLeft} SPIN${spinsLeft === 1 ? '' : 'S'} LEFT TODAY`
-            }
-          </div>
+        {/* BUG 2: Spins Counter */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            zIndex: 9999,
+            color: spinsUsed >= 2 ? '#FF2D78' : '#00E5FF',
+            fontSize: '13px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            padding: '12px',
+            textAlign: 'right',
+          }}
+        >
+          {spinsUsed >= 2
+            ? '🔒 NO SPINS LEFT'
+            : spinsUsed === 1
+            ? '1 SPIN LEFT TODAY'
+            : '2 SPINS LEFT TODAY'}
         </div>
 
         {/* ── Wheel area ── */}
@@ -451,8 +478,9 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
 
                     {/* Segments */}
                     {SEGMENTS.map((seg, i) => {
-                      const start = i * SEG_DEG;
-                      const end   = start + SEG_DEG;
+                      // Reverse visual drawing so it matches the clockwise rotation logic perfectly
+                      const start = 360 - (i + 1) * SEG_DEG;
+                      const end   = 360 - i * SEG_DEG;
                       const isWinner = phase === 'result' && winIdx === i;
                       const midAngle = start + SEG_DEG / 2;
                       const ePos = polar(cx, cy, emojiR, midAngle);
