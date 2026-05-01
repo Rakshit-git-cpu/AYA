@@ -322,7 +322,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
   const emojiFz = Math.max(14, dia * 0.09);
   const labelFz = Math.max(7, dia * 0.052);
 
-  const spinsLeft = Math.max(0, 2 - spinsUsed);
+
 
   const btnLabel =
     phase === 'loading'   ? 'LOADING...'  :
