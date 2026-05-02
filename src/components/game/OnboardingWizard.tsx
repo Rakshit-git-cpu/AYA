@@ -109,6 +109,7 @@ const AgeDial = ({ value, onChange }: { value: number; onChange: (val: number) =
 };
 
 const registerUser = async (name: string, mobile: string, age: number) => {
+    const cleanMobile = mobile.trim().replace(/\s+/g, '');
     // First verify Supabase is reachable at all
     try {
         const { error: pingError } = await withTimeout(
@@ -134,7 +135,7 @@ const registerUser = async (name: string, mobile: string, age: number) => {
                 supabase
                     .from('users')
                     .select('*')
-                    .eq('mobile', mobile.trim())
+                    .eq('mobile', cleanMobile)
                     .maybeSingle(),
                 8000
             );
@@ -147,7 +148,14 @@ const registerUser = async (name: string, mobile: string, age: number) => {
 
             if (existing) {
                 saveSession(existing);
-                return { user: existing, isNew: false };
+                
+                // Check if they completed quiz
+                const { data: quizData } = await withTimeout(
+                    supabase.from('quiz_responses').select('id').eq('user_id', existing.id).maybeSingle(),
+                    5000
+                ).catch(() => ({ data: null }));
+
+                return { user: existing, isNew: false, hasCompletedQuiz: !!quizData };
             }
 
             // Step 2: Insert new user
@@ -156,7 +164,7 @@ const registerUser = async (name: string, mobile: string, age: number) => {
                     .from('users')
                     .insert([{
                         name: name.trim(),
-                        mobile: mobile.trim(),
+                        mobile: cleanMobile,
                         age: Number(age),
                         total_xp: 0,
                         level: 1,
@@ -175,12 +183,12 @@ const registerUser = async (name: string, mobile: string, age: number) => {
                 // Handle duplicate mobile race condition
                 if (insertErr.code === '23505') {
                     const { data: existing2 } = await withTimeout(
-                        supabase.from('users').select('*').eq('mobile', mobile.trim()).maybeSingle(),
+                        supabase.from('users').select('*').eq('mobile', cleanMobile).maybeSingle(),
                         5000
                     );
                     if (existing2) {
                         saveSession(existing2);
-                        return { user: existing2, isNew: false };
+                        return { user: existing2, isNew: false, hasCompletedQuiz: false };
                     }
                 }
                 retries--;
@@ -195,7 +203,7 @@ const registerUser = async (name: string, mobile: string, age: number) => {
             }
 
             saveSession(newUser);
-            return { user: newUser, isNew: true };
+            return { user: newUser, isNew: true, hasCompletedQuiz: false };
 
         } catch (err: any) {
             retries--;
@@ -283,13 +291,13 @@ export function OnboardingWizard() {
                 assessmentCompleted: false
             };
 
-            if (profileData) {
+            if (profileData || result.hasCompletedQuiz) {
                 const loadedTraits = {
                     discipline: 50, resilience: 50,
-                    risk: profileData.trait_risk_taker || 50,
-                    leadership: profileData.trait_ambitious || 50,
-                    creativity: profileData.trait_creative || 50,
-                    empathy: profileData.trait_social || 50,
+                    risk: profileData?.trait_risk_taker || 50,
+                    leadership: profileData?.trait_ambitious || 50,
+                    creativity: profileData?.trait_creative || 50,
+                    empathy: profileData?.trait_social || 50,
                     vision: 50,
                 };
                 baseProfile.traits = loadedTraits as any;
@@ -299,6 +307,10 @@ export function OnboardingWizard() {
                     motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
                     social: 'Supporter', passion: 'Creative', coreValue: 'Success'
                 });
+            } else if (!result.isNew && !result.hasCompletedQuiz) {
+                // Returning user who never finished quiz -> skip cinematic intro
+                localStorage.setItem('aya_skip_intro', 'true');
+                setProfile(baseProfile as any);
             } else {
                 setProfile(baseProfile as any);
             }

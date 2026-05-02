@@ -75,6 +75,11 @@ export function GameRoot() {
                             5000
                         ).catch(() => ({ data: null }));
 
+                        const { data: quizData } = await withTimeout(
+                            supabase.from('quiz_responses').select('id').eq('user_id', session.userId).maybeSingle(),
+                            5000
+                        ).catch(() => ({ data: null }));
+
                         const store = useUserStore.getState();
                         store.setProfile({
                             id: data.id,
@@ -101,14 +106,14 @@ export function GameRoot() {
                             } : {})
                         } as any);
 
-                        if (profileData) {
+                        if (profileData || quizData || localStorage.getItem('aya_quiz_done') === 'true') {
                             store.completeAssessment(
                                 {
                                     discipline: 50, resilience: 50,
-                                    risk: profileData.trait_risk_taker || 50,
-                                    leadership: profileData.trait_ambitious || 50,
-                                    creativity: profileData.trait_creative || 50,
-                                    empathy: profileData.trait_social || 50,
+                                    risk: profileData?.trait_risk_taker || 50,
+                                    leadership: profileData?.trait_ambitious || 50,
+                                    creativity: profileData?.trait_creative || 50,
+                                    empathy: profileData?.trait_social || 50,
                                     vision: 50
                                 },
                                 {
@@ -116,6 +121,10 @@ export function GameRoot() {
                                     social: 'Supporter', passion: 'Creative', coreValue: 'Success'
                                 }
                             );
+                        } else {
+                            // No quiz — go to quiz only (skip name/mobile/age entry, skip cinematic)
+                            localStorage.setItem('aya_skip_intro', 'true');
+                            setOnboardingComplete(true);
                         }
 
                         const savedTheme = data.preferred_theme || safeStorage.get('aya_map_theme') || 'city_dark';
@@ -163,7 +172,7 @@ export function GameRoot() {
         // Nuclear fallback — never stay on checking forever
         const maxWait = setTimeout(() => {
             setSessionStatus(prev => prev === 'checking' ? 'not_found' : prev);
-        }, 25000);
+        }, 20000);
 
         return () => clearTimeout(maxWait);
     }, []);
@@ -202,7 +211,8 @@ export function GameRoot() {
     }
 
     // Always show cinematic onboarding before the quiz (not persisted — shows every new journey)
-    if (!profile.assessmentCompleted && !onboardingComplete) {
+    const skipIntro = localStorage.getItem('aya_skip_intro') === 'true';
+    if (!profile.assessmentCompleted && !onboardingComplete && !skipIntro) {
         return <CinematicOnboarding onComplete={() => {
             setOnboardingComplete(true);
         }} />;

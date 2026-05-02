@@ -252,6 +252,7 @@ export function PersonalityAssessment() {
                     interest_domain: newProfile.interest_domain
                 };
 
+                localStorage.setItem('aya_quiz_done', 'true');
                 completeAssessment(newTraits, finalProfile);
             }
         }
