@@ -3,8 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('[Supabase] Missing environment variables! VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY not set.');
+if (!supabaseUrl || supabaseUrl.includes('dummy')) {
+  console.error('[CRITICAL] VITE_SUPABASE_URL is not set correctly:', supabaseUrl);
+}
+if (!supabaseAnonKey || supabaseAnonKey.length < 20) {
+  console.error('[CRITICAL] VITE_SUPABASE_ANON_KEY is not set correctly');
 }
 
 export const supabase = createClient(

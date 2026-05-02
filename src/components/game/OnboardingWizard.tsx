@@ -109,6 +109,22 @@ const AgeDial = ({ value, onChange }: { value: number; onChange: (val: number) =
 };
 
 const registerUser = async (name: string, mobile: string, age: number) => {
+    // First verify Supabase is reachable at all
+    try {
+        const { error: pingError } = await withTimeout(
+            supabase.from('users').select('id').limit(1),
+            10000,
+            'Cannot reach server'
+        );
+        if (pingError && pingError.message !== 'Cannot reach server') {
+            console.log('[Register] Supabase reachable, proceeding...');
+        }
+    } catch (pingErr: any) {
+        if (pingErr.message === 'Cannot reach server') {
+            throw new Error('Cannot reach server. Please check your connection.');
+        }
+    }
+
     let retries = 3;
 
     while (retries > 0) {
@@ -201,16 +217,22 @@ export function OnboardingWizard() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    // Hard 12-second escape hatch — never leave user on spinner forever
+    // Hard 20-second escape hatch — never leave user on spinner forever
     useEffect(() => {
         if (!isLoading) return;
         const fallback = setTimeout(() => {
             setIsLoading(false);
             setIsSubmitting(false);
-            setError('Taking too long. Please check your connection and try again.');
-        }, 12000);
+            setError('Connection failed. Please try again.');
+        }, 20000);
         return () => clearTimeout(fallback);
     }, [isLoading]);
+
+    const handleRetry = () => {
+        setError("");
+        setIsLoading(false);
+        setIsSubmitting(false);
+    };
 
     const handleComplete = async () => {
         if (!name.trim() || !mobile.trim() || age < 13) return;
@@ -383,10 +405,37 @@ export function OnboardingWizard() {
                         {error && (
                             <motion.div 
                                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                                className="mt-4 p-4 bg-red-900/40 text-red-100 rounded-xl border border-red-500/50 backdrop-blur-md text-center font-bold"
+                                className="mt-4"
                             >
-                                <p>{error}</p>
-                                <p className="text-red-300 text-xs font-normal mt-1">Please try again or check your connection.</p>
+                                <div style={{
+                                    background: 'rgba(255,0,0,0.15)',
+                                    border: '1px solid rgba(255,0,0,0.3)',
+                                    borderRadius: '12px',
+                                    padding: '16px',
+                                    color: '#FF6B6B',
+                                    fontSize: '14px',
+                                    textAlign: 'center',
+                                    lineHeight: '1.5',
+                                }}>
+                                    {error}
+                                    <br />
+                                    <button
+                                        onClick={handleRetry}
+                                        style={{
+                                            marginTop: '10px',
+                                            background: 'none',
+                                            border: '1px solid #FF6B6B',
+                                            borderRadius: '8px',
+                                            color: '#FF6B6B',
+                                            padding: '8px 20px',
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            touchAction: 'manipulation',
+                                        }}
+                                    >
+                                        TRY AGAIN
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>

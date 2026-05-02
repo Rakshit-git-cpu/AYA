@@ -1,6 +1,6 @@
 export const withTimeout = <T>(
   promise: PromiseLike<T>,
-  ms: number = 8000,
+  ms: number = 15000,
   errorMsg: string = 'Request timeout'
 ): Promise<T> => {
   return Promise.race([

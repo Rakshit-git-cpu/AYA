@@ -163,7 +163,7 @@ export function GameRoot() {
         // Nuclear fallback — never stay on checking forever
         const maxWait = setTimeout(() => {
             setSessionStatus(prev => prev === 'checking' ? 'not_found' : prev);
-        }, 15000);
+        }, 25000);
 
         return () => clearTimeout(maxWait);
     }, []);
