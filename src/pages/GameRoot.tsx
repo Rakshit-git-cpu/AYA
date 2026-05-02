@@ -206,7 +206,7 @@ export function GameRoot() {
         )
     }
 
-    if (sessionStatus === 'not_found' || !profile) {
+    if (!profile) {
         return <OnboardingWizard />;
     }
 
