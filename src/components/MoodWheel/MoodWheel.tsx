@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useSpinCountdown } from '../../hooks/useSpinCountdown';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 import { supabase } from '../../utils/supabase';
@@ -30,22 +31,7 @@ const todayIST = (): string => {
   ).toISOString().split('T')[0];
 };
 
-const msToMidnightIST = (): number => {
-  const now = Date.now();
-  const istNow = new Date(now + 5.5 * 3_600_000);
-  const midnight = new Date(istNow);
-  midnight.setUTCHours(18, 30, 0, 0); // 18:30 UTC = midnight IST
-  if (midnight.getTime() <= now) midnight.setUTCDate(midnight.getUTCDate() + 1);
-  return midnight.getTime() - now;
-};
-
-const fmtCountdown = (ms: number) => {
-  if (ms <= 0) return '00:00:00';
-  const h = Math.floor(ms / 3_600_000);
-  const m = Math.floor((ms % 3_600_000) / 60_000);
-  const s = Math.floor((ms % 60_000) / 1_000);
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-};
+// msToMidnightIST and fmtCountdown removed — now handled by useSpinCountdown hook
 
 
 // ─── SVG polar math ───────────────────────────────────────────────────────────
@@ -110,7 +96,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
   const [showVignette, setVignette] = useState(false);
   const [isShudder, setShudder]     = useState(false);
   const [pointerLand, setPointerLand] = useState(false);
-  const [countdown, setCountdown]   = useState(() => msToMidnightIST());
+  const countdownStr = useSpinCountdown();
 
   // Framer Motion value for wheel rotation (no re-renders per frame)
   const rotation = useMotionValue(0);
@@ -165,12 +151,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     })();
   }, [userId]);
 
-  // Countdown timer
-  useEffect(() => {
-    if (phase !== 'no-spins') return;
-    const id = setInterval(() => setCountdown(msToMidnightIST()), 1000);
-    return () => clearInterval(id);
-  }, [phase]);
+  // Countdown timer is now driven by the useSpinCountdown hook above
 
   const onWheelUpdate = (latest: { rotate?: number }) => {
     if (phase !== 'spinning' || latest.rotate === undefined) return;
@@ -513,7 +494,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
                   <div className="mw-no-spins-overlay" style={{ width: dia, height: dia }}>
                     <span className="mw-lock-emoji">🔒</span>
                     <span className="mw-comeback-text">COME BACK TOMORROW</span>
-                    <span className="mw-countdown">Resets in {fmtCountdown(countdown)}</span>
+                    <span className="mw-countdown">Resets in {countdownStr}</span>
                   </div>
                 )}
               </div>

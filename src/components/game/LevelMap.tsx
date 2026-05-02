@@ -232,6 +232,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <VibeSpinnerButton
                         streak={profile?.current_streak || 0}
                         completed={!!profile?.daily_challenge_completed}
+                        userId={profile?.id || ''}
                         onClick={() => {
                             audioSynth.playClick();
                             setShowMoodWheel(true);
