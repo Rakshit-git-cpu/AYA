@@ -3,8 +3,6 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
-import { withTimeout } from '../../utils/withTimeout';
-import { saveSession } from '../../utils/session';
 
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 
@@ -108,112 +106,6 @@ const AgeDial = ({ value, onChange }: { value: number; onChange: (val: number) =
     );
 };
 
-const registerUser = async (name: string, mobile: string, age: number) => {
-    const cleanMobile = mobile.trim().replace(/\s+/g, '');
-    // First verify Supabase is reachable at all
-    try {
-        const { error: pingError } = await withTimeout(
-            supabase.from('users').select('id').limit(1),
-            10000,
-            'Cannot reach server'
-        );
-        if (pingError && pingError.message !== 'Cannot reach server') {
-            console.log('[Register] Supabase reachable, proceeding...');
-        }
-    } catch (pingErr: any) {
-        if (pingErr.message === 'Cannot reach server') {
-            throw new Error('Cannot reach server. Please check your connection.');
-        }
-    }
-
-    let retries = 3;
-
-    while (retries > 0) {
-        try {
-            // Step 1: Check if user already exists
-            const { data: existing, error: fetchErr } = await withTimeout(
-                supabase
-                    .from('users')
-                    .select('*')
-                    .eq('mobile', cleanMobile)
-                    .maybeSingle(),
-                8000
-            );
-
-            if (fetchErr && fetchErr.code !== 'PGRST116') {
-                retries--;
-                await new Promise(r => setTimeout(r, 1000));
-                continue;
-            }
-
-            if (existing) {
-                saveSession(existing);
-                
-                // Check if they completed quiz
-                const { data: quizData } = await withTimeout(
-                    supabase.from('quiz_responses').select('id').eq('user_id', existing.id).maybeSingle(),
-                    5000
-                ).catch(() => ({ data: null }));
-
-                return { user: existing, isNew: false, hasCompletedQuiz: !!quizData };
-            }
-
-            // Step 2: Insert new user
-            const { data: newUser, error: insertErr } = await withTimeout(
-                supabase
-                    .from('users')
-                    .insert([{
-                        name: name.trim(),
-                        mobile: cleanMobile,
-                        age: Number(age),
-                        total_xp: 0,
-                        level: 1,
-                        current_streak: 0,
-                        longest_streak: 0,
-                        stories_completed: 0,
-                        daily_spins_used: 0,
-                        spin_reset_date: new Date().toISOString().split('T')[0],
-                    }])
-                    .select()
-                    .single(),
-                8000
-            );
-
-            if (insertErr) {
-                // Handle duplicate mobile race condition
-                if (insertErr.code === '23505') {
-                    const { data: existing2 } = await withTimeout(
-                        supabase.from('users').select('*').eq('mobile', cleanMobile).maybeSingle(),
-                        5000
-                    );
-                    if (existing2) {
-                        saveSession(existing2);
-                        return { user: existing2, isNew: false, hasCompletedQuiz: false };
-                    }
-                }
-                retries--;
-                await new Promise(r => setTimeout(r, 1000));
-                continue;
-            }
-
-            if (!newUser) {
-                retries--;
-                await new Promise(r => setTimeout(r, 1000));
-                continue;
-            }
-
-            saveSession(newUser);
-            return { user: newUser, isNew: true, hasCompletedQuiz: false };
-
-        } catch (err: any) {
-            retries--;
-            if (retries > 0) await new Promise(r => setTimeout(r, 1000));
-        }
-    }
-
-    throw new Error('Registration failed after 3 attempts. Please check your connection.');
-};
-
 export function OnboardingWizard() {
     const setProfile = useUserStore((state) => state.setProfile);
     const completeAssessment = useUserStore((state) => state.completeAssessment);
@@ -222,101 +114,132 @@ export function OnboardingWizard() {
     const [age, setAge] = useState<number>(20);
     const [mobile, setMobile] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    // Hard 20-second escape hatch — never leave user on spinner forever
-    useEffect(() => {
-        if (!isLoading) return;
-        const fallback = setTimeout(() => {
-            setIsLoading(false);
-            setIsSubmitting(false);
-            setError('Connection failed. Please try again.');
-        }, 20000);
-        return () => clearTimeout(fallback);
-    }, [isLoading]);
-
-    const handleRetry = () => {
-        setError("");
-        setIsLoading(false);
-        setIsSubmitting(false);
-    };
+    const saveSession = (user: any) => {
+        try {
+            localStorage.setItem('aya_user_id', user.id)
+            localStorage.setItem('aya_user_mobile', user.mobile)
+            localStorage.setItem('aya_user_name', user.name)
+            localStorage.setItem('aya_user_age', user.age.toString())
+            // Also save to sessionStorage as backup (Safari private mode)
+            sessionStorage.setItem('aya_user_id', user.id)
+            sessionStorage.setItem('aya_user_mobile', user.mobile)
+            console.log('[Session] Saved successfully:', user.id)
+        } catch (e) {
+            console.error('[Session] Failed to save:', e)
+        }
+    }
 
     const handleComplete = async () => {
         if (!name.trim() || !mobile.trim() || age < 13) return;
-        if (isSubmitting) return;
-
         audioSynth.playClick();
-        setIsSubmitting(true);
         setIsLoading(true);
         setError("");
 
+        console.log('[Register] Starting registration...');
+        console.log('[Register] Name:', name.trim());
+        console.log('[Register] Mobile:', mobile.trim());
+        console.log('[Register] Age:', age);
+        console.log('[Register] Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+        console.log('[Register] Has Anon Key:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+
         try {
-            const result = await registerUser(name, mobile, age);
-            const user = result.user;
+            console.log('[Register] Checking if user exists...');
+            const { data: existingUsers, error: fetchError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('mobile', mobile.trim());
 
-            // Load personality profile if returning user
-            let profileData = null;
-            if (!result.isNew) {
-                try {
-                    const { data } = await withTimeout(
-                        supabase
-                            .from('personality_profiles')
-                            .select('*')
-                            .eq('user_id', user.id)
-                            .maybeSingle(),
-                        5000
-                    );
-                    profileData = data;
-                } catch {}
-            }
+            console.log('[Register] Existing users:', existingUsers);
+            console.log('[Register] Fetch error:', fetchError);
 
-            const baseProfile = {
-                id: user.id,
-                mobile: user.mobile,
-                name: user.name,
-                age: user.age,
-                total_xp: user.total_xp || 0,
-                level: user.level || 1,
-                current_streak: user.current_streak || 0,
-                longest_streak: user.longest_streak || 0,
-                stories_completed: user.stories_completed || 0,
-                daily_challenge_completed: user.daily_challenge_completed || false,
-                interests: [],
-                roleModels: [],
-                traits: {
-                    discipline: 50, resilience: 50, risk: 50,
-                    leadership: 50, creativity: 50, empathy: 50, vision: 50
-                },
-                assessmentCompleted: false
-            };
+            if (fetchError) throw fetchError;
 
-            if (profileData || result.hasCompletedQuiz) {
-                const loadedTraits = {
-                    discipline: 50, resilience: 50,
-                    risk: profileData?.trait_risk_taker || 50,
-                    leadership: profileData?.trait_ambitious || 50,
-                    creativity: profileData?.trait_creative || 50,
-                    empathy: profileData?.trait_social || 50,
-                    vision: 50,
+            if (existingUsers && existingUsers.length > 0) {
+                console.log('[Register] Returning user found, loading profile...');
+                const user = existingUsers[0];
+                const { data: profiles, error: profileError } = await supabase
+                    .from('personality_profiles')
+                    .select('*')
+                    .eq('user_id', user.id);
+                    
+                console.log('[Register] Personality profiles:', profiles);
+                console.log('[Register] Profile fetch error:', profileError);
+
+                if (profileError) throw profileError;
+
+                saveSession(user);
+                console.log('[Register] Session saved for returning user');
+
+                const baseProfile = {
+                    id: user.id,
+                    mobile: user.mobile,
+                    name: user.name,
+                    age: user.age,
+                    interests: [],
+                    roleModels: [],
+                    traits: {
+                        discipline: 50, resilience: 50, risk: 50,
+                        leadership: 50, creativity: 50, empathy: 50, vision: 50
+                    },
+                    assessmentCompleted: false
                 };
-                baseProfile.traits = loadedTraits as any;
-                baseProfile.assessmentCompleted = true;
-                setProfile(baseProfile as any);
-                completeAssessment(loadedTraits as any, {
-                    motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
-                    social: 'Supporter', passion: 'Creative', coreValue: 'Success'
-                });
-            } else if (!result.isNew && !result.hasCompletedQuiz) {
-                // Returning user who never finished quiz -> skip cinematic intro
-                localStorage.setItem('aya_skip_intro', 'true');
-                setProfile(baseProfile as any);
+
+                if (profiles && profiles.length > 0) {
+                    const p = profiles[0];
+                    const loadedTraits = {
+                        discipline: 50, resilience: 50, risk: p.trait_risk_taker || 50,
+                        leadership: p.trait_ambitious || 50, creativity: p.trait_creative || 50, empathy: p.trait_social || 50, vision: 50,
+                    };
+
+                    baseProfile.traits = loadedTraits as any;
+                    baseProfile.assessmentCompleted = true;
+                    setProfile(baseProfile);
+                    completeAssessment(loadedTraits as any, {
+                        motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
+                        social: 'Supporter', passion: 'Creative', coreValue: 'Success'
+                    });
+                } else {
+                    setProfile(baseProfile);
+                }
             } else {
-                setProfile(baseProfile as any);
+                console.log('[Register] New user, creating account...');
+                const { data: newUser, error: insertError } = await supabase
+                    .from('users')
+                    .insert([{ name: name.trim(), age: age, mobile: mobile.trim() }])
+                    .select()
+                    .single();
+
+                console.log('[Register] New user created:', newUser);
+                console.log('[Register] Insert error:', insertError);
+
+                if (insertError) {
+                    console.error('[Register] FAILED:', insertError.message, insertError.details);
+                    throw insertError;
+                }
+
+                saveSession(newUser);
+                console.log('[Register] Session saved for new user');
+
+                setProfile({
+                    id: newUser.id,
+                    mobile: newUser.mobile,
+                    name: newUser.name,
+                    age: newUser.age,
+                    interests: [],
+                    roleModels: [],
+                    traits: {
+                        discipline: 50, resilience: 50, risk: 50,
+                        leadership: 50, creativity: 50, empathy: 50, vision: 50
+                    },
+                    assessmentCompleted: false
+                });
             }
         } catch (err: any) {
-            setError(err.message || 'Something went wrong. Please try again.');
-            setIsSubmitting(false);
+            console.error('[Register] Unexpected error:', err);
+            setError(err.message || 'Registration failed. Please try again.');
+        } finally {
             setIsLoading(false);
         }
     };
@@ -417,46 +340,18 @@ export function OnboardingWizard() {
                         {error && (
                             <motion.div 
                                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                                className="mt-4"
+                                className="mt-4 p-4 bg-red-900/40 text-red-100 rounded-xl border border-red-500/50 backdrop-blur-md text-center font-bold"
                             >
-                                <div style={{
-                                    background: 'rgba(255,0,0,0.15)',
-                                    border: '1px solid rgba(255,0,0,0.3)',
-                                    borderRadius: '12px',
-                                    padding: '16px',
-                                    color: '#FF6B6B',
-                                    fontSize: '14px',
-                                    textAlign: 'center',
-                                    lineHeight: '1.5',
-                                }}>
-                                    {error}
-                                    <br />
-                                    <button
-                                        onClick={handleRetry}
-                                        style={{
-                                            marginTop: '10px',
-                                            background: 'none',
-                                            border: '1px solid #FF6B6B',
-                                            borderRadius: '8px',
-                                            color: '#FF6B6B',
-                                            padding: '8px 20px',
-                                            fontSize: '13px',
-                                            cursor: 'pointer',
-                                            touchAction: 'manipulation',
-                                        }}
-                                    >
-                                        TRY AGAIN
-                                    </button>
-                                </div>
+                                <p>{error}</p>
+                                <p className="text-red-300 text-xs font-normal mt-1">Please try again or check your connection.</p>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
                     <motion.button
                         initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-                        disabled={!name.trim() || !mobile.trim() || isSubmitting}
+                        disabled={!name.trim() || !mobile.trim() || isLoading}
                         onClick={handleComplete}
-                        style={{ pointerEvents: isSubmitting ? 'none' : 'auto', opacity: isSubmitting ? 0.7 : 1 }}
                         className="w-full mt-10 py-5 bg-[#00f1fe] text-[#004145] font-black text-xl rounded-full shadow-[0_0_30px_rgba(0,241,254,0.4)] flex items-center justify-center space-x-2 relative group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#99f7ff] transition-all"
                     >
                         <motion.div 
@@ -464,8 +359,8 @@ export function OnboardingWizard() {
                             animate={{ opacity: [0, 0.4, 0] }}
                             transition={{ duration: 2, repeat: Infinity }}
                         />
-                        <span className="relative z-10">{isSubmitting ? 'LOADING...' : 'START MY JOURNEY'}</span>
-                        {!isSubmitting && <Check size={28} className="relative z-10 stroke-[4]" />}
+                        <span className="relative z-10">{isLoading ? 'INITIALIZING...' : 'START MY JOURNEY'}</span>
+                        {!isLoading && <Check size={28} className="relative z-10 stroke-[4]" />}
                     </motion.button>
                 </motion.div>
             </div>

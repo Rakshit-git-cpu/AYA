@@ -1,6 +1,7 @@
 /* ══════════════════════════════════════════════════════════
    VibeSpinnerButton.css — Premium dark glass pill button
-   with spinning 3D mini-wheel and glowing neon effects
+   with spinning 3D mini-wheel and glowing neon effects.
+   Includes locked / countdown state.
    ══════════════════════════════════════════════════════════ */
 
 .vsb-wrapper {
@@ -22,9 +23,9 @@
   -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   white-space: nowrap;
-  
+
   /* Double neon border: inner 1px cyan + outer 2px gold */
-  box-shadow: 
+  box-shadow:
     inset 0 0 0 1px #00E5FF,
     0 0 0 2px #FFD700,
     0 0 8px #00E5FF;
@@ -47,13 +48,13 @@
 
 @keyframes vsb-breathing-glow {
   0%, 100% {
-    box-shadow: 
+    box-shadow:
       inset 0 0 0 1px #00E5FF,
       0 0 0 2px #FFD700,
       0 0 8px #00E5FF;
   }
   50% {
-    box-shadow: 
+    box-shadow:
       inset 0 0 0 1px #00E5FF,
       0 0 0 2px #FFD700,
       0 0 24px #00E5FF,
@@ -61,28 +62,31 @@
   }
 }
 
-.vsb-pill:not(:disabled):hover {
+.vsb-pill:not(.vsb-locked):hover {
   transform: scale(1.04);
   animation: none;
-  box-shadow: 
+  box-shadow:
     inset 0 0 0 1px #00E5FF,
     0 0 0 2px #FFD700,
     0 0 30px #00E5FF,
     0 0 50px #FFD700;
 }
 
-/* On hover: mini wheel jumps to 1s duration */
-.vsb-pill:not(:disabled):hover .vsb-wheel-face {
+/* On hover (unlocked): mini wheel spins faster */
+.vsb-pill:not(.vsb-locked):hover .vsb-wheel-face {
   animation: mini-wheel-spin 1s linear infinite;
 }
 
-.vsb-pill:disabled,
-.vsb-pill.vsb-completed {
-  opacity: 0.7;
+/* ── LOCKED STATE ─────────────────────────────────────────── */
+.vsb-pill.vsb-locked {
+  animation: none;                          /* no breathing glow */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.15),
+    0 0 0 1px rgba(255,255,255,0.08);       /* dim grey border */
   cursor: default;
-  filter: grayscale(0.8);
-  animation: none;
-  box-shadow: inset 0 0 0 1px #555, 0 0 0 2px #333;
+  filter: none;
+  padding: 0 16px 0 6px;
+  gap: 10px;
 }
 
 /* ── Mini wheel ───────────────────────────────────── */
@@ -97,6 +101,11 @@
   height: 100%;
   border-radius: 50%;
   position: relative;
+}
+
+/* Locked mini wheel — greyscale + no spin */
+.vsb-mini-wheel-locked {
+  filter: grayscale(1) brightness(0.5);
 }
 
 /* The spinning face */
@@ -114,6 +123,11 @@
   );
   animation: mini-wheel-spin 6s linear infinite;
   box-shadow: inset 0 1px 3px rgba(255,255,255,0.4);
+}
+
+/* Locked face — static, no spin */
+.vsb-wheel-face-locked {
+  animation: none !important;
 }
 
 @keyframes mini-wheel-spin {
@@ -156,10 +170,70 @@
   text-shadow: 0 0 10px #00E5FF, 0 0 20px #00E5FF;
 }
 
-/* Completed state overrides */
-.vsb-completed .vsb-title {
-  color: rgba(255, 255, 255, 0.4);
-  text-shadow: none;
+/* ── Locked content layout ───────────────────────── */
+.vibe-spinner-locked {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+}
+
+.spinner-lock-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.spinner-locked-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.spinner-locked-title {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+}
+
+.spinner-countdown {
+  font-size: 18px;
+  font-weight: 900;
+  color: #00E5FF;
+  text-shadow: 0 0 10px #00E5FF;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  font-family: 'Space Grotesk', monospace;
+}
+
+/* ── Toast ───────────────────────────────────────── */
+.vsb-locked-toast {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 15, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 8px 16px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Space Grotesk', sans-serif;
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  animation: vsb-toast-in 0.2s ease;
+  pointer-events: none;
+}
+
+@keyframes vsb-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* ── Sparkles ────────────────────────────────────────────── */
@@ -195,52 +269,4 @@
 @keyframes vsb-blink {
   0%   { opacity: 0; transform: scale(0.5); }
   100% { opacity: 1; transform: scale(1.2); }
-}
-
-/* Locked state overrides */
-.vsb-pill.vsb-locked {
-  opacity: 1;
-  cursor: default;
-  animation: none;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 0 0 2px rgba(255,255,255,0.05);
-}
-
-.vsb-pill.vsb-locked:hover {
-  transform: none;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 0 0 2px rgba(255,255,255,0.05);
-}
-
-.vibe-spinner-locked {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-}
-
-.spinner-lock-icon {
-  font-size: 18px;
-}
-
-.spinner-locked-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.spinner-locked-title {
-  font-size: 10px;
-  color: rgba(255,255,255,0.5);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  line-height: 1;
-}
-
-.spinner-countdown {
-  font-size: 18px;
-  font-weight: 900;
-  color: #00E5FF;
-  text-shadow: 0 0 10px #00E5FF;
-  letter-spacing: 2px;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
 }

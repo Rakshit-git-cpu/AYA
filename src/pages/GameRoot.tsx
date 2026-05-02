@@ -18,8 +18,6 @@ import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 import { useRef } from 'react';
 import { safeStorage } from '../utils/storage';
-import { getSession, saveSession } from '../utils/session';
-import { withTimeout } from '../utils/withTimeout';
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
@@ -58,125 +56,104 @@ export function GameRoot() {
 
     useEffect(() => {
         const restoreSession = async () => {
-            // First check local storage (instant)
-            const session = getSession();
-
-            if (session.userId && session.mobile) {
-                // Session exists — verify with Supabase quickly
-                try {
-                    const { data } = await withTimeout(
-                        supabase.from('users').select('*').eq('id', session.userId).maybeSingle(),
-                        5000
-                    );
-                    if (data) {
-                        // Full restore from DB
-                        const { data: profileData } = await withTimeout(
-                            supabase.from('personality_profiles').select('*').eq('user_id', session.userId).maybeSingle(),
-                            5000
-                        ).catch(() => ({ data: null }));
-
-                        const { data: quizData } = await withTimeout(
-                            supabase.from('quiz_responses').select('id').eq('user_id', session.userId).maybeSingle(),
-                            5000
-                        ).catch(() => ({ data: null }));
-
-                        const store = useUserStore.getState();
-                        store.setProfile({
-                            id: data.id,
-                            name: data.name,
-                            age: data.age,
-                            mobile: data.mobile,
-                            total_xp: data.total_xp || 0,
-                            level: data.level || 1,
-                            current_streak: data.current_streak || 0,
-                            longest_streak: data.longest_streak || 0,
-                            stories_completed: data.stories_completed || 0,
-                            daily_challenge_completed: data.daily_challenge_completed || false,
-                            preferred_theme: data.preferred_theme || 'city_dark',
-                            ...(profileData ? {
-                                trait_risk_taker: profileData.trait_risk_taker,
-                                trait_creative: profileData.trait_creative,
-                                trait_analytical: profileData.trait_analytical,
-                                trait_social: profileData.trait_social,
-                                trait_ambitious: profileData.trait_ambitious,
-                                future_archetype: profileData.future_archetype,
-                                interest_goal: profileData.interest_goal,
-                                interest_struggle: profileData.interest_struggle,
-                                interest_domain: profileData.interest_domain,
-                            } : {})
-                        } as any);
-
-                        if (profileData || quizData || localStorage.getItem('aya_quiz_done') === 'true') {
-                            store.completeAssessment(
-                                {
-                                    discipline: 50, resilience: 50,
-                                    risk: profileData?.trait_risk_taker || 50,
-                                    leadership: profileData?.trait_ambitious || 50,
-                                    creativity: profileData?.trait_creative || 50,
-                                    empathy: profileData?.trait_social || 50,
-                                    vision: 50
-                                },
-                                {
-                                    motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
-                                    social: 'Supporter', passion: 'Creative', coreValue: 'Success'
-                                }
-                            );
-                        } else {
-                            // No quiz — go to quiz only (skip name/mobile/age entry, skip cinematic)
-                            localStorage.setItem('aya_skip_intro', 'true');
-                            setOnboardingComplete(true);
-                        }
-
-                        const savedTheme = data.preferred_theme || safeStorage.get('aya_map_theme') || 'city_dark';
-                        store.setMapTheme(savedTheme as any);
-
-                        // Refresh session keys with latest DB data
-                        saveSession(data);
-                        setSessionStatus('found');
-                        return;
-                    }
-                } catch {
-                    // Supabase check failed — use cached session data from Zustand persist
-                    // If Zustand already hydrated a profile, just use it
-                    const cachedProfile = useUserStore.getState().profile;
-                    if (cachedProfile) {
-                        setSessionStatus('found');
-                        return;
-                    }
-                    // Last resort: build minimal profile from session keys
-                    if (session.userId && session.mobile) {
-                        useUserStore.getState().setProfile({
-                            id: session.userId,
-                            mobile: session.mobile,
-                            name: session.name || '',
-                            age: Number(session.age) || 18,
-                        } as any);
-                        setSessionStatus('found');
-                        return;
-                    }
+            console.log('[Session] Checking for existing session...')
+            
+            const userId = localStorage.getItem('aya_user_id') || sessionStorage.getItem('aya_user_id')
+            const userMobile = localStorage.getItem('aya_user_mobile') || sessionStorage.getItem('aya_user_mobile')
+            
+            console.log('[Session] Found in storage:', { userId, userMobile })
+            
+            if (!userId || !userMobile) {
+                console.log('[Session] No session found — showing registration')
+                setSessionStatus('not_found')
+                return
+            }
+            
+            try {
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .maybeSingle()
+                
+                if (error) {
+                    console.error('[Session] Supabase error:', error)
+                    setSessionStatus('not_found')
+                    return
                 }
+                
+                if (!user) {
+                    console.log('[Session] User not in DB — clearing storage')
+                    localStorage.removeItem('aya_user_id')
+                    localStorage.removeItem('aya_user_mobile')
+                    sessionStorage.removeItem('aya_user_id')
+                    sessionStorage.removeItem('aya_user_mobile')
+                    setSessionStatus('not_found')
+                    return
+                }
+                
+                console.log('[Session] User found:', user.name)
+                
+                const { data: profileData } = await supabase
+                    .from('personality_profiles')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .maybeSingle()
+                
+                const store = useUserStore.getState()
+                
+                store.setProfile({
+                    id: user.id,
+                    name: user.name,
+                    age: user.age,
+                    mobile: user.mobile,
+                    total_xp: user.total_xp || 0,
+                    level: user.level || 1,
+                    current_streak: user.current_streak || 0,
+                    longest_streak: user.longest_streak || 0,
+                    stories_completed: user.stories_completed || 0,
+                    daily_challenge_completed: user.daily_challenge_completed || false,
+                    preferred_theme: user.preferred_theme || 'city_dark',
+                    ...(profileData ? {
+                        trait_risk_taker: profileData.trait_risk_taker,
+                        trait_creative: profileData.trait_creative,
+                        trait_analytical: profileData.trait_analytical,
+                        trait_social: profileData.trait_social,
+                        trait_ambitious: profileData.trait_ambitious,
+                        future_archetype: profileData.future_archetype,
+                        interest_goal: profileData.interest_goal,
+                        interest_struggle: profileData.interest_struggle,
+                        interest_domain: profileData.interest_domain,
+                    } : {})
+                } as any)
+                
+                if (profileData) {
+                    store.completeAssessment(
+                        {
+                            discipline: 50, resilience: 50, risk: profileData.trait_risk_taker || 50,
+                            leadership: profileData.trait_ambitious || 50, creativity: profileData.trait_creative || 50, empathy: profileData.trait_social || 50, vision: 50
+                        },
+                        {
+                            motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
+                            social: 'Supporter', passion: 'Creative', coreValue: 'Success'
+                        }
+                    );
+                }
+                
+                const savedTheme = user.preferred_theme || localStorage.getItem('aya_map_theme') || 'city_dark'
+                store.setMapTheme(savedTheme as any)
+                
+                console.log('[Session] Session restored successfully!')
+                setSessionStatus('found')
+                
+            } catch (err) {
+                console.error('[Session] Unexpected error:', err)
+                setSessionStatus('not_found')
             }
-
-            // No session in storage — check Zustand persist hydration
-            const cachedProfile = useUserStore.getState().profile;
-            if (cachedProfile?.id) {
-                setSessionStatus('found');
-                return;
-            }
-
-            setSessionStatus('not_found');
-        };
-
-        restoreSession();
-
-        // Nuclear fallback — never stay on checking forever
-        const maxWait = setTimeout(() => {
-            setSessionStatus(prev => prev === 'checking' ? 'not_found' : prev);
-        }, 20000);
-
-        return () => clearTimeout(maxWait);
-    }, []);
-
+        }
+        
+        restoreSession()
+    }, [])
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
 
@@ -192,6 +169,11 @@ export function GameRoot() {
         }
     }, [profile?.level]);
 
+    useEffect(() => {
+        console.log('[GameRoot] Profile State:', profile);
+        console.log('[GameRoot] Assessment Completed:', profile?.assessmentCompleted);
+    }, [profile]);
+
     // Streak tracking
     const [streakData, setStreakData] = useState<{ xpEarned: number, oldStreak: number, newStreak: number, isMilestone: boolean } | null>(null);
 
@@ -206,13 +188,13 @@ export function GameRoot() {
         )
     }
 
-    if (!profile) {
+    if (sessionStatus === 'not_found' || !profile) {
         return <OnboardingWizard />;
     }
 
     // Always show cinematic onboarding before the quiz (not persisted — shows every new journey)
-    const skipIntro = localStorage.getItem('aya_skip_intro') === 'true';
-    if (!profile.assessmentCompleted && !onboardingComplete && !skipIntro) {
+    if (!profile.assessmentCompleted && !onboardingComplete) {
+        console.log('showing onboarding')
         return <CinematicOnboarding onComplete={() => {
             setOnboardingComplete(true);
         }} />;

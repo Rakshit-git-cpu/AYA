@@ -1,7 +1,6 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { usePreventDoubleTap } from '../../utils/usePreventDoubleTap';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
@@ -15,7 +14,6 @@ import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
 import { MapAmbience } from './MapAmbience';
-import { supabase } from '../../utils/supabase';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -88,37 +86,6 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         checkStreak(); // evaluate streaks on mount
     }, [checkStreak]);
 
-    const [spinsUsed, setSpinsUsed] = useState(0);
-
-    // Fetch spins on mount
-    useEffect(() => {
-        if (!profile?.id) return;
-        (async () => {
-            try {
-                const { data } = await supabase
-                    .from('users')
-                    .select('daily_spins_used, spin_reset_date')
-                    .eq('id', profile.id)
-                    .maybeSingle();
-
-                if (!data) return;
-
-                const today = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).toISOString().split('T')[0];
-                let used = data.daily_spins_used ?? 0;
-
-                if (!data.spin_reset_date || data.spin_reset_date < today) {
-                    used = 0;
-                    await supabase.from('users')
-                        .update({ daily_spins_used: 0, spin_reset_date: today })
-                        .eq('id', profile.id);
-                }
-                setSpinsUsed(used);
-            } catch (e) {
-                console.warn('Failed to load spin data', e);
-            }
-        })();
-    }, [profile?.id]);
-
     // Modals
     const [showSettings, setShowSettings] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
@@ -174,16 +141,6 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
 
         return { x: xOffset, y };
     };
-
-    // Map ready delay — gives mobile browser time to paint before heavy render
-    const [mapReady, setMapReady] = useState(false);
-    useEffect(() => {
-        const timer = setTimeout(() => setMapReady(true), 150);
-        return () => clearTimeout(timer);
-    }, []);
-
-    // Double-tap prevention for personality nodes
-    const preventDoubleTap = usePreventDoubleTap(600);
 
     // Scroll refs and values
     const containerRef = useRef<HTMLDivElement>(null);
@@ -264,23 +221,6 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         };
     }, []);
 
-    if (!mapReady) {
-        return (
-            <div style={{
-                height: '100dvh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#0a0a0f',
-                color: '#00E5FF',
-                fontSize: '18px',
-                fontWeight: 'bold',
-            }}>
-                Loading your universe...
-            </div>
-        );
-    }
-
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden">
             <AudioController isMapActive={isMapActive} />
@@ -292,9 +232,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <VibeSpinnerButton
                         streak={profile?.current_streak || 0}
                         completed={!!profile?.daily_challenge_completed}
-                        spinsUsed={spinsUsed}
+                        userId={profile?.id || ''}
                         onClick={() => {
-                            if (spinsUsed >= 2) return;
                             audioSynth.playClick();
                             setShowMoodWheel(true);
                         }}
@@ -422,8 +361,6 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 <MoodWheel
                     userId={profile?.id || ''}
                     userAge={profile?.age || 18}
-                    spinsUsed={spinsUsed}
-                    onSpinsUsedChange={setSpinsUsed}
                     onMoodSelected={(mood) => {
                         setShowMoodWheel(false);
                         setChallengeMood(mood as MoodArchetype);
@@ -481,11 +418,6 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                             const isCompleted = level.status === 'completed';
                             const isCurrent = isUnlocked && !isCompleted;
 
-                            // Viewport culling — skip nodes outside visible area ±300px
-                            const nodeY = pos.y;
-                            const vh = windowHeight;
-                            if (nodeY < scrollY - 300 || nodeY > scrollY + vh + 300) return null;
-
                             return (
                                 <div
                                     key={level.id}
@@ -502,14 +434,16 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                             !isUnlocked && "candy-node-locked grayscale opacity-80",
                                             isCompleted && "candy-node-completed"
                                         )}
-                                        style={{ touchAction: 'manipulation' }}
+                                        // Touch start for mobile responsiveness
                                         onTouchStart={() => {
                                             if (isUnlocked) audioSynth.playHover();
                                         }}
-                                        onPointerDown={isUnlocked ? preventDoubleTap(() => {
-                                            audioSynth.playClick();
-                                            onPlayLevel(level);
-                                        }) : undefined}
+                                        onClick={() => {
+                                            if (isUnlocked) {
+                                                audioSynth.playClick();
+                                                onPlayLevel(level);
+                                            }
+                                        }}
                                     >
                                         <div className="lollipop-stick" />
                                         {/* Responsive Halo */}

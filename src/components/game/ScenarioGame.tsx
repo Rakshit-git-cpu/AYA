@@ -80,9 +80,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Feedback State
     const [feedbackChoice, setFeedbackChoice] = useState<Choice | null>(null);
 
-    // Double-tap guard for story choice buttons
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
     // Background Loading State (prevents UI from showing until image is ready)
     const [isBgLoaded, setIsBgLoaded] = useState(false);
 
@@ -598,7 +595,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
     const handleFeedbackContinue = () => {
         if (feedbackChoice) {
-            setSelectedOption(null); // Re-enable choices on next frame
             setCurrentFrameId(feedbackChoice.next);
             setFeedbackChoice(null);
         }
@@ -889,13 +885,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                 {displayedChoices.map((choice, idx) => (
                                     <button
                                         key={idx}
-                                        onPointerDown={(e) => {
-                                            e.preventDefault();
-                                            if (selectedOption !== null) return;
-                                            setSelectedOption(String(idx));
-                                            handleChoiceClick(choice as Choice);
-                                        }}
-                                        disabled={selectedOption !== null}
+                                        onClick={() => handleChoiceClick(choice as Choice)}
                                         className={clsx(
                                             "cinematic-choice group w-full text-left border-2 transition-all flex items-center justify-between shadow-lg",
                                             isCandyTheme
@@ -907,9 +897,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                             padding: '14px 16px',
                                             whiteSpace: 'normal',
                                             wordBreak: 'break-word',
-                                            touchAction: 'manipulation',
-                                            pointerEvents: selectedOption !== null ? 'none' : 'auto',
-                                            opacity: selectedOption !== null && selectedOption !== String(idx) ? 0.5 : 1,
                                             ...(isCandyMode ? {} : { borderColor: currentTheme.choiceBorder }),
                                         }}
                                         onMouseEnter={(e) => {
