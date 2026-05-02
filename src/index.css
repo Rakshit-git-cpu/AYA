@@ -621,6 +621,15 @@ body, #root {
   padding-right: max(20px, env(safe-area-inset-right));
 }
 
+/* Desktop: constrain login form to centered card */
+@media (min-width: 769px) {
+  .login-container {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 /* Mobile: move right-side buttons to bottom-right so they never overlap node labels */
 @media (max-width: 768px) {
   .map-right-buttons {
