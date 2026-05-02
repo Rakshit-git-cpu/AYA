@@ -631,3 +631,33 @@ body, #root {
   }
 }
 
+/* Fix 2: Header username/XP section — prevent overlap with logo on mobile */
+@media (max-width: 480px) {
+  /* Stats wrapper: shrink so it doesn't push into the logo */
+  header > div:last-child {
+    max-width: 55vw;
+    overflow: hidden;
+  }
+  /* Name span: tighter cap on very small screens */
+  header .truncate {
+    max-width: 40px;
+  }
+  /* XP badge: smaller text */
+  header span[class*="text-[10px]"] {
+    font-size: 9px;
+  }
+}
+
+/* Fix 3: Personality name & story title labels — not clipped by global max-width:100% */
+.personality-name-label,
+.story-title-label {
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+/* Node containers must allow label overflow */
+.personality-node-container,
+.candy-node-container {
+  overflow: visible !important;
+}
+

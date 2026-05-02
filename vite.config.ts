@@ -12,7 +12,12 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: false,
       manifest: false,
-      devOptions: { enabled: true }
+      devOptions: { enabled: true },
+      workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+      },
     })
   ],
   server: {
