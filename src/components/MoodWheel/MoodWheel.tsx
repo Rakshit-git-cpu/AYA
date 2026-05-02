@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSpinCountdown } from '../../hooks/useSpinCountdown';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 import { supabase } from '../../utils/supabase';
@@ -24,15 +23,7 @@ const SEGMENTS = [
 const N = SEGMENTS.length;         // 6
 const SEG_DEG = 360 / N;           // 60°
 
-// ─── IST helpers ─────────────────────────────────────────────────────────────
-const todayIST = (): string => {
-  return new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
-  ).toISOString().split('T')[0];
-};
-
-// msToMidnightIST and fmtCountdown removed — now handled by useSpinCountdown hook
-
+import { useSpinCountdown } from '../../hooks/useSpinCountdown';
 
 // ─── SVG polar math ───────────────────────────────────────────────────────────
 const polar = (cx: number, cy: number, r: number, deg: number) => {
@@ -79,6 +70,8 @@ const buildConfetti = (color: string) =>
 interface MoodWheelProps {
   userId: string;
   userAge: number;
+  spinsUsed: number;
+  onSpinsUsedChange: (spins: number) => void;
   onMoodSelected: (mood: string) => void;
   onClose: () => void;
 }
@@ -87,16 +80,19 @@ interface MoodWheelProps {
 type WheelPhase = 'loading' | 'idle' | 'spinning' | 'landing' | 'result' | 'no-spins';
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
-  // Spin limit
-  const [spinsUsed, setSpinsUsed]   = useState(0);
+export function MoodWheel({ userId, spinsUsed, onSpinsUsedChange, onMoodSelected, onClose }: MoodWheelProps) {
   const [phase, setPhase]           = useState<WheelPhase>('loading');
   const [winIdx, setWinIdx]         = useState<number | null>(null);
   const [confetti, setConfetti]     = useState<ReturnType<typeof buildConfetti>>([]);
   const [showVignette, setVignette] = useState(false);
   const [isShudder, setShudder]     = useState(false);
   const [pointerLand, setPointerLand] = useState(false);
-  const countdownStr = useSpinCountdown();
+  const countdownString = useSpinCountdown();
+
+  // Set initial phase
+  useEffect(() => {
+    setPhase(spinsUsed >= 2 ? 'no-spins' : 'idle');
+  }, [spinsUsed]);
 
   // Framer Motion value for wheel rotation (no re-renders per frame)
   const rotation = useMotionValue(0);
@@ -118,40 +114,6 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     window.addEventListener('resize', calc);
     return () => window.removeEventListener('resize', calc);
   }, []);
-
-  // Supabase: load spin data on mount
-  useEffect(() => {
-    (async () => {
-      if (!userId) { setPhase('idle'); return; }
-      try {
-        const { data } = await supabase
-          .from('users')
-          .select('daily_spins_used, spin_reset_date')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (!data) { setSpinsUsed(0); setPhase('idle'); return; }
-
-        const today = todayIST();
-        let used = data.daily_spins_used ?? 0;
-
-        if (!data.spin_reset_date || data.spin_reset_date < today) {
-          used = 0;
-          await supabase.from('users')
-            .update({ daily_spins_used: 0, spin_reset_date: today })
-            .eq('id', userId);
-        }
-
-        setSpinsUsed(used);
-        setPhase(used >= 2 ? 'no-spins' : 'idle');
-      } catch {
-        setSpinsUsed(0);
-        setPhase('idle'); // fail open
-      }
-    })();
-  }, [userId]);
-
-  // Countdown timer is now driven by the useSpinCountdown hook above
 
   const onWheelUpdate = (latest: { rotate?: number }) => {
     if (phase !== 'spinning' || latest.rotate === undefined) return;
@@ -224,7 +186,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
 
     // Increment Supabase spins
     const newUsed = spinsUsed + 1;
-    setSpinsUsed(newUsed);
+    onSpinsUsedChange(newUsed);
     if (userId) {
       supabase.from('users')
         .update({ daily_spins_used: newUsed })
@@ -494,7 +456,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
                   <div className="mw-no-spins-overlay" style={{ width: dia, height: dia }}>
                     <span className="mw-lock-emoji">🔒</span>
                     <span className="mw-comeback-text">COME BACK TOMORROW</span>
-                    <span className="mw-countdown">Resets in {countdownStr}</span>
+                    <span className="mw-countdown">Resets in {countdownString}</span>
                   </div>
                 )}
               </div>

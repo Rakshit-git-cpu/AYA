@@ -1,35 +1,26 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Returns a live HH:MM:SS countdown string to the next midnight IST.
- * Updates every second. Extracted from MoodWheel so both the map button
- * and the wheel share identical logic.
- */
-export const useSpinCountdown = (): string => {
-  const getMsToMidnightIST = (): number => {
-    const now = Date.now();
-    const istNow = new Date(now + 5.5 * 3_600_000);
-    const midnight = new Date(istNow);
-    midnight.setUTCHours(18, 30, 0, 0); // 18:30 UTC = midnight IST
-    if (midnight.getTime() <= now) midnight.setUTCDate(midnight.getUTCDate() + 1);
-    return midnight.getTime() - now;
-  };
-
-  const fmt = (ms: number): string => {
-    if (ms <= 0) return '00:00:00';
-    const h = Math.floor(ms / 3_600_000);
-    const m = Math.floor((ms % 3_600_000) / 60_000);
-    const s = Math.floor((ms % 60_000) / 1_000);
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  };
-
-  const [timeLeft, setTimeLeft] = useState(() => fmt(getMsToMidnightIST()));
+export const useSpinCountdown = () => {
+  const [timeLeft, setTimeLeft] = useState('');
 
   useEffect(() => {
-    const tick = () => setTimeLeft(fmt(getMsToMidnightIST()));
+    const tick = () => {
+      const now = new Date();
+      // Midnight IST = UTC+5:30
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const nowIST = new Date(now.getTime() + istOffset);
+      const midnightIST = new Date(nowIST);
+      midnightIST.setUTCHours(18, 30, 0, 0); // 18:30 UTC = midnight IST
+      if (midnightIST <= nowIST) midnightIST.setUTCDate(midnightIST.getUTCDate() + 1);
+      const diff = midnightIST.getTime() - nowIST.getTime();
+      const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+      const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+      const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+      setTimeLeft(`${h}:${m}:${s}`);
+    };
     tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return timeLeft;

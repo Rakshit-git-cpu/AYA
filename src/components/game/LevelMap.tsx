@@ -14,6 +14,7 @@ import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
 import { MapAmbience } from './MapAmbience';
+import { supabase } from '../../utils/supabase';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -85,6 +86,37 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     useEffect(() => {
         checkStreak(); // evaluate streaks on mount
     }, [checkStreak]);
+
+    const [spinsUsed, setSpinsUsed] = useState(0);
+
+    // Fetch spins on mount
+    useEffect(() => {
+        if (!profile?.id) return;
+        (async () => {
+            try {
+                const { data } = await supabase
+                    .from('users')
+                    .select('daily_spins_used, spin_reset_date')
+                    .eq('id', profile.id)
+                    .maybeSingle();
+
+                if (!data) return;
+
+                const today = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).toISOString().split('T')[0];
+                let used = data.daily_spins_used ?? 0;
+
+                if (!data.spin_reset_date || data.spin_reset_date < today) {
+                    used = 0;
+                    await supabase.from('users')
+                        .update({ daily_spins_used: 0, spin_reset_date: today })
+                        .eq('id', profile.id);
+                }
+                setSpinsUsed(used);
+            } catch (e) {
+                console.warn('Failed to load spin data', e);
+            }
+        })();
+    }, [profile?.id]);
 
     // Modals
     const [showSettings, setShowSettings] = useState(false);
@@ -232,8 +264,9 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     <VibeSpinnerButton
                         streak={profile?.current_streak || 0}
                         completed={!!profile?.daily_challenge_completed}
-                        userId={profile?.id || ''}
+                        spinsUsed={spinsUsed}
                         onClick={() => {
+                            if (spinsUsed >= 2) return;
                             audioSynth.playClick();
                             setShowMoodWheel(true);
                         }}
@@ -361,6 +394,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 <MoodWheel
                     userId={profile?.id || ''}
                     userAge={profile?.age || 18}
+                    spinsUsed={spinsUsed}
+                    onSpinsUsedChange={setSpinsUsed}
                     onMoodSelected={(mood) => {
                         setShowMoodWheel(false);
                         setChallengeMood(mood as MoodArchetype);
