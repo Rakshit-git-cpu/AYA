@@ -490,7 +490,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                             {/* Personality Badge */}
                                             {level.personality && (
                                                 <div className={clsx(
-                                                    "relative -mb-2 px-3 py-0.5 rounded-full border shadow-sm flex items-center justify-center z-40 animate-float",
+                                                    "relative -mb-2 px-3 py-0.5 rounded-full border shadow-sm flex items-center justify-center z-40 animate-float min-w-max",
                                                     "md:-mb-3 md:px-4 md:py-1 md:border-2",
                                                     isCandyMode
                                                         ? (isUnlocked ? "bg-gradient-to-r from-yellow-300 to-yellow-500 border-white text-yellow-900" : "bg-slate-700 border-slate-600 text-slate-400")
