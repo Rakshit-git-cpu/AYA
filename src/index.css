@@ -631,3 +631,24 @@ body, #root {
   }
 }
 
+/* ── Fix 2: Personality name & story title not clipped on mobile ── */
+/* The global `* { max-width: 100% }` rule clips whitespace-nowrap label spans.
+   These classes target the actual label elements inside nodes and exempt them. */
+.personality-name-label,
+.story-title-label {
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+/* The personality-node-container must never clip its absolutely-positioned labels */
+.personality-node-container {
+  overflow: visible !important;
+}
+
+/* The candy-node-container must also allow label children to overflow */
+.candy-node-container {
+  overflow: visible !important;
+}
+

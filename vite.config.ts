@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    __VITE_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -12,11 +15,17 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: false,
       manifest: false,
-      devOptions: { enabled: true }
+      devOptions: { enabled: true },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+        runtimeCaching: [],
+      },
     })
   ],
   server: {
-    host: true, // Exposes the server to the network
+    host: true,
   },
   build: {
     chunkSizeWarningLimit: 1200,

@@ -8,13 +8,29 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then((reg) => {
-        console.log('[SW] Registered successfully. Scope:', reg.scope);
+        console.log('[SW] Registered. Scope:', reg.scope);
+
+        // Force check for a new SW version on every page load
+        reg.update().catch(() => {/* non-critical */});
+
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') {
+              // New version activated — hard reload to serve latest build
+              console.log('[SW] New version activated. Reloading...');
+              window.location.reload();
+            }
+          });
+        });
       })
       .catch((err) => {
         console.error('[SW] Registration failed:', err);
       });
   });
 }
+
 
 // Global Error Handler moved to index.html for better coverage
 
