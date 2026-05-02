@@ -1,51 +1,62 @@
-import { Component } from 'react';
-import type { ErrorInfo, ReactNode } from 'react';
-import { safeStorage } from '../utils/storage';
+import React from 'react';
 
-interface Props {
-    children?: ReactNode;
-}
+interface State { hasError: boolean; error?: Error; }
 
-interface State {
-    hasError: boolean;
-    error: Error | null;
-}
+export class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  State
+> {
+  state: State = { hasError: false };
 
-export class ErrorBoundary extends Component<Props, State> {
-    public state: State = {
-        hasError: false,
-        error: null
-    };
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
 
-    public static getDerivedStateFromError(error: Error): State {
-        return { hasError: true, error };
+  componentDidCatch(error: Error) {
+    console.error('[AYA Error Boundary]:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          height: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#0a0a0f',
+          color: 'white',
+          padding: '24px',
+          textAlign: 'center',
+          gap: '20px',
+        }}>
+          <div style={{ fontSize: '48px' }}>⚠️</div>
+          <h2 style={{ color: '#00E5FF', fontSize: '22px' }}>
+            Something went wrong
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px' }}>
+            Don't worry — your progress is saved.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '16px 40px',
+              background: 'linear-gradient(135deg, #FFD700, #FF8C00)',
+              border: 'none',
+              borderRadius: '14px',
+              fontWeight: '800',
+              fontSize: '16px',
+              cursor: 'pointer',
+              color: '#0a0a0f',
+              touchAction: 'manipulation',
+            }}
+          >
+            TAP TO RELOAD
+          </button>
+        </div>
+      );
     }
-
-    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error("Uncaught error:", error, errorInfo);
-    }
-
-    public render() {
-        if (this.state.hasError) {
-            return (
-                <div className="p-8 bg-red-900 text-white min-h-screen">
-                    <h1 className="text-3xl font-bold mb-4">Something went wrong</h1>
-                    <pre className="bg-black/50 p-4 rounded overflow-auto text-sm">
-                        {this.state.error?.toString()}
-                    </pre>
-                    <button
-                        onClick={() => {
-                            safeStorage.clear();
-                            window.location.reload();
-                        }}
-                        className="mt-6 px-4 py-2 bg-white text-red-900 font-bold rounded hover:bg-gray-200"
-                    >
-                        Clear Data & Reload
-                    </button>
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
+    return this.props.children;
+  }
 }

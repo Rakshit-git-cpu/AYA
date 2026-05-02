@@ -631,3 +631,38 @@ body, #root {
   }
 }
 
+/* ─── Global Touch + Mobile Fixes ──────────────────────────────────── */
+
+/* Prevent double-tap zoom on all interactive elements */
+button, a, [role="button"], input, select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on tap */
+button, [role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent iOS Safari overscroll bounce causing layout issues */
+body {
+  overscroll-behavior: none;
+}
+
+/* Fix iOS Safari 100vh issue everywhere */
+.full-height {
+  height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+/* Safe area insets for notch/home bar */
+.safe-bottom {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Prevent horizontal overflow globally */
+html, body, #root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}

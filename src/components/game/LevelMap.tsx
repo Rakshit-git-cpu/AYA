@@ -1,6 +1,7 @@
 import { useUserStore } from '../../store/userStore';
 import { Lock, Star, Settings, BookOpen, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { usePreventDoubleTap } from '../../utils/usePreventDoubleTap';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
@@ -174,6 +175,16 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         return { x: xOffset, y };
     };
 
+    // Map ready delay — gives mobile browser time to paint before heavy render
+    const [mapReady, setMapReady] = useState(false);
+    useEffect(() => {
+        const timer = setTimeout(() => setMapReady(true), 150);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Double-tap prevention for personality nodes
+    const preventDoubleTap = usePreventDoubleTap(600);
+
     // Scroll refs and values
     const containerRef = useRef<HTMLDivElement>(null);
     const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
@@ -252,6 +263,23 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             audioSynth.stopGlide();
         };
     }, []);
+
+    if (!mapReady) {
+        return (
+            <div style={{
+                height: '100dvh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#0a0a0f',
+                color: '#00E5FF',
+                fontSize: '18px',
+                fontWeight: 'bold',
+            }}>
+                Loading your universe...
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 overflow-hidden">
@@ -453,6 +481,11 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                             const isCompleted = level.status === 'completed';
                             const isCurrent = isUnlocked && !isCompleted;
 
+                            // Viewport culling — skip nodes outside visible area ±300px
+                            const nodeY = pos.y;
+                            const vh = windowHeight;
+                            if (nodeY < scrollY - 300 || nodeY > scrollY + vh + 300) return null;
+
                             return (
                                 <div
                                     key={level.id}
@@ -469,16 +502,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                             !isUnlocked && "candy-node-locked grayscale opacity-80",
                                             isCompleted && "candy-node-completed"
                                         )}
-                                        // Touch start for mobile responsiveness
+                                        style={{ touchAction: 'manipulation' }}
                                         onTouchStart={() => {
                                             if (isUnlocked) audioSynth.playHover();
                                         }}
-                                        onClick={() => {
-                                            if (isUnlocked) {
-                                                audioSynth.playClick();
-                                                onPlayLevel(level);
-                                            }
-                                        }}
+                                        onPointerDown={isUnlocked ? preventDoubleTap(() => {
+                                            audioSynth.playClick();
+                                            onPlayLevel(level);
+                                        }) : undefined}
                                     >
                                         <div className="lollipop-stick" />
                                         {/* Responsive Halo */}
