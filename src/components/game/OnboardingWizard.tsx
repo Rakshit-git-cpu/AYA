@@ -3,6 +3,8 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { saveSession, markQuizDone, isQuizDone } from '../../utils/session';
+import { withTimeout } from '../../utils/withTimeout';
 
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 
@@ -116,131 +118,148 @@ export function OnboardingWizard() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const saveSession = (user: any) => {
-        try {
-            localStorage.setItem('aya_user_id', user.id)
-            localStorage.setItem('aya_user_mobile', user.mobile)
-            localStorage.setItem('aya_user_name', user.name)
-            localStorage.setItem('aya_user_age', user.age.toString())
-            // Also save to sessionStorage as backup (Safari private mode)
-            sessionStorage.setItem('aya_user_id', user.id)
-            sessionStorage.setItem('aya_user_mobile', user.mobile)
-            console.log('[Session] Saved successfully:', user.id)
-        } catch (e) {
-            console.error('[Session] Failed to save:', e)
-        }
-    }
+    const isSubmitting = useRef(false);
 
     const handleComplete = async () => {
         if (!name.trim() || !mobile.trim() || age < 13) return;
+        if (isSubmitting.current) return; // hard block double-tap
+        isSubmitting.current = true;
+
         audioSynth.playClick();
         setIsLoading(true);
         setError("");
 
-        console.log('[Register] Starting registration...');
-        console.log('[Register] Name:', name.trim());
-        console.log('[Register] Mobile:', mobile.trim());
-        console.log('[Register] Age:', age);
-        console.log('[Register] Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-        console.log('[Register] Has Anon Key:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+        const cleanMobile = mobile.trim().replace(/\s+/g, '');
+
+        // 20s escape hatch — prevents infinite spinner even if all retries fail
+        const fallback = setTimeout(() => {
+            setIsLoading(false);
+            isSubmitting.current = false;
+            setError('Connection failed. Please check your internet and try again.');
+        }, 20000);
 
         try {
-            console.log('[Register] Checking if user exists...');
-            const { data: existingUsers, error: fetchError } = await supabase
-                .from('users')
-                .select('*')
-                .eq('mobile', mobile.trim());
+            // ---- Attempt up to 3 times ----
+            let attempt = 0;
+            let lastErr: any = null;
+            let result: { user: any; isNew: boolean } | null = null;
 
-            console.log('[Register] Existing users:', existingUsers);
-            console.log('[Register] Fetch error:', fetchError);
+            while (attempt < 3 && !result) {
+                attempt++;
+                try {
+                    // Check if mobile already exists
+                    const { data: existing, error: fetchErr } = await withTimeout(
+                        supabase.from('users').select('*').eq('mobile', cleanMobile)
+                    );
+                    if (fetchErr) throw fetchErr;
 
-            if (fetchError) throw fetchError;
-
-            if (existingUsers && existingUsers.length > 0) {
-                console.log('[Register] Returning user found, loading profile...');
-                const user = existingUsers[0];
-                const { data: profiles, error: profileError } = await supabase
-                    .from('personality_profiles')
-                    .select('*')
-                    .eq('user_id', user.id);
-                    
-                console.log('[Register] Personality profiles:', profiles);
-                console.log('[Register] Profile fetch error:', profileError);
-
-                if (profileError) throw profileError;
-
-                saveSession(user);
-                console.log('[Register] Session saved for returning user');
-
-                const baseProfile = {
-                    id: user.id,
-                    mobile: user.mobile,
-                    name: user.name,
-                    age: user.age,
-                    interests: [],
-                    roleModels: [],
-                    traits: {
-                        discipline: 50, resilience: 50, risk: 50,
-                        leadership: 50, creativity: 50, empathy: 50, vision: 50
-                    },
-                    assessmentCompleted: false
-                };
-
-                if (profiles && profiles.length > 0) {
-                    const p = profiles[0];
-                    const loadedTraits = {
-                        discipline: 50, resilience: 50, risk: p.trait_risk_taker || 50,
-                        leadership: p.trait_ambitious || 50, creativity: p.trait_creative || 50, empathy: p.trait_social || 50, vision: 50,
-                    };
-
-                    baseProfile.traits = loadedTraits as any;
-                    baseProfile.assessmentCompleted = true;
-                    setProfile(baseProfile);
-                    completeAssessment(loadedTraits as any, {
-                        motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
-                        social: 'Supporter', passion: 'Creative', coreValue: 'Success'
-                    });
-                } else {
-                    setProfile(baseProfile);
+                    if (existing && existing.length > 0) {
+                        result = { user: existing[0], isNew: false };
+                    } else {
+                        const { data: newUser, error: insertErr } = await withTimeout(
+                            supabase
+                                .from('users')
+                                .insert([{ name: name.trim(), age, mobile: cleanMobile }])
+                                .select()
+                                .single()
+                        );
+                        if (insertErr) {
+                            // Race condition: another insert snuck in — try to fetch again
+                            if (insertErr.code === '23505') {
+                                const { data: raceUser } = await withTimeout(
+                                    supabase.from('users').select('*').eq('mobile', cleanMobile)
+                                );
+                                if (raceUser && raceUser.length > 0) {
+                                    result = { user: raceUser[0], isNew: false };
+                                } else throw insertErr;
+                            } else throw insertErr;
+                        } else {
+                            result = { user: newUser, isNew: true };
+                        }
+                    }
+                } catch (e) {
+                    lastErr = e;
+                    if (attempt < 3) await new Promise(r => setTimeout(r, 1000 * attempt)); // exponential back-off
                 }
-            } else {
-                console.log('[Register] New user, creating account...');
-                const { data: newUser, error: insertError } = await supabase
-                    .from('users')
-                    .insert([{ name: name.trim(), age: age, mobile: mobile.trim() }])
-                    .select()
-                    .single();
+            }
 
-                console.log('[Register] New user created:', newUser);
-                console.log('[Register] Insert error:', insertError);
+            if (!result) throw lastErr || new Error('Registration failed after 3 attempts');
 
-                if (insertError) {
-                    console.error('[Register] FAILED:', insertError.message, insertError.details);
-                    throw insertError;
+            const { user, isNew } = result;
+
+            // Persist session to localStorage + sessionStorage
+            saveSession({ id: user.id, mobile: user.mobile, name: user.name, age: user.age });
+
+            // Load personality profile for returning users
+            let profileData: any = null;
+            if (!isNew) {
+                try {
+                    const { data } = await withTimeout(
+                        supabase.from('personality_profiles').select('*').eq('user_id', user.id)
+                    );
+                    profileData = data && data.length > 0 ? data[0] : null;
+                } catch { /* non-critical */ }
+
+                // Check quiz completion
+                let quizDone = isQuizDone() || !!profileData;
+                if (!quizDone) {
+                    try {
+                        const { data: qr } = await withTimeout(
+                            supabase.from('quiz_responses').select('id').eq('user_id', user.id).limit(1)
+                        );
+                        quizDone = !!(qr && qr.length > 0);
+                        if (quizDone) markQuizDone();
+                    } catch { /* non-critical */ }
                 }
 
-                saveSession(newUser);
-                console.log('[Register] Session saved for new user');
+                const traits = profileData ? {
+                    discipline: 50, resilience: 50,
+                    risk: profileData.trait_risk_taker || 50,
+                    leadership: profileData.trait_ambitious || 50,
+                    creativity: profileData.trait_creative || 50,
+                    empathy: profileData.trait_social || 50, vision: 50,
+                } : { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 };
 
                 setProfile({
-                    id: newUser.id,
-                    mobile: newUser.mobile,
-                    name: newUser.name,
-                    age: newUser.age,
-                    interests: [],
-                    roleModels: [],
-                    traits: {
-                        discipline: 50, resilience: 50, risk: 50,
-                        leadership: 50, creativity: 50, empathy: 50, vision: 50
-                    },
-                    assessmentCompleted: false
-                });
+                    id: user.id, mobile: user.mobile, name: user.name, age: user.age,
+                    interests: [], roleModels: [],
+                    traits: traits as any,
+                    assessmentCompleted: quizDone,
+                    ...(profileData ? {
+                        trait_risk_taker: profileData.trait_risk_taker,
+                        trait_creative: profileData.trait_creative,
+                        trait_analytical: profileData.trait_analytical,
+                        trait_social: profileData.trait_social,
+                        trait_ambitious: profileData.trait_ambitious,
+                        future_archetype: profileData.future_archetype,
+                    } : {})
+                } as any);
+
+                if (quizDone) {
+                    completeAssessment(
+                        traits as any,
+                        { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
+                    );
+                }
+                // Returning user — setProfile() causes GameRoot to unmount OnboardingWizard naturally
+            } else {
+                // New user — set minimal profile; onboarding flow (CinematicOnboarding + Quiz) continues automatically
+                setProfile({
+                    id: user.id, mobile: user.mobile, name: user.name, age: user.age,
+                    interests: [], roleModels: [],
+                    traits: { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                    assessmentCompleted: false,
+                } as any);
+                // GameRoot will see profile != null and assessmentCompleted = false — shows CinematicOnboarding then Quiz
             }
+
         } catch (err: any) {
-            console.error('[Register] Unexpected error:', err);
+            console.error('[Register] Failed:', err);
             setError(err.message || 'Registration failed. Please try again.');
         } finally {
+            clearTimeout(fallback);
             setIsLoading(false);
+            isSubmitting.current = false;
         }
     };
 

@@ -3,6 +3,7 @@ import { useUserStore } from '../../store/userStore';
 import { audioSynth } from '../../utils/audioSynth';
 import { Flame, Briefcase, Eye, Shield, Award, Zap, Check } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { markQuizDone } from '../../utils/session';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import type { PersonalityTraits, PsychologicalProfile, MotivationType, RiskAppetite, EmotionalStyle, SocialRole, PassionType, CoreValue } from '../../types/gameTypes';
@@ -233,6 +234,8 @@ export function PersonalityAssessment() {
                         interest_struggle: newProfile.interest_struggle || '',
                         interest_domain: newProfile.interest_domain || ''
                     }]);
+
+                    markQuizDone();
                 }
             } catch (err) {
                 console.error("Failed to save to Supabase", err);

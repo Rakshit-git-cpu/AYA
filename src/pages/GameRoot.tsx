@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabase';
+import { getSession, clearSession, markQuizDone, isQuizDone } from '../utils/session';
+import { withTimeout } from '../utils/withTimeout';
 import { useUserStore } from '../store/userStore';
 import { OnboardingWizard } from '../components/game/OnboardingWizard';
 import { CinematicOnboarding } from '../components/game/CinematicOnboarding';
@@ -16,7 +18,7 @@ import { DnaProfile } from '../components/game/DnaProfile';
 import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
 import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
-import { useRef } from 'react';
+
 import { safeStorage } from '../utils/storage';
 
 export function GameRoot() {
@@ -57,51 +59,93 @@ export function GameRoot() {
     useEffect(() => {
         const restoreSession = async () => {
             console.log('[Session] Checking for existing session...')
-            
-            const userId = localStorage.getItem('aya_user_id') || sessionStorage.getItem('aya_user_id')
-            const userMobile = localStorage.getItem('aya_user_mobile') || sessionStorage.getItem('aya_user_mobile')
-            
-            console.log('[Session] Found in storage:', { userId, userMobile })
-            
-            if (!userId || !userMobile) {
-                console.log('[Session] No session found — showing registration')
-                setSessionStatus('not_found')
-                return
-            }
-            
+
+            // Nuclear fallback — never stay on 'checking' forever
+            const maxWait = setTimeout(() => {
+                setSessionStatus(prev => prev === 'checking' ? 'not_found' : prev);
+            }, 20000);
+
             try {
-                const { data: user, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .maybeSingle()
-                
-                if (error) {
-                    console.error('[Session] Supabase error:', error)
-                    setSessionStatus('not_found')
-                    return
+                const session = getSession();
+                console.log('[Session] Found in storage:', session);
+
+                if (!session.userId || !session.mobile) {
+                    console.log('[Session] No session found — showing registration');
+                    clearTimeout(maxWait);
+                    setSessionStatus('not_found');
+                    return;
                 }
-                
+
+                // Verify user still exists in DB
+                let user: any = null;
+                try {
+                    const { data, error } = await withTimeout(
+                        supabase.from('users').select('*').eq('id', session.userId).maybeSingle()
+                    );
+                    if (error) throw error;
+                    user = data;
+                } catch (dbErr) {
+                    // DB unreachable — fall back to cached session data so user isn't locked out
+                    console.warn('[Session] DB lookup failed, using cached data:', dbErr);
+                    const store = useUserStore.getState();
+                    if (!store.profile) {
+                        // Minimal profile from cache so they can access the app
+                        store.setProfile({
+                            id: session.userId,
+                            name: session.name || 'Player',
+                            age: session.age || 18,
+                            mobile: session.mobile,
+                            total_xp: 0, level: 1,
+                            current_streak: 0, longest_streak: 0,
+                            stories_completed: 0,
+                            daily_challenge_completed: false,
+                            preferred_theme: 'city_dark',
+                            assessmentCompleted: isQuizDone(),
+                        } as any);
+                        if (isQuizDone()) {
+                            store.completeAssessment(
+                                { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                                { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
+                            );
+                        }
+                    }
+                    clearTimeout(maxWait);
+                    setSessionStatus('found');
+                    return;
+                }
+
                 if (!user) {
-                    console.log('[Session] User not in DB — clearing storage')
-                    localStorage.removeItem('aya_user_id')
-                    localStorage.removeItem('aya_user_mobile')
-                    sessionStorage.removeItem('aya_user_id')
-                    sessionStorage.removeItem('aya_user_mobile')
-                    setSessionStatus('not_found')
-                    return
+                    console.log('[Session] User not in DB — clearing session');
+                    clearSession();
+                    clearTimeout(maxWait);
+                    setSessionStatus('not_found');
+                    return;
                 }
-                
-                console.log('[Session] User found:', user.name)
-                
-                const { data: profileData } = await supabase
-                    .from('personality_profiles')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .maybeSingle()
-                
-                const store = useUserStore.getState()
-                
+
+                console.log('[Session] User found:', user.name);
+
+                // Fetch personality profile
+                let profileData: any = null;
+                try {
+                    const { data } = await withTimeout(
+                        supabase.from('personality_profiles').select('*').eq('user_id', session.userId).maybeSingle()
+                    );
+                    profileData = data;
+                } catch { /* non-critical — proceed without trait data */ }
+
+                // Check if quiz was done (via localStorage flag first for speed, then DB)
+                let quizCompleted = isQuizDone() || !!profileData;
+                if (!quizCompleted) {
+                    try {
+                        const { data: qr } = await withTimeout(
+                            supabase.from('quiz_responses').select('id').eq('user_id', session.userId).limit(1)
+                        );
+                        quizCompleted = !!(qr && qr.length > 0);
+                        if (quizCompleted) markQuizDone();
+                    } catch { /* non-critical */ }
+                }
+
+                const store = useUserStore.getState();
                 store.setProfile({
                     id: user.id,
                     name: user.name,
@@ -125,34 +169,45 @@ export function GameRoot() {
                         interest_struggle: profileData.interest_struggle,
                         interest_domain: profileData.interest_domain,
                     } : {})
-                } as any)
-                
-                if (profileData) {
+                } as any);
+
+                if (quizCompleted && profileData) {
                     store.completeAssessment(
                         {
-                            discipline: 50, resilience: 50, risk: profileData.trait_risk_taker || 50,
-                            leadership: profileData.trait_ambitious || 50, creativity: profileData.trait_creative || 50, empathy: profileData.trait_social || 50, vision: 50
+                            discipline: 50, resilience: 50,
+                            risk: profileData.trait_risk_taker || 50,
+                            leadership: profileData.trait_ambitious || 50,
+                            creativity: profileData.trait_creative || 50,
+                            empathy: profileData.trait_social || 50, vision: 50
                         },
                         {
                             motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
                             social: 'Supporter', passion: 'Creative', coreValue: 'Success'
                         }
                     );
+                } else if (quizCompleted && !profileData) {
+                    // Quiz done but profile data unavailable — mark assessment done anyway
+                    store.completeAssessment(
+                        { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                        { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
+                    );
                 }
-                
-                const savedTheme = user.preferred_theme || localStorage.getItem('aya_map_theme') || 'city_dark'
-                store.setMapTheme(savedTheme as any)
-                
-                console.log('[Session] Session restored successfully!')
-                setSessionStatus('found')
-                
+
+                const savedTheme = user.preferred_theme || 'city_dark';
+                store.setMapTheme(savedTheme as any);
+
+                console.log('[Session] Session restored successfully!');
+                clearTimeout(maxWait);
+                setSessionStatus('found');
+
             } catch (err) {
-                console.error('[Session] Unexpected error:', err)
-                setSessionStatus('not_found')
+                console.error('[Session] Unexpected error:', err);
+                clearTimeout(maxWait);
+                setSessionStatus('not_found');
             }
-        }
-        
-        restoreSession()
+        };
+
+        restoreSession();
     }, [])
     const [activeAge, setActiveAge] = useState<number | null>(null);
     const [activeLevel, setActiveLevel] = useState<Level | null>(null);
@@ -188,7 +243,9 @@ export function GameRoot() {
         )
     }
 
-    if (sessionStatus === 'not_found' || !profile) {
+    // Only gate on !profile — sessionStatus is for the loading screen only.
+    // OnboardingWizard calls setProfile() directly, which unmounts this gate immediately.
+    if (!profile) {
         return <OnboardingWizard />;
     }
 
