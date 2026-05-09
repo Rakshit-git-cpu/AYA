@@ -8,6 +8,28 @@ export function generateLevels(_age: number): Level[] {
 
     // Master List of ALL Levels
     const levels: Omit<Level, 'status' | 'isLocked' | 'stars'>[] = [
+        // Age 20: Billie Eilish (Story 2)
+        {
+            id: 'lvl_20_billie_2', title: 'The Person Who Left You On Seen', description: 'At 20, you must choose between chasing someone who ghosts you, or turning the pain into art.',
+            requiredStars: 0, year: 2022, age: 20, theme: 'Music', age_mirror_text: 'waiting for a text back while your songs play everywhere', archetype: 'The Vulnerable', personality: 'Billie Eilish',
+            bio: 'A 20-year-old global superstar learning the painful difference between emotional dependence and actual love.',
+            fame: 'Grammy record-holder. Gen Z\'s most honest voice.',
+            achievements: ['5 Grammys at age 18', 'Youngest artist to record a Bond theme', 'TIME100 Most Influential'],
+            lesson: 'THE COST OF ATTACHMENT — sometimes the most loving thing you can do for yourself is remove access.',
+            avatarUrl: '/assets/portrait-billie-20.png', scenarioId: 'lvl_age_20_billie_2',
+            idolTraits: { discipline: 80, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 85 }
+        },
+        // Age 19: Justin Bieber
+        {
+            id: 'lvl_19_justin', title: 'The Hotel Room at 2AM', description: 'At 19, you sit alone in a hotel room deciding whether to text an ex or face the emptiness underneath.',
+            requiredStars: 0, year: 2013, age: 19, theme: 'Music', age_mirror_text: 'sitting in a silent hotel room after playing for a screaming arena', archetype: 'The Resilient', personality: 'Justin Bieber',
+            bio: 'A 19-year-old pop phenomenon struggling to find his identity outside of fame and a highly publicized relationship.',
+            fame: 'Global pop sensation.',
+            achievements: ['Multiple Grammy Awards', 'One of the best-selling music artists', 'Record-breaking stadium tours'],
+            lesson: 'THE EMPTINESS UNDERNEATH — finding yourself starts when the noise stops.',
+            avatarUrl: '/assets/portrait-justin-19.png', scenarioId: 'lvl_age_19_justin',
+            idolTraits: { discipline: 70, resilience: 90, risk: 85, leadership: 85, creativity: 95, empathy: 90, vision: 70 }
+        },
         // Age 17: Shah Rukh Khan
         {
             id: 'lvl_17_srk', title: 'The Stage or The Books', description: 'At 17, SRK faces an impossible choice — grieve, study, or chase the stage.',

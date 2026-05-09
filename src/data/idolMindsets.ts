@@ -756,6 +756,33 @@ export const IDOL_MINDSETS: Record<string, IdolMindset> = {
         },
         avatarUrl: '/assets/avatar_billie.jpg'
     },
+    "Justin Bieber": {
+        name: "Justin Bieber",
+        archetypeTitle: "The Comeback Kid",
+        quote: "I'm looking forward to influencing others in a positive way. My message is you can do anything if you just put your mind to it.",
+        voice: {
+            tone: "Vulnerable, Honest, Resilient",
+            intro: "You don't have to be perfect. You just have to keep trying."
+        },
+        missions: {
+            discipline: { title: "The Studio Routine", desc: "Work on your craft for 2 hours today without distractions.", xp: "+50 Focus" },
+            resilience: { title: "Forgive Yourself", desc: "Acknowledge a recent mistake, forgive yourself, and move on.", xp: "+50 Healing" },
+            risk: { title: "Vulnerable Truth", desc: "Share something honest about your struggles with a close friend.", xp: "+50 Authenticity" },
+            leadership: { title: "Own the Stage", desc: "Take charge of a situation where others are hesitating.", xp: "+50 Confidence" },
+            creativity: { title: "Acoustic Session", desc: "Strip a project down to its bare essentials.", xp: "+50 Clarity" },
+            empathy: { title: "Reach Out", desc: "Check in on someone who might be silently struggling.", xp: "+50 Connection" },
+            vision: { title: "The Next Chapter", desc: "Write down the kind of person you want to become after this phase.", xp: "+50 Growth" }
+        },
+        profile: {
+            motivation: 'Impact',
+            risk: 'Vulnerable',
+            emotional: 'Sensitive',
+            social: 'Extrovert',
+            passion: 'Creative',
+            coreValue: 'Resilience'
+        },
+        avatarUrl: '/assets/portrait-justin-19.png'
+    },
     "MrBeast": {
         name: "MrBeast",
         archetypeTitle: "The Obsessed",
@@ -1109,6 +1136,7 @@ export const IDOL_PROFILES: Record<string, Record<string, number>> = {
     "Malala Yousafzai": { analytical: 85, ambitious: 85, risk: 100, creativity: 70, social: 95 },
     "Indra Nooyi": { analytical: 95, ambitious: 95, risk: 80, creativity: 70, social: 85 },
     "Billie Eilish": { analytical: 55, ambitious: 85, risk: 80, creativity: 100, social: 60 },
+    "Justin Bieber": { analytical: 60, ambitious: 90, risk: 90, creativity: 95, social: 85 },
     "MrBeast": { analytical: 70, ambitious: 100, risk: 95, creativity: 90, social: 85 },
     "Ritesh Agarwal": { analytical: 80, ambitious: 100, risk: 98, creativity: 75, social: 70 },
     "Muhammad Ali": { analytical: 65, ambitious: 100, risk: 95, creativity: 80, social: 90 },

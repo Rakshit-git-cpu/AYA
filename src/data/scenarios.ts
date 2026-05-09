@@ -4223,5 +4223,329 @@ export const STORY_DATABASE: Record<string, any> = {
                 ]
             }
         ]
+    },
+
+    // AGE 20: Billie Eilish — "The Person Who Left You On Seen"
+    'lvl_age_20_billie_2': {
+        title: "The Person Who Left You On Seen",
+        source: "Source: Billie Eilish's relationships and music",
+        frames: [
+            {
+                id: 'intro',
+                emotion: 'love',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                portrait: '/assets/portrait-billie-20.png',
+                text: "It's 2022. You are 20. Your songs are everywhere. Millions think you are living a dream life. But every night ends the same way. Waiting for one person to reply. Tonight, they leave your message on seen again. Thirty minutes later, you see them laughing with someone else on Instagram Live. Your stomach drops.",
+                choices: [
+                    {
+                        text: "Double text: 'Are you avoiding me?'",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Fear vs Love",
+                        feedback: "You reached out from fear not love. Billie learned that chasing someone who chooses distance is a form of self-abandonment."
+                    },
+                    {
+                        text: "Post a story pretending you're having fun too",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Masking",
+                        feedback: "You try to mask the pain, but the silence still hurts."
+                    },
+                    {
+                        text: "Throw the phone away and start writing music",
+                        next: 'scene_2B',
+                        score: 15,
+                        feedbackTitle: "Creation",
+                        feedback: "You chose creation over desperation. This is exactly what Billie did. Pain that becomes art stops being just pain."
+                    },
+                    {
+                        text: "Block them everywhere to protect yourself before they can hurt you again",
+                        next: 'scene_2A',
+                        score: 15,
+                        feedbackTitle: "Protection",
+                        feedback: "You chose protection. Billie understood this eventually — sometimes the most loving thing you can do for yourself is remove access."
+                    },
+                    {
+                        text: "Stay silent and wait to see if they come back",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Hope",
+                        feedback: "You chose hope over action. The hardest truth — silence from someone who wants to reach you lasts minutes. Silence from someone who doesn't lasts forever."
+                    }
+                ]
+            },
+            {
+                id: 'scene_2A',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                portrait: '/assets/portrait-billie-20.png',
+                text: "Three dots appear instantly. 'You overthink everything. I can't breathe around you anymore.' You reread the message again and again. Part of you wants to apologize. Part of you wants to scream. You know if you keep chasing them, you may lose your self-respect completely. But losing them feels worse.",
+                choices: [
+                    {
+                        text: "Send a huge emotional paragraph explaining yourself",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Emotional Flood",
+                        feedback: ""
+                    },
+                    {
+                        text: "Reply: 'Then leave.'",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Defensive Anger",
+                        feedback: ""
+                    },
+                    {
+                        text: "Ask honestly: 'Did you ever actually love me?'",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Desperate Vulnerability",
+                        feedback: ""
+                    },
+                    {
+                        text: "Delete the chat without replying",
+                        next: 'LEARNING_LESSON',
+                        score: 15,
+                        feedbackTitle: "Silence",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'scene_2B',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-studio-3am-2022.png',
+                portrait: '/assets/portrait-billie-20.png',
+                text: "At 3:12 AM, your room is dark except for your laptop screen. The pain slowly turns into lyrics. Every sentence feels personal. Dangerous. Your producer listens quietly and says: 'This could become your biggest song.' You suddenly freeze. If you release it, the world will know exactly who hurt you.",
+                choices: [
+                    {
+                        text: "Release it exactly as written",
+                        next: 'LEARNING_LESSON',
+                        score: 15,
+                        feedbackTitle: "Raw Honesty",
+                        feedback: ""
+                    },
+                    {
+                        text: "Change the lyrics to protect them",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Protection",
+                        feedback: ""
+                    },
+                    {
+                        text: "Never release it — too vulnerable",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Self-Protection",
+                        feedback: ""
+                    },
+                    {
+                        text: "Perform it live without telling anyone who it's about",
+                        next: 'LEARNING_LESSON',
+                        score: 15,
+                        feedbackTitle: "Subtle Art",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_LESSON',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                text: "LESSON: THE COST OF ATTACHMENT. Billie later spoke openly about unhealthy attachment and losing herself emotionally in relationships. Sometimes heartbreak is not losing someone else. Sometimes it's realizing how much of yourself you sacrificed to keep them. The most painful truth: you can love someone deeply and still be completely wrong for each other.",
+                choices: [
+                    { text: "Ponder", next: 'reflection_1', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_1',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                text: "Reflection: Is emotional dependence a form of love or a loss of identity?",
+                choices: [
+                    { text: "Next", next: 'reflection_2', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_2',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                text: "Reflection: If someone triggers your anxiety constantly, why is leaving them so difficult?",
+                choices: [
+                    { text: "Next", next: 'reflection_3', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_3',
+                emotion: 'grief',
+                bg: '/assets/bg-billie-bedroom-night-2022.png',
+                text: "Reflection: Would you rather be loved deeply by one person or admired by millions?",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
+    },
+
+    // AGE 19: Justin Bieber — "The Hotel Room at 2AM"
+    'lvl_age_19_justin': {
+        title: "The Hotel Room at 2AM",
+        source: "Source: Justin Bieber's early career struggles",
+        frames: [
+            {
+                id: 'intro',
+                emotion: 'tension',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                portrait: '/assets/portrait-justin-19.png',
+                text: "It's 2013. You are 19. You are one of the most famous people on Earth. Crowds scream your name. Headlines follow your every move. But your relationship is collapsing in public. Every fight becomes trending news. Tonight, after another argument, you sit alone in a hotel room staring at your phone. One text could restart everything. Or destroy you again.",
+                choices: [
+                    {
+                        text: "Text: 'I miss you.'",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Comfort",
+                        feedback: "You reached for comfort. Justin did too. But he later realized missing someone and loving them are completely different feelings that feel identical at 2AM."
+                    },
+                    {
+                        text: "Drive through the city alone at 2AM",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Escape",
+                        feedback: "You try to escape, but the thoughts follow you."
+                    },
+                    {
+                        text: "Go to the studio and bury yourself in music",
+                        next: 'scene_2B',
+                        score: 15,
+                        feedbackTitle: "Creation",
+                        feedback: "You chose creation. Justin's best work came from his worst nights. Pain processed through art becomes something the world can use."
+                    },
+                    {
+                        text: "Turn your phone off completely and disappear",
+                        next: 'scene_2B',
+                        score: 15,
+                        feedbackTitle: "Distance",
+                        feedback: "You chose distance. Justin eventually learned that silence from the world was the only way to hear himself think. Sometimes disappearing is not running away — it is finding yourself."
+                    },
+                    {
+                        text: "Call them even though you know it will become another fight",
+                        next: 'scene_2A',
+                        score: 10,
+                        feedbackTitle: "Chaos",
+                        feedback: "You reach for familiar chaos over unfamiliar peace."
+                    }
+                ]
+            },
+            {
+                id: 'scene_2A',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                portrait: '/assets/portrait-justin-19.png',
+                text: "They reply instantly. For a second, it feels warm. Familiar. Then the argument starts again. Old jealousy. Old accusations. Old pain neither of you fixed. You suddenly realize something terrifying: You don't know whether you miss THEM... or just the feeling of not being alone.",
+                choices: [
+                    {
+                        text: "Keep fighting for the relationship no matter how toxic it becomes",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Clinging",
+                        feedback: ""
+                    },
+                    {
+                        text: "End things even if it emotionally destroys you",
+                        next: 'LEARNING_LESSON',
+                        score: 15,
+                        feedbackTitle: "Painful Truth",
+                        feedback: ""
+                    },
+                    {
+                        text: "Ask for a break instead of a breakup",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Delaying",
+                        feedback: ""
+                    },
+                    {
+                        text: "Stay together because the highs still feel magical",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Addiction",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'scene_2B',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-studio-night-2013.png',
+                portrait: '/assets/portrait-justin-19.png',
+                text: "The studio is silent except for the beat playing through the speakers. You record for hours without stopping. The producer finally says: 'You sound angry.' You stare at the mic. Because the truth is... you ARE angry. At them. At yourself. At the pressure of pretending to be okay while falling apart internally.",
+                choices: [
+                    {
+                        text: "Turn the pain into your best song yet",
+                        next: 'LEARNING_LESSON',
+                        score: 15,
+                        feedbackTitle: "Channeling",
+                        feedback: ""
+                    },
+                    {
+                        text: "Leave halfway because the emotions are too overwhelming",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Overwhelmed",
+                        feedback: ""
+                    },
+                    {
+                        text: "Call your mom because you feel emotionally lost",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Seeking Support",
+                        feedback: ""
+                    },
+                    {
+                        text: "Keep working until exhaustion numbs the pain",
+                        next: 'LEARNING_LESSON',
+                        score: 10,
+                        feedbackTitle: "Numbing",
+                        feedback: ""
+                    }
+                ]
+            },
+            {
+                id: 'LEARNING_LESSON',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                text: "LESSON: THE EMPTINESS UNDERNEATH. Justin later said the hardest part of being 19 wasn't the fame — it was realizing he had never learned how to be alone. He had gone from his parents' house to tour buses to hotel rooms. He had never once sat with himself long enough to know who he actually was. The relationship didn't break him. The emptiness underneath did.",
+                choices: [
+                    { text: "Ponder", next: 'reflection_1', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_1',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                text: "Reflection: Can two emotionally broken people heal together, or only damage each other more?",
+                choices: [
+                    { text: "Next", next: 'reflection_2', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_2',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                text: "Reflection: Is missing someone the same as loving them?",
+                choices: [
+                    { text: "Next", next: 'reflection_3', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            },
+            {
+                id: 'reflection_3',
+                emotion: 'grief',
+                bg: '/assets/bg-justin-hotel-room-2013.png',
+                text: "Reflection: Does fame make loneliness worse or just more visible?",
+                choices: [
+                    { text: "Complete Level", next: 'COMPLETE', score: 0, feedbackTitle: "", feedback: "" }
+                ]
+            }
+        ]
     }
 };
