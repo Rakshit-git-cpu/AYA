@@ -739,7 +739,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
             {/* Main Content Area */}
             <div className={clsx(
-                "relative z-10 w-full h-[100dvh] flex flex-col pb-6 items-center max-w-3xl px-6 transition-opacity duration-700",
+                "relative z-10 w-full h-[100dvh] flex flex-col pt-[120px] pb-6 items-center max-w-3xl px-6 transition-opacity duration-700",
                 isBgLoaded ? "opacity-100 delay-300" : "opacity-0 pointer-events-none"
             )}>
 
@@ -775,7 +775,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                     >
                         <div 
                             ref={textContainerRef}
-                            className="p-5 overflow-y-auto custom-scrollbar flex flex-col"
+                            className="p-5 overflow-y-auto custom-scrollbar flex flex-col flex-1 min-h-0"
                             style={{ 
                                 scrollbarWidth: 'thin', 
                                 scrollbarColor: `${currentTheme.badgeColor} transparent`,
@@ -862,8 +862,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                             <p className={clsx(
                                 "leading-relaxed",
                                 isCandyTheme
-                                    ? "text-xl md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
-                                    : "text-xl md:text-2xl font-comic text-white drop-shadow-md"
+                                    ? "text-[17px] md:text-2xl font-bold font-comic text-pink-900 drop-shadow-none"
+                                    : "text-[17px] md:text-2xl font-comic text-white drop-shadow-md"
                             )}>
                                 {displayedText}
                                 {isTyping && <span className={clsx("inline-block w-2 h-6 ml-1 animate-cursor-blink align-middle", isCandyTheme ? "bg-pink-500" : "bg-yellow-400")} />}
@@ -874,13 +874,13 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         {!isTyping && !feedbackChoice && (
                             <div
                                 className="mt-3 animate-fade-in"
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '12px',
-                                    width: '100%',
-                                    flexShrink: 0,
-                                }}
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: window.innerWidth < 768 ? '8px' : '12px',
+                                        width: '100%',
+                                        flexShrink: 0,
+                                    }}
                             >
                                 {displayedChoices.map((choice, idx) => (
                                     <button
@@ -893,8 +893,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                                                 : "border-white/10 rounded-2xl"
                                         )}
                                         style={{
-                                            minHeight: '56px',
-                                            padding: '14px 16px',
+                                            minHeight: window.innerWidth < 768 ? '48px' : '56px',
+                                            padding: window.innerWidth < 768 ? '10px 14px' : '14px 16px',
                                             whiteSpace: 'normal',
                                             wordBreak: 'break-word',
                                             ...(isCandyMode ? {} : { borderColor: currentTheme.choiceBorder }),
