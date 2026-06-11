@@ -12,6 +12,8 @@ interface MatchReportProps {
     userProfile?: PsychologicalProfile;
     idolTraits: PersonalityTraits;
     idolName: string;
+    idolAvatarUrl?: string;
+    idolAge?: number;
     onClose: () => void;
 }
 
@@ -207,7 +209,7 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
     </div>
 );
 
-export function MatchReport({ userTraits, userProfile, idolName, onClose }: MatchReportProps) {
+export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, idolAge, onClose }: MatchReportProps) {
     const [animatedPercent, setAnimatedPercent] = useState(0);
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const cleanIdolName = (idolName || "Default").trim();
@@ -448,7 +450,7 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
                                         : "border-[#0a0f28] bg-slate-900 shadow-[0_0_50px_rgba(77,217,255,0.4)] ring-2 ring-[#4DD9FF]/30"
                                 )}>
                                     <img 
-                                        src={idolData.avatarUrl || '/assets/avatar_business.png'} 
+                                        src={idolAvatarUrl || idolData.avatarUrl || '/assets/avatar_business.png'} 
                                         alt={idolName} 
                                         className="w-full h-full object-cover" 
                                         onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}
@@ -463,13 +465,22 @@ export function MatchReport({ userTraits, userProfile, idolName, onClose }: Matc
 
                             {/* Name Title */}
                             <h2 className={clsx(
-                                "text-5xl md:text-7xl text-center mb-10 tracking-wide",
+                                "text-5xl md:text-7xl text-center mb-2 tracking-wide",
                                 isCandyMode
                                     ? "font-yummy text-white drop-shadow-[0_6px_0_#4A148C] stroke-text-white"
                                     : "font-black text-[#E8E0FF] drop-shadow-[0_0_20px_rgba(232,224,255,0.6)] uppercase"
                             )}>
                                 {idolName}
                             </h2>
+                            {idolAge && (
+                                <div className={clsx(
+                                    "text-xl md:text-2xl font-bold mb-10 tracking-widest uppercase",
+                                    isCandyMode ? "text-white/90 drop-shadow-md font-yummy" : "text-[#4DD9FF]/80 drop-shadow-[0_0_10px_rgba(77,217,255,0.3)]"
+                                )}>
+                                    AGE {idolAge}
+                                </div>
+                            )}
+                            {!idolAge && <div className="mb-10"></div>}
 
                             {/* Mobile Views for columns (collapsed) */}
                             <div className="md:hidden w-full flex flex-col gap-6 mb-8">

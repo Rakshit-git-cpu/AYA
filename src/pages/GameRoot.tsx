@@ -369,7 +369,9 @@ export function GameRoot() {
                     userTraits={profile.traits}
                     userProfile={profile.psychologicalProfile}
                     idolTraits={activeLevel.idolTraits || { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 }}
-                    idolName={activeLevel.personality || activeLevel.archetype}
+                    idolName={activeLevel.personality || activeLevel.archetype || "Unknown"}
+                    idolAvatarUrl={activeLevel.portrait ? `/portraits/${activeLevel.portrait}` : undefined}
+                    idolAge={activeLevel.age}
                     onClose={() => {
                         setActiveLevel(null);
                         setActiveAge(null);

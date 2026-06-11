@@ -1,10 +1,12 @@
 import type { Level } from '../types/gameTypes';
+import { STORY_DATABASE } from './scenarios';
 
 export const jeeStories: Level[] = [
     {
         id: 'jee-day-1',
         day_number: 1,
         placeholder: false,
+        scenarioId: 'jee-day-1',
         personality: 'Chirag Falor',
         age: 16,
         title: 'The YouTube Hole',
@@ -66,3 +68,76 @@ export const jeeStories: Level[] = [
         } as Level;
     })
 ];
+
+// Dynamically populate STORY_DATABASE for JEE stories so ScenarioGame plays them
+jeeStories.forEach((level: any) => {
+    if (level.part1 && level.part2) {
+        STORY_DATABASE[level.scenarioId] = {
+            title: level.title,
+            frames: [
+                {
+                    id: 'intro',
+                    bg: `/portraits/${level.background}`,
+                    text: level.part1.setup,
+                    choices: level.part1.choices.map((c: any) => ({
+                        text: c.text,
+                        next: `part1_result_${c.id}`,
+                        score: 0,
+                        feedbackTitle: "Reflection",
+                        feedback: level.part1.reflections[c.id],
+                        trait_impacts: { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+                    }))
+                },
+                ...level.part1.choices.map((c: any) => ({
+                    id: `part1_result_${c.id}`,
+                    bg: `/portraits/${level.background}`,
+                    text: level.part1.actualChoice + "\n\n" + level.part1.lessonTitle + "\n" + level.part1.lesson,
+                    choices: [
+                        { 
+                            text: "Continue", 
+                            next: "part2_intro", 
+                            score: 0, 
+                            feedbackTitle: "", 
+                            feedback: "",
+                            trait_impacts: { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+                        }
+                    ]
+                })),
+                {
+                    id: 'part2_intro',
+                    bg: `/portraits/${level.background}`,
+                    text: level.part2.setup,
+                    choices: level.part2.choices.map((c: any) => ({
+                        text: c.text,
+                        next: `part2_result_${c.id}`,
+                        score: 0,
+                        feedbackTitle: "Reflection",
+                        feedback: level.part2.reflections[c.id],
+                        trait_impacts: { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+                    }))
+                },
+                ...level.part2.choices.map((c: any) => ({
+                    id: `part2_result_${c.id}`,
+                    bg: `/portraits/${level.background}`,
+                    text: level.part2.actualChoice + "\n\n" + level.part2.lessonTitle + "\n" + level.part2.lesson,
+                    choices: [
+                        { 
+                            text: "Finish", 
+                            next: "lesson", 
+                            score: 0, 
+                            feedbackTitle: "", 
+                            feedback: "",
+                            trait_impacts: { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+                        }
+                    ]
+                })),
+                {
+                    id: 'lesson',
+                    bg: `/portraits/${level.background}`,
+                    text: "You have completed this chapter of the journey.",
+                    choices: []
+                }
+            ]
+        };
+    }
+});
