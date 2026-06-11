@@ -47,6 +47,7 @@ export function GameRoot() {
     const initialView = (localStorage.getItem('aya_last_view') as any) || 'map';
     const [view, setView] = useState<'map' | 'selection' | 'intro' | 'game' | 'report' | 'dna'>(initialView);
     const [sessionStatus, setSessionStatus] = useState<'checking' | 'found' | 'not_found'>('checking');
+    const [connectionError, setConnectionError] = useState<string | null>(null);
 
     useEffect(() => {
         if (sessionStatus === 'found' && view) {
@@ -78,51 +79,69 @@ export function GameRoot() {
 
                 // Verify user still exists in DB
                 let user: any = null;
-                try {
-                    const { data, error } = await withTimeout(
-                        supabase.from('users').select('*').eq('id', session.userId).maybeSingle()
-                    );
-                    if (error) throw error;
-                    user = data;
-                } catch (dbErr) {
-                    // DB unreachable — fall back to cached session data so user isn't locked out
-                    console.warn('[Session] DB lookup failed, using cached data:', dbErr);
-                    const store = useUserStore.getState();
-                    if (!store.profile) {
-                        // Minimal profile from cache so they can access the app
-                        store.setProfile({
-                            id: session.userId,
-                            name: session.name || 'Player',
-                            age: session.age || 18,
-                            mobile: session.mobile,
-                            total_xp: 0, level: 1,
-                            current_streak: 0, longest_streak: 0,
-                            stories_completed: 0,
-                            daily_challenge_completed: false,
-                            preferred_theme: 'city_dark',
-                            access_type: 'free',
-                            access_start_date: null,
-                            preferred_map: null,
-                            assessmentCompleted: isQuizDone(),
-                        } as any);
-                        if (isQuizDone()) {
-                            store.completeAssessment(
-                                { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
-                                { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
+                const store = useUserStore.getState();
+                const isJeeNeet = store.profile?.access_type === 'jee15' || store.profile?.access_type === 'neet15';
+
+                if (isJeeNeet) {
+                    let attempt = 0;
+                    while (attempt < 3 && !user) {
+                        attempt++;
+                        try {
+                            const { data, error } = await withTimeout(
+                                supabase.from('users').select('*').eq('id', session.userId).maybeSingle()
                             );
+                            if (error) throw error;
+                            user = data;
+                        } catch (e) {
+                            if (attempt < 3) {
+                                console.warn(`[Session] DB lookup failed, retrying in 5s (Attempt ${attempt}/3)...`);
+                                await new Promise(r => setTimeout(r, 5000));
+                            } else {
+                                console.error('[Session] DB lookup failed after 3 attempts for JEE/NEET user.');
+                                clearTimeout(maxWait);
+                                setConnectionError("Having trouble connecting. Please check your internet and try again.");
+                                return; // Stay on loading screen indefinitely
+                            }
                         }
-                    } else if (store.profile.access_type === 'jee15' || store.profile.access_type === 'neet15') {
-                        // Never use a cached value for these three fields
-                        store.setProfile({
-                            ...store.profile,
-                            access_type: 'free',
-                            access_start_date: null,
-                            preferred_map: null,
-                        } as any);
                     }
-                    clearTimeout(maxWait);
-                    setSessionStatus('found');
-                    return;
+                } else {
+                    try {
+                        const { data, error } = await withTimeout(
+                            supabase.from('users').select('*').eq('id', session.userId).maybeSingle()
+                        );
+                        if (error) throw error;
+                        user = data;
+                    } catch (dbErr) {
+                        // DB unreachable — fall back to cached session data so user isn't locked out
+                        console.warn('[Session] DB lookup failed, using cached data:', dbErr);
+                        if (!store.profile) {
+                            // Minimal profile from cache so they can access the app
+                            store.setProfile({
+                                id: session.userId,
+                                name: session.name || 'Player',
+                                age: session.age || 18,
+                                mobile: session.mobile,
+                                total_xp: 0, level: 1,
+                                current_streak: 0, longest_streak: 0,
+                                stories_completed: 0,
+                                daily_challenge_completed: false,
+                                preferred_theme: 'city_dark',
+                                access_type: 'free',
+                                access_start_date: null,
+                                preferred_map: null,
+                                assessmentCompleted: isQuizDone(),
+                            } as any);
+                            if (isQuizDone()) {
+                                store.completeAssessment(
+                                    { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                                    { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
+                                );
+                            }
+                        }
+                        clearTimeout(maxWait);
+                        setSessionStatus('found');
+                        return;
+                    }
                 }
 
                 if (!user) {
@@ -156,7 +175,6 @@ export function GameRoot() {
                     } catch { /* non-critical */ }
                 }
 
-                const store = useUserStore.getState();
                 store.setProfile({
                     id: user.id,
                     name: user.name,
@@ -248,11 +266,16 @@ export function GameRoot() {
 
     if (sessionStatus === 'checking') {
         return (
-            <div className="w-full h-screen bg-[#0d0d16] flex flex-col items-center justify-center gap-4">
+            <div className="w-full h-screen bg-[#0d0d16] flex flex-col items-center justify-center gap-4 p-6 text-center">
                 <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
                 <p className="text-cyan-400 text-lg font-bold tracking-widest animate-pulse">
                     LOADING YOUR UNIVERSE...
                 </p>
+                {connectionError && (
+                    <div className="mt-4 p-4 bg-red-900/40 border border-red-500/50 rounded-xl text-red-200 text-sm max-w-sm animate-fade-in">
+                        {connectionError}
+                    </div>
+                )}
             </div>
         )
     }
