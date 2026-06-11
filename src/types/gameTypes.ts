@@ -113,6 +113,8 @@ export interface Level {
     // Access Code
     day_number?: number;
     placeholder?: boolean;
+    portrait?: string;
+    background?: string;
 }
 
 export interface AccessCode {

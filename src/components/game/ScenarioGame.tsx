@@ -147,6 +147,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         if (!scenario || !scenario.frames) return;
         const imagesToPreload = scenario.frames.map((f: any) => f.bg).filter(Boolean);
         if (level.avatarUrl) imagesToPreload.push(level.avatarUrl);
+        if (level.portrait) imagesToPreload.push(`/portraits/${level.portrait}`);
+        if (level.background) imagesToPreload.push(`/portraits/${level.background}`);
 
         // Use a Set to avoid preloading duplicates
         [...new Set(imagesToPreload)].forEach(url => {
@@ -619,8 +621,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             {/* Background Layer */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
-                    key={frame.bg}
-                    src={frame.bg}
+                    key={level.background ? `/portraits/${level.background}` : frame.bg}
+                    src={level.background ? `/portraits/${level.background}` : frame.bg}
                     alt="Scenario Scene"
                     onLoad={() => setIsBgLoaded(true)}
                     onError={() => setIsBgLoaded(true)}

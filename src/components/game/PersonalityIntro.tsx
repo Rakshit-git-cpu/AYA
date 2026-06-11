@@ -59,7 +59,7 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
 
                     {/* Character Image */}
                     <img
-                        src={level.avatarUrl}
+                        src={level.portrait ? `/portraits/${level.portrait}` : level.avatarUrl}
                         alt={level.personality}
                         className={clsx(
                             "absolute inset-0 w-full h-full object-cover object-top filter md:scale-110 md:group-hover:scale-115 transition-transform duration-1000 origin-top",
