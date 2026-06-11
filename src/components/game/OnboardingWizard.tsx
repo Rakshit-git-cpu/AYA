@@ -130,6 +130,7 @@ export function OnboardingWizard() {
         setError("");
 
         const cleanMobile = mobile.trim().replace(/\s+/g, '');
+        console.error('DEBUG 6-DIGIT FLOW: cleanMobile=', cleanMobile, 'length=', cleanMobile.length);
 
         // 20s escape hatch — prevents infinite spinner even if all retries fail
         const fallback = setTimeout(() => {
@@ -242,8 +243,17 @@ export function OnboardingWizard() {
                             }
                         }
                     }
-                } catch (e) {
+                } catch (e: any) {
                     lastErr = e;
+                    // Do not retry for deterministic validation errors
+                    if (e instanceof Error && (
+                        e.message.includes("Invalid access") || 
+                        e.message.includes("already been used") || 
+                        e.message.includes("has expired") || 
+                        e.message.includes("User associated with this code not found")
+                    )) {
+                        break;
+                    }
                     if (attempt < 3) await new Promise(r => setTimeout(r, 1000 * attempt)); // exponential back-off
                 }
             }
