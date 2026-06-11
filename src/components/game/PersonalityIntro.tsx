@@ -1,6 +1,6 @@
 import type { Level } from '../../types/gameTypes';
 import { Play, Trophy, Sparkles, Star } from 'lucide-react';
-import { audioManager } from '../../utils/audioManager';
+import { audioSynth } from '../../utils/audioSynth';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useUserStore } from '../../store/userStore';
@@ -18,16 +18,15 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
     useEffect(() => {
         setIsVisible(true);
         // Safe audio call
-        if (audioManager.playTransition) {
+        if (audioSynth.playReveal) {
             try {
-                audioManager.playTransition();
+                audioSynth.playReveal();
             } catch (e) { console.warn("Audio failed", e); }
         }
     }, []);
 
     const handleStart = () => {
-        audioManager.unlockAudio();
-        audioManager.playClick();
+        audioSynth.playClick();
         setIsVisible(false);
         setTimeout(onStart, 300);
     };
@@ -194,8 +193,7 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
                         </button>
                         <button
                             onClick={() => {
-                                audioManager.unlockAudio();
-                                audioManager.playClick();
+                                audioSynth.playClick();
                                 onBack();
                             }}
                             className={clsx(
