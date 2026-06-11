@@ -1,6 +1,8 @@
 import type { Level } from '../../types/gameTypes';
 import { Play, Trophy, Sparkles, Star } from 'lucide-react';
 import { audioSynth } from '../../utils/audioSynth';
+import { unlockAudio } from '../../utils/audioManager';
+import { bgmManager } from '../../utils/bgmManager';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useUserStore } from '../../store/userStore';
@@ -26,6 +28,8 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
     }, []);
 
     const handleStart = () => {
+        unlockAudio();
+        bgmManager.unlock();
         audioSynth.playClick();
         setIsVisible(false);
         setTimeout(onStart, 300);
@@ -92,10 +96,26 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
                         )}>
                             {level.archetype}
                         </div>
+                        {level.location && (
+                            <div className={clsx(
+                                "px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm",
+                                isCandyMode ? "bg-slate-200 text-slate-600" : "bg-[#4DD9FF]/10 border border-[#4DD9FF]/30 text-[#4DD9FF] drop-shadow-[0_0_5px_rgba(77,217,255,0.3)]"
+                            )}>
+                                {level.location}
+                            </div>
+                        )}
                     </div>
 
                     {/* Title & Fame */}
                     <div className="mb-4 md:mb-6">
+                        {level.title && (
+                            <div className={clsx(
+                                "text-sm md:text-base font-bold tracking-widest uppercase mb-1",
+                                isCandyMode ? "text-slate-500" : "text-[#4DD9FF]"
+                            )}>
+                                {level.title}
+                            </div>
+                        )}
                         <h1 className={clsx(
                             "text-3xl md:text-6xl font-black leading-none uppercase tracking-tighter mb-2",
                             isCandyMode 
@@ -193,6 +213,8 @@ export function PersonalityIntro({ level, onStart, onBack }: PersonalityIntroPro
                         </button>
                         <button
                             onClick={() => {
+                                unlockAudio();
+                                bgmManager.unlock();
                                 audioSynth.playClick();
                                 onBack();
                             }}

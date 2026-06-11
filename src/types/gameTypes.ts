@@ -115,6 +115,7 @@ export interface Level {
     placeholder?: boolean;
     portrait?: string;
     background?: string;
+    location?: string;
 }
 
 export interface AccessCode {

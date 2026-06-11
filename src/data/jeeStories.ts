@@ -10,6 +10,7 @@ export const jeeStories: Level[] = [
         personality: 'Chirag Falor',
         age: 16,
         title: 'The YouTube Hole',
+        description: 'Chirag Falor scored AIR 1 in JEE Advanced 2020 — the first student to do so while studying independently using MIT OpenCourseWare. He was 18. This is his story at 16, when the distraction almost won.',
         location: 'Pune, 2015',
         portrait: 'portrait-chirag-falor.png',
         background: 'bg-chirag-pune-2015.png',
@@ -119,10 +120,10 @@ jeeStories.forEach((level: any) => {
                 ...level.part2.choices.map((c: any) => ({
                     id: `part2_result_${c.id}`,
                     bg: `/portraits/${level.background}`,
-                    text: level.part2.actualChoice + "\n\n" + level.part2.lessonTitle + "\n" + level.part2.lesson,
+                    text: level.part2.actualChoice,
                     choices: [
                         { 
-                            text: "Finish", 
+                            text: "View Insight", 
                             next: "lesson", 
                             score: 0, 
                             feedbackTitle: "", 
@@ -134,8 +135,17 @@ jeeStories.forEach((level: any) => {
                 {
                     id: 'lesson',
                     bg: `/portraits/${level.background}`,
-                    text: "You have completed this chapter of the journey.",
-                    choices: []
+                    text: `LESSON: ${level.part2.lessonTitle}. ${level.part2.lesson}`,
+                    choices: [
+                        {
+                            text: "Complete Journey",
+                            next: 'COMPLETE',
+                            score: 10,
+                            feedbackTitle: "Mission Accomplished",
+                            feedback: "",
+                            trait_impacts: { risk_taker: 0, creative: 0, analytical: 0, social: 0, ambitious: 0 }
+                        }
+                    ]
                 }
             ]
         };

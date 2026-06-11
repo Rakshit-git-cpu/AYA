@@ -13,6 +13,7 @@ import { VibeSpinnerButton } from '../MoodWheel/VibeSpinnerButton';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
+import { unlockAudio } from '../../utils/audioManager';
 import { MapAmbience } from './MapAmbience';
 import { jeeStories } from '../../data/jeeStories';
 import { neetStories } from '../../data/neetStories';
@@ -110,17 +111,18 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
 
-        // Play neon-map BGM on initial mount
-        bgmManager.setMapReady();
-        bgmManager.play('neon-map');
-
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     // Resume neon-map whenever the map becomes the active view again
     // (LevelMap never unmounts, so we watch the isMapActive prop instead)
+    const hasInitBgm = useRef(false);
     useEffect(() => {
         if (isMapActive) {
+            if (!hasInitBgm.current) {
+                bgmManager.setMapReady();
+                hasInitBgm.current = true;
+            }
             bgmManager.play('neon-map');
         }
     }, [isMapActive]);
@@ -453,6 +455,8 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                         }}
                                         onClick={() => {
                                             if (isUnlocked) {
+                                                unlockAudio();
+                                                bgmManager.unlock();
                                                 audioSynth.playClick();
                                                 onPlayLevel(level);
                                             }
