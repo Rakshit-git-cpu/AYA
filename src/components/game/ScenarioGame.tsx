@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUserStore } from '../../store/userStore';
-import { audioSynth } from '../../utils/audioSynth';
+import { audioManager } from '../../utils/audioManager';
 import { detectEmotion, EMOTION_THEMES } from '../../utils/storyEmotion';
 import type { EmotionTheme } from '../../utils/storyEmotion';
-import { bgmManager } from '../../utils/bgmManager';
 import type { Level, Lesson } from '../../types/gameTypes';
 import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
@@ -192,8 +191,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
         const theme = EMOTION_THEMES[emotion];
         setCurrentTheme(theme);
 
-        // Play matching ambient music — unlock listener in bgmManager handles autoplay policy
-        bgmManager.play(theme.emotion);
+        // Play matching ambient music — unlock listener handles autoplay policy
+        audioManager.play(theme.emotion);
 
         // Scroll text container back to top on every new frame
         textContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -206,7 +205,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     // Stop music when component unmounts (user exits story)
     useEffect(() => {
         return () => {
-            bgmManager.stop(1.5);
+            audioManager.stop(1.5);
         };
     }, []);
 
@@ -295,7 +294,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     };
 
     const handleChoiceClick = async (choice: Choice) => {
-        audioSynth.playClick();
+        audioManager.playClick();
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);
 
@@ -568,7 +567,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             
             // Queue transition out allowing particles to run
             setTimeout(() => {
-                bgmManager.stop(1);
+                audioManager.stop(1);
                 handleLevelComplete(starCount);
             }, delayMs);
             return;
@@ -672,8 +671,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 {/* BGM toggle */}
                 <button
                     onClick={() => {
-                        bgmManager.toggle();
-                        const nowEnabled = bgmManager.enabled;
+                        audioManager.toggle();
+                        const nowEnabled = audioManager.enabled;
                         setBgmEnabled(nowEnabled);
                         localStorage.setItem('aya_bgm', nowEnabled.toString());
                     }}
@@ -706,8 +705,8 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             )}>
                 <button
                     onClick={() => {
-                        audioSynth.playClick();
-                        bgmManager.stop(1);
+                        audioManager.playClick();
+                        audioManager.stop(1);
                         onBack();
                     }}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
