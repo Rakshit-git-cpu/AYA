@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+
+import { audioManager } from '../../utils/audioManager';
 import { useUserStore } from '../../store/userStore';
-import { audioSynth } from '../../utils/audioSynth';
+
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { saveSession, markQuizDone, isQuizDone } from '../../utils/session';
@@ -34,7 +36,7 @@ const AgeDial = ({ value, onChange }: { value: number; onChange: (val: number) =
     };
 
     const handleNudge = (direction: -1 | 1) => {
-        audioSynth.playClick();
+        audioManager.playClick();
         const newValue = Math.max(MIN, Math.min(MAX, value + direction));
         onChange(newValue);
     };
@@ -125,7 +127,8 @@ export function OnboardingWizard() {
         if (isSubmitting.current) return; // hard block double-tap
         isSubmitting.current = true;
 
-        audioSynth.playClick();
+        audioManager.unlockAudio();
+        audioManager.playClick();
         setIsLoading(true);
         setError("");
 
