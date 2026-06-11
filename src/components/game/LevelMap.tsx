@@ -481,7 +481,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                                     : "border-transparent ring-2 ring-[#4DD9FF]/80 shadow-[0_0_15px_rgba(77,217,255,0.6)]")
                                         )}>
                                             <img 
-                                                src={level.avatarUrl || '/assets/avatar_business.png'} 
+                                                src={level.portrait ? `/portraits/${level.portrait}` : (level.avatarUrl || '/assets/avatar_business.png')} 
                                                 alt={level.archetype} 
                                                 className="w-full h-full object-cover node-content" 
                                                 onError={(e) => { e.currentTarget.src = '/assets/avatar_business.png'; }}

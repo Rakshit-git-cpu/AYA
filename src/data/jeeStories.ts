@@ -9,6 +9,8 @@ export const jeeStories: Level[] = [
         age: 16,
         title: 'The YouTube Hole',
         location: 'Pune, 2015',
+        portrait: 'portrait-chirag-falor.png',
+        background: 'bg-chirag-pune-2015.png',
         part1: {
             setup: "JEE is 2 years away. Chirag is brilliant — everyone knows it. But for 11 days he hasn't opened a single textbook. It started with one MIT lecture. Then physics documentaries. Then just YouTube. His Allen material sits untouched. Tonight his father asks how preparation is going. Chirag says fine.",
             choices: [
