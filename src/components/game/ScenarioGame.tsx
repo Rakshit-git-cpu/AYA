@@ -294,6 +294,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     };
 
     const handleChoiceClick = async (choice: Choice) => {
+        audioManager.unlockAudio();
         audioManager.playClick();
         // DEBUG: Fires immediately on EVERY choice tap — confirms new code is running
         console.log('[AYA DEBUG] handleChoiceClick fired! choice.text =', choice.text, '| choice.next =', choice.next);

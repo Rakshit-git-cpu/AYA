@@ -182,10 +182,14 @@ class AudioManager {
 
   public async play(trackName: string, fadeDuration = 1.5): Promise<void> {
     try {
-      if (!this.isUnlocked || !this.enabled) return; // Only play if unlocked and enabled
-      if (this.currentTrack === trackName) return;
+      if (!this.enabled) return;
       
       const ctx = this.getContext();
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
+      if (this.currentTrack === trackName) return;
       let buffer = this.bgmBuffers.get(trackName);
       
       if (!buffer) {
@@ -214,7 +218,7 @@ class AudioManager {
       source.connect(newGain);
       source.start(0);
 
-      newGain.gain.linearRampToValueAtTime(1.0, ctx.currentTime + fadeDuration);
+      newGain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + fadeDuration);
 
       this.currentBgmSource = source;
       // Store the local gain node on the source so we can fade it out later
@@ -269,7 +273,7 @@ class AudioManager {
   public resume(): void {
     try {
       if (this.ctx && this.bgmGain) {
-        this.bgmGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
+        this.bgmGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
       }
     } catch (e) {}
   }
