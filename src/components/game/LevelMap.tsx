@@ -14,6 +14,9 @@ import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
 import { bgmManager } from '../../utils/bgmManager';
 import { MapAmbience } from './MapAmbience';
+import { jeeStories } from '../../data/jeeStories';
+import { neetStories } from '../../data/neetStories';
+import { getUnlockedDayCount } from '../../utils/storyUnlock';
 
 interface LevelMapProps {
     onPlayLevel: (level: any) => void;
@@ -74,7 +77,14 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         }
     }
 
-    const ageLevels = processedLevels;
+    let ageLevels = processedLevels;
+    if (profile?.preferred_map === 'jee') {
+        ageLevels = jeeStories;
+    } else if (profile?.preferred_map === 'neet') {
+        ageLevels = neetStories;
+    }
+    
+    const unlockedDays = getUnlockedDayCount(profile?.access_type, profile?.access_start_date);
 
     const mapTheme = useUserStore((state) => state.mapTheme);
     const isCandyMode = mapTheme === 'light';
@@ -414,7 +424,10 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                         {/* LEVEL NODES */}
                         {ageLevels.map((level, i) => {
                             const pos = getPosition(i);
-                            const isUnlocked = level.status !== 'locked';
+                            let isUnlocked = level.status !== 'locked';
+                            if (level.day_number !== undefined) {
+                                isUnlocked = level.day_number <= unlockedDays;
+                            }
                             const isCompleted = level.status === 'completed';
                             const isCurrent = isUnlocked && !isCompleted;
 
@@ -480,6 +493,15 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                             )}
                                             <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent pointer-events-none rounded-t-full" />
                                         </div>
+
+                                        {/* Lock Tooltip */}
+                                        {!isUnlocked && level.day_number !== undefined && (
+                                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
+                                                <div className="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded shadow-xl border border-slate-700 whitespace-nowrap">
+                                                    🔒 Unlocks on Day {level.day_number}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {/* Labels */}
                                         <div className={clsx(

@@ -100,6 +100,9 @@ export function GameRoot() {
                             stories_completed: 0,
                             daily_challenge_completed: false,
                             preferred_theme: 'city_dark',
+                            access_type: 'free',
+                            access_start_date: null,
+                            preferred_map: null,
                             assessmentCompleted: isQuizDone(),
                         } as any);
                         if (isQuizDone()) {
@@ -158,6 +161,9 @@ export function GameRoot() {
                     stories_completed: user.stories_completed || 0,
                     daily_challenge_completed: user.daily_challenge_completed || false,
                     preferred_theme: user.preferred_theme || 'city_dark',
+                    access_type: user.access_type,
+                    access_start_date: user.access_start_date,
+                    preferred_map: user.preferred_map,
                     ...(profileData ? {
                         trait_risk_taker: profileData.trait_risk_taker,
                         trait_creative: profileData.trait_creative,

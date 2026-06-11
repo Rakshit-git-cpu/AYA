@@ -46,6 +46,9 @@ export interface UserProfile {
     interests?: string[];
     roleModels?: string[];
     avatarId?: string;
+    access_type?: string;        // 'free' | 'jee15' | 'neet15'
+    access_start_date?: string;  // ISO date string 'YYYY-MM-DD'
+    preferred_map?: string;
 
     // Personality System
     traits: PersonalityTraits;
@@ -106,6 +109,21 @@ export interface Level {
     // New: Idol Benchmarks
     idolTraits?: PersonalityTraits;
     idolProfile?: Partial<PsychologicalProfile>; // For deep matching
+
+    // Access Code
+    day_number?: number;
+    placeholder?: boolean;
+}
+
+export interface AccessCode {
+    id: string;
+    code: string;
+    access_type: string;
+    preferred_map: string;
+    max_uses: number;
+    uses_count: number;
+    expires_at: string | null;
+    used_by_user_id: string | null;
 }
 
 export interface Scenario {

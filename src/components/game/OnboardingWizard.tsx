@@ -147,34 +147,99 @@ export function OnboardingWizard() {
             while (attempt < 3 && !result) {
                 attempt++;
                 try {
-                    // Check if mobile already exists
-                    const { data: existing, error: fetchErr } = await withTimeout(
-                        supabase.from('users').select('*').eq('mobile', cleanMobile)
-                    );
-                    if (fetchErr) throw fetchErr;
-
-                    if (existing && existing.length > 0) {
-                        result = { user: existing[0], isNew: false };
-                    } else {
-                        const { data: newUser, error: insertErr } = await withTimeout(
-                            supabase
-                                .from('users')
-                                .insert([{ name: name.trim(), age, mobile: cleanMobile }])
-                                .select()
-                                .single()
+                    if (cleanMobile.length === 6) {
+                        // Access Code Flow
+                        const { data: codeData, error: codeErr } = await withTimeout(
+                            supabase.from('access_codes').select('*').eq('code', cleanMobile).maybeSingle()
                         );
-                        if (insertErr) {
-                            // Race condition: another insert snuck in — try to fetch again
-                            if (insertErr.code === '23505') {
-                                const { data: raceUser } = await withTimeout(
-                                    supabase.from('users').select('*').eq('mobile', cleanMobile)
-                                );
-                                if (raceUser && raceUser.length > 0) {
-                                    result = { user: raceUser[0], isNew: false };
-                                } else throw insertErr;
-                            } else throw insertErr;
+                        if (codeErr) throw codeErr;
+                        if (!codeData) throw new Error("Invalid access code. Please check and try again.");
+                        if (codeData.uses_count >= codeData.max_uses) throw new Error("This access code has already been used.");
+                        if (codeData.expires_at && new Date(codeData.expires_at) < new Date()) throw new Error("This access code has expired.");
+
+                        if (codeData.used_by_user_id) {
+                            // Returning user
+                            const { data: existingUser, error: fetchUserErr } = await withTimeout(
+                                supabase.from('users').select('*').eq('id', codeData.used_by_user_id).maybeSingle()
+                            );
+                            if (fetchUserErr) throw fetchUserErr;
+                            if (existingUser) {
+                                result = { user: existingUser, isNew: false };
+                            } else {
+                                throw new Error("User associated with this code not found.");
+                            }
                         } else {
-                            result = { user: newUser, isNew: true };
+                            // New user registration
+                            const todayStr = new Date().toISOString().split('T')[0];
+                            const { data: newUser, error: insertErr } = await withTimeout(
+                                supabase
+                                    .from('users')
+                                    .insert([{ 
+                                        name: name.trim(), 
+                                        age, 
+                                        mobile: cleanMobile,
+                                        access_type: codeData.access_type,
+                                        preferred_map: codeData.preferred_map,
+                                        access_start_date: todayStr
+                                    }])
+                                    .select()
+                                    .single()
+                            );
+                            if (insertErr) {
+                                if (insertErr.code === '23505') {
+                                    const { data: raceUser } = await withTimeout(
+                                        supabase.from('users').select('*').eq('mobile', cleanMobile).maybeSingle()
+                                    );
+                                    if (raceUser) {
+                                        result = { user: raceUser, isNew: false };
+                                    } else throw insertErr;
+                                } else throw insertErr;
+                            } else {
+                                // Update access code
+                                const { error: updateCodeErr } = await withTimeout(
+                                    supabase.from('access_codes').update({
+                                        uses_count: codeData.uses_count + 1,
+                                        used_by_user_id: newUser.id
+                                    }).eq('id', codeData.id)
+                                );
+                                if (updateCodeErr) {
+                                    // rollback user creation
+                                    await supabase.from('users').delete().eq('id', newUser.id);
+                                    throw updateCodeErr;
+                                }
+                                result = { user: newUser, isNew: true };
+                            }
+                        }
+                    } else {
+                        // Check if mobile already exists
+                        const { data: existing, error: fetchErr } = await withTimeout(
+                            supabase.from('users').select('*').eq('mobile', cleanMobile)
+                        );
+                        if (fetchErr) throw fetchErr;
+
+                        if (existing && existing.length > 0) {
+                            result = { user: existing[0], isNew: false };
+                        } else {
+                            const { data: newUser, error: insertErr } = await withTimeout(
+                                supabase
+                                    .from('users')
+                                    .insert([{ name: name.trim(), age, mobile: cleanMobile }])
+                                    .select()
+                                    .single()
+                            );
+                            if (insertErr) {
+                                // Race condition: another insert snuck in — try to fetch again
+                                if (insertErr.code === '23505') {
+                                    const { data: raceUser } = await withTimeout(
+                                        supabase.from('users').select('*').eq('mobile', cleanMobile)
+                                    );
+                                    if (raceUser && raceUser.length > 0) {
+                                        result = { user: raceUser[0], isNew: false };
+                                    } else throw insertErr;
+                                } else throw insertErr;
+                            } else {
+                                result = { user: newUser, isNew: true };
+                            }
                         }
                     }
                 } catch (e) {
@@ -222,6 +287,9 @@ export function OnboardingWizard() {
 
                 setProfile({
                     id: user.id, mobile: user.mobile, name: user.name, age: user.age,
+                    access_type: user.access_type,
+                    access_start_date: user.access_start_date,
+                    preferred_map: user.preferred_map,
                     interests: [], roleModels: [],
                     traits: traits as any,
                     assessmentCompleted: quizDone,
@@ -246,6 +314,9 @@ export function OnboardingWizard() {
                 // New user — set minimal profile; onboarding flow (CinematicOnboarding + Quiz) continues automatically
                 setProfile({
                     id: user.id, mobile: user.mobile, name: user.name, age: user.age,
+                    access_type: user.access_type,
+                    access_start_date: user.access_start_date,
+                    preferred_map: user.preferred_map,
                     interests: [], roleModels: [],
                     traits: { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
                     assessmentCompleted: false,
