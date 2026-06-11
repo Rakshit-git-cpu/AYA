@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { LessonJournal } from './LessonJournal';
 import clsx from 'clsx';
 import { AudioController } from '../shared/AudioController';
+import { audioSynth } from '../../utils/audioSynth';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { AntiGravityCanvas } from './AntiGravityCanvas';
 import { MoodWheel } from '../MoodWheel/MoodWheel';
@@ -11,7 +12,7 @@ import type { MoodArchetype } from '../MoodWheel/MoodWheel';
 import { VibeSpinnerButton } from '../MoodWheel/VibeSpinnerButton';
 import { DailyChallengeReveal } from './DailyChallengeReveal';
 import { ThemeSwitcherModal } from './ThemeSwitcherModal';
-import { audioManager } from '../../utils/audioManager';
+import { bgmManager } from '../../utils/bgmManager';
 import { MapAmbience } from './MapAmbience';
 import { jeeStories } from '../../data/jeeStories';
 import { neetStories } from '../../data/neetStories';
@@ -103,29 +104,24 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     const [challengeMood, setChallengeMood] = useState<MoodArchetype | null>(null);
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [isBgmEnabled, setIsBgmEnabled] = useState(audioManager.enabled);
-    const hasInitBgm = useRef(false);
+    const [isBgmEnabled, setIsBgmEnabled] = useState(bgmManager.enabled);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
 
-        if (!hasInitBgm.current) {
-            hasInitBgm.current = true;
-            audioManager.play('neon-map');
-        }
+        // Play neon-map BGM on initial mount
+        bgmManager.setMapReady();
+        bgmManager.play('neon-map');
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            audioManager.stop(1); // clean up on unmount
-        };
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     // Resume neon-map whenever the map becomes the active view again
     // (LevelMap never unmounts, so we watch the isMapActive prop instead)
     useEffect(() => {
-        if (isMapActive && hasInitBgm.current) {
-            audioManager.play('neon-map');
+        if (isMapActive) {
+            bgmManager.play('neon-map');
         }
     }, [isMapActive]);
 
@@ -188,7 +184,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
     // --- STARTUP SOUND & AUTO-SCROLL ---
     useEffect(() => {
         // Startup Sound
-        audioManager.playStartup();
+        audioSynth.playStartup();
 
         const scrollToTop = () => {
             if (containerRef.current) {
@@ -215,12 +211,12 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             const delta = Math.abs(currentScrollTop - lastScrollTop);
             
             if (delta > 2) {
-                audioManager.startGlide();
-                audioManager.updateGlide(delta);
+                audioSynth.startGlide();
+                audioSynth.updateGlide(delta);
                 
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    audioManager.stopGlide();
+                    audioSynth.stopGlide();
                 }, 150);
             }
             
@@ -231,7 +227,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
         return () => {
             container.removeEventListener('scroll', handleScroll);
             clearTimeout(scrollTimeout);
-            audioManager.stopGlide();
+            audioSynth.stopGlide();
         };
     }, []);
 
@@ -248,7 +244,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                         completed={!!profile?.daily_challenge_completed}
                         userId={profile?.id || ''}
                         onClick={() => {
-                            audioManager.playClick();
+                            audioSynth.playClick();
                             setShowMoodWheel(true);
                         }}
                     />
@@ -260,7 +256,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             <div className="absolute top-20 left-4 md:top-24 md:left-6 z-[100] flex flex-col gap-2">
                 <button
                     onClick={() => {
-                        audioManager.playClick();
+                        audioSynth.playClick();
                         setShowSettings(true);
                     }}
                     className="w-8 h-8 md:w-10 md:h-10 bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/20 shadow-lg hover:rotate-12 active:scale-90"
@@ -270,7 +266,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 </button>
                 <button
                     onClick={() => {
-                        audioManager.playClick();
+                        audioSynth.playClick();
                         setShowThemeSwitcher(true);
                     }}
                     className={clsx(
@@ -291,9 +287,9 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 {/* BGM Toggle Button */}
                 <button
                     onClick={() => {
-                        audioManager.playClick();
-                        audioManager.toggle();
-                        setIsBgmEnabled(audioManager.enabled);
+                        audioSynth.playClick();
+                        bgmManager.toggle();
+                        setIsBgmEnabled(bgmManager.enabled);
                     }}
                     className={clsx(
                         "group flex items-center justify-center gap-2 px-3 py-1.5 md:py-2 rounded-full shadow-lg border transition-all pointer-events-auto hover:scale-105 active:scale-95",
@@ -312,7 +308,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                 </button>
                 <button
                     onClick={() => {
-                        audioManager.playClick();
+                        audioSynth.playClick();
                         setShowJournal(true);
                     }}
                     className={clsx(
@@ -344,7 +340,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                  <button
                     onClick={() => {
                         console.log('DNA button clicked');
-                        audioManager.playClick();
+                        audioSynth.playClick();
                         onOpenDnaProfile();
                     }}
                     className={clsx(
@@ -453,15 +449,11 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                                         )}
                                         // Touch start for mobile responsiveness
                                         onTouchStart={() => {
-                                            if (isUnlocked) audioManager.playTick();
-                                        }}
-                                        onMouseEnter={() => {
-                                            if (isUnlocked) audioManager.playTick();
+                                            if (isUnlocked) audioSynth.playHover();
                                         }}
                                         onClick={() => {
-                                            audioManager.unlockAudio();
                                             if (isUnlocked) {
-                                                audioManager.playClick();
+                                                audioSynth.playClick();
                                                 onPlayLevel(level);
                                             }
                                         }}
@@ -574,7 +566,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
             </div>
 
             {/* AGE EDIT MODAL */}
-            {showSettings && <SettingsModal onClose={() => { audioManager.playBack(); setShowSettings(false); }} />}
+            {showSettings && <SettingsModal onClose={() => { audioSynth.playBack(); setShowSettings(false); }} />}
         </div >
     );
 }
@@ -623,7 +615,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs font-bold text-slate-400 uppercase">Music</span>
                                 <button
-                                    onClick={() => { audioManager.playClick(); toggleMusicMute(); }}
+                                    onClick={() => { audioSynth.playClick(); toggleMusicMute(); }}
                                     className={clsx("p-1 rounded transition-colors", isMusicMuted ? "text-red-400 bg-red-900/30" : "text-green-400 bg-green-900/30")}
                                 >
                                     {isMusicMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -642,7 +634,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs font-bold text-slate-400 uppercase">Sound FX</span>
                                 <button
-                                    onClick={() => { audioManager.playClick(); toggleSfxMute(); }}
+                                    onClick={() => { audioSynth.playClick(); toggleSfxMute(); }}
                                     className={clsx("p-1 rounded transition-colors", isSfxMuted ? "text-red-400 bg-red-900/30" : "text-green-400 bg-green-900/30")}
                                 >
                                     {isSfxMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -669,14 +661,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                             className="w-full bg-slate-800 text-white rounded-lg px-4 py-3 border border-slate-700 font-mono"
                         />
                     </div>
-                    <button onClick={() => { audioManager.playClick(); handleAgeSave(); }} className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all">
+                    <button onClick={() => { audioSynth.playClick(); handleAgeSave(); }} className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all">
                         UPDATE TIMELINE
                     </button>
 
                     <hr className="border-slate-700 my-2" />
 
                     <button
-                        onClick={() => { audioManager.playClick(); resetProgress(); }}
+                        onClick={() => { audioSynth.playClick(); resetProgress(); }}
                         className="w-full bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-200 border border-slate-700 hover:border-red-800 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition-all uppercase tracking-wider text-xs"
                     >
                         Restart Journey (Reset)
@@ -684,7 +676,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         onClick={() => {
-                            audioManager.playClick();
+                            audioSynth.playClick();
                             localStorage.clear();
                             window.location.reload();
                         }}
@@ -693,7 +685,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                         Sign Out
                     </button>
 
-                    <button onClick={() => { audioManager.playClick(); onClose(); }} className="w-full text-slate-500 text-sm py-2 hover:text-white transition-colors">
+                    <button onClick={() => { audioSynth.playClick(); onClose(); }} className="w-full text-slate-500 text-sm py-2 hover:text-white transition-colors">
                         Close Overlay
                     </button>
                 </div>

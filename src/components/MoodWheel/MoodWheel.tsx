@@ -3,7 +3,7 @@ import { useSpinCountdown } from '../../hooks/useSpinCountdown';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion';
 import { supabase } from '../../utils/supabase';
-import { audioManager } from '../../utils/audioManager';
+import { unlockAudio, playTick, playWin, playClick } from '../../utils/audioManager';
 import './MoodWheel.css';
 
 // ─── Exported type (re-exported so LevelMap can import from here) ─────────────
@@ -116,13 +116,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     };
     calc();
     window.addEventListener('resize', calc);
-
-    // Pause BGM when spinner opens, resume when closes
-    audioManager.pause();
-    return () => {
-      window.removeEventListener('resize', calc);
-      audioManager.resume();
-    };
+    return () => window.removeEventListener('resize', calc);
   }, []);
 
   // Supabase: load spin data on mount
@@ -166,7 +160,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     
     if (currentSegment !== lastSegmentRef.current) {
       lastSegmentRef.current = currentSegment;
-      audioManager.playTick();
+      playTick();
     }
   };
 
@@ -175,7 +169,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     if (phase !== 'idle' || spinsUsed >= 2) return;
 
     // FIRST LINE — must be synchronous inside gesture handler for Safari
-    await audioManager.unlockAudio();
+    await unlockAudio();
 
     setPhase('spinning');
 
@@ -226,7 +220,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
     setTimeout(() => setVignette(false), 400);
 
     // Win sound
-    audioManager.playWin();
+    playWin();
 
     // Increment Supabase spins
     const newUsed = spinsUsed + 1;
@@ -319,7 +313,7 @@ export function MoodWheel({ userId, onMoodSelected, onClose }: MoodWheelProps) {
 
         {/* BUG 1: Back Button */}
         <button
-          onClick={() => { audioManager.playClick(); onClose(); }}
+          onClick={() => { playClick(); onClose(); }}
           style={{
             position: 'absolute',
             top: '16px',
