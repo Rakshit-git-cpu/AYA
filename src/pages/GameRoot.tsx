@@ -111,6 +111,14 @@ export function GameRoot() {
                                 { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
                             );
                         }
+                    } else if (store.profile.access_type === 'jee15' || store.profile.access_type === 'neet15') {
+                        // Never use a cached value for these three fields
+                        store.setProfile({
+                            ...store.profile,
+                            access_type: 'free',
+                            access_start_date: null,
+                            preferred_map: null,
+                        } as any);
                     }
                     clearTimeout(maxWait);
                     setSessionStatus('found');
