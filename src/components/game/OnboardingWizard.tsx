@@ -172,6 +172,10 @@ export function OnboardingWizard() {
                         } else {
                             // New user registration
                             const todayStr = new Date().toISOString().split('T')[0];
+                            let derivedMap: string | null = null;
+                            if (codeData.access_type === 'jee15') derivedMap = 'jee';
+                            else if (codeData.access_type === 'neet15') derivedMap = 'neet';
+
                             const { data: newUser, error: insertErr } = await withTimeout(
                                 supabase
                                     .from('users')
@@ -180,7 +184,7 @@ export function OnboardingWizard() {
                                         age, 
                                         mobile: cleanMobile,
                                         access_type: codeData.access_type,
-                                        preferred_map: codeData.preferred_map,
+                                        preferred_map: derivedMap,
                                         access_start_date: todayStr
                                     }])
                                     .select()
