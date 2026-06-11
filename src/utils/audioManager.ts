@@ -40,6 +40,7 @@ class AudioManager {
   }
 
   public async unlockAudio(): Promise<void> {
+    console.log('AUDIO UNLOCK CALLED');
     if (this.isUnlocked) return;
     try {
       const context = this.getContext();
