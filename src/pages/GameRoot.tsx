@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { supabase } from '../utils/supabase';
 import { getSession, clearSession, markQuizDone, isQuizDone } from '../utils/session';
 import { withTimeout } from '../utils/withTimeout';
@@ -9,17 +9,24 @@ import { LevelMap } from '../components/game/LevelMap';
 // SolarMap import preserved for future use — not rendered currently
 // import { SolarMap } from '../components/game/SolarMap';
 import { CharacterSelection } from '../components/game/CharacterSelection';
-import { ScenarioGame } from '../components/game/ScenarioGame';
 import { PersonalityIntro } from '../components/game/PersonalityIntro';
 import { PersonalityAssessment } from '../components/game/PersonalityAssessment';
 import type { Level } from '../types/gameTypes';
-import { MatchReport } from '../components/game/MatchReport';
-import { DnaProfile } from '../components/game/DnaProfile';
 import { LevelUpCelebration } from '../components/game/LevelUpCelebration';
 import { StreakCelebration } from '../components/game/StreakCelebration';
 import { calculateLevelInfo } from '../utils/levelSystem';
 
 import { safeStorage } from '../utils/storage';
+
+const ScenarioGame = lazy(() => import('../components/game/ScenarioGame').then(m => ({ default: m.ScenarioGame })));
+const MatchReport = lazy(() => import('../components/game/MatchReport').then(m => ({ default: m.MatchReport })));
+const DnaProfile = lazy(() => import('../components/game/DnaProfile').then(m => ({ default: m.DnaProfile })));
+
+const LoadingFallback = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d0d16]">
+        <p className="text-[#00f1fe] text-lg animate-pulse uppercase tracking-widest font-bold">LOADING...</p>
+    </div>
+);
 
 export function GameRoot() {
     const profile = useUserStore((state) => state.profile);
@@ -351,37 +358,43 @@ export function GameRoot() {
             )}
 
             {view === 'game' && activeLevel && (
-                <ScenarioGame
-                    level={activeLevel}
-                    onComplete={handleLevelComplete}
-                    onBack={() => {
-                        setActiveLevel(null);
-                        setView('map');
-                    }}
-                    onDailyChallengeComplete={(data) => {
-                        setStreakData(data);
-                    }}
-                />
+                <Suspense fallback={<LoadingFallback />}>
+                    <ScenarioGame
+                        level={activeLevel}
+                        onComplete={handleLevelComplete}
+                        onBack={() => {
+                            setActiveLevel(null);
+                            setView('map');
+                        }}
+                        onDailyChallengeComplete={(data) => {
+                            setStreakData(data);
+                        }}
+                    />
+                </Suspense>
             )}
 
             {view === 'report' && activeLevel && profile && (
-                <MatchReport
-                    userTraits={profile.traits}
-                    userProfile={profile.psychologicalProfile}
-                    idolTraits={activeLevel.idolTraits || { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 }}
-                    idolName={activeLevel.personality || activeLevel.archetype || "Unknown"}
-                    idolAvatarUrl={activeLevel.portrait ? `/portraits/${activeLevel.portrait}` : undefined}
-                    idolAge={activeLevel.age}
-                    onClose={() => {
-                        setActiveLevel(null);
-                        setActiveAge(null);
-                        setView('map');
-                    }}
-                />
+                <Suspense fallback={<LoadingFallback />}>
+                    <MatchReport
+                        userTraits={profile.traits}
+                        userProfile={profile.psychologicalProfile}
+                        idolTraits={activeLevel.idolTraits || { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 }}
+                        idolName={activeLevel.personality || activeLevel.archetype || "Unknown"}
+                        idolAvatarUrl={activeLevel.portrait ? `/portraits/${activeLevel.portrait}` : undefined}
+                        idolAge={activeLevel.age}
+                        onClose={() => {
+                            setActiveLevel(null);
+                            setActiveAge(null);
+                            setView('map');
+                        }}
+                    />
+                </Suspense>
             )}
 
             {view === 'dna' && profile && (
-                <DnaProfile onBack={() => setView('map')} />
+                <Suspense fallback={<LoadingFallback />}>
+                    <DnaProfile onBack={() => setView('map')} />
+                </Suspense>
             )}
 
             {/* SolarMap hidden until re-enabled — always render LevelMap (handles dark/light via mapTheme) */}

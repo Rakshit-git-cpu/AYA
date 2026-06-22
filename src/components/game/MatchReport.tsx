@@ -1,9 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { audioSynth } from '../../utils/audioSynth';
-import { Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw, Copy, Check } from 'lucide-react';
+import { Loader2, Sparkles, Star, Zap, Heart, Flame, Brain, Shield, Grid3x3, RefreshCw, Copy, Check } from 'lucide-react';
 import type { PersonalityTraits, PsychologicalProfile } from '../../types/gameTypes';
-import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
 import { useUserStore } from '../../store/userStore';
 
 
@@ -210,10 +209,31 @@ const ToughCookieMeter = ({ score, isCandyMode }: { score: number, isCandyMode: 
 );
 
 export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, idolAge, onClose }: MatchReportProps) {
+
+    const [idolMindsetsData, setIdolMindsetsData] = useState<any>(null);
+    const [idolProfilesData, setIdolProfilesData] = useState<any>(null);
+
+    useEffect(() => {
+        async function loadData() {
+            const idolsModule = await import('../../data/idolMindsets');
+            setIdolMindsetsData(idolsModule.IDOL_MINDSETS);
+            setIdolProfilesData(idolsModule.IDOL_PROFILES);
+        }
+        loadData();
+    }, []);
+
+    if (!idolMindsetsData || !idolProfilesData) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
+                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING REPORT...</span>
+            </div>
+        );
+    }
     const [animatedPercent, setAnimatedPercent] = useState(0);
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const cleanIdolName = (idolName || "Default").trim();
-    const idolData = IDOL_MINDSETS[cleanIdolName] || IDOL_MINDSETS["Default"];
+    const idolData = idolMindsetsData[cleanIdolName] || idolMindsetsData["Default"];
 
     // Dynamic Trait Calculation based on Supabase mapped properties
     const TRAIT_MAP = [
@@ -235,10 +255,10 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
     else if (struggleStr.includes('Fear of what others think')) realLifeChallenge = "Share one honest opinion with someone today.";
     else if (struggleStr.includes('Staying consistent')) realLifeChallenge = "Set one non-negotiable daily habit starting tonight.";
 
-    // Dynamic Match Calculation using strict IDOL_PROFILES
+    // Dynamic Match Calculation using strict idolProfilesData
     const matchScore = useMemo(() => {
         const cleanIdolName = (idolName || "Default").trim();
-        const strictIdolTraits = IDOL_PROFILES[cleanIdolName] || IDOL_PROFILES["Default"];
+        const strictIdolTraits = idolProfilesData[cleanIdolName] || idolProfilesData["Default"];
         
         const totalDiff = 
             Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
@@ -254,7 +274,7 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
 
     const personalityDNA = useMemo(() => {
         const diffs: { name: string; diff: number }[] = [];
-        for (const [name, profile] of Object.entries(IDOL_PROFILES)) {
+        for (const [name, profile] of Object.entries(idolProfilesData as Record<string, any>)) {
             if (name === idolName || name === "Default") continue;
             
             const totalDiff = 
@@ -271,7 +291,7 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         const top2 = diffs.slice(0, 2).map(d => d.name);
         
         const getTraitDesc = (name: string) => {
-            const p = IDOL_PROFILES[name];
+            const p: any = idolProfilesData[name];
             const maxVal = Math.max(p.ambitious, p.creativity, p.analytical, p.social, p.risk);
             
             if (maxVal === p.ambitious) return `${name}'s relentless drive`;
@@ -286,12 +306,12 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         return {
             idol1: {
                 name: top2[0],
-                avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '/assets/avatar_business.png',
+                avatarUrl: idolMindsetsData[top2[0]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[0])
             },
             idol2: {
                 name: top2[1],
-                avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '/assets/avatar_business.png',
+                avatarUrl: idolMindsetsData[top2[1]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[1])
             }
         };

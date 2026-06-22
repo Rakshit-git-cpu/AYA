@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { audioSynth } from '../../utils/audioSynth';
-import { ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList, Flame } from 'lucide-react';
-import { IDOL_MINDSETS, IDOL_PROFILES } from '../../data/idolMindsets';
+import { Loader2, ArrowLeft, Copy, Check, Star, Shield, Download, ClipboardList, Flame } from 'lucide-react';
 import { useUserStore } from '../../store/userStore';
 import { calculateLevelInfo } from '../../utils/levelSystem';
 import domtoimage from 'dom-to-image';
@@ -82,6 +81,27 @@ const NeonTraitBar = ({ label, value, neonColor }: { label: string, value: numbe
 };
 
 export function DnaProfile({ onBack }: DnaProfileProps) {
+
+    const [idolMindsetsData, setIdolMindsetsData] = useState<any>(null);
+    const [idolProfilesData, setIdolProfilesData] = useState<any>(null);
+
+    useEffect(() => {
+        async function loadData() {
+            const idolsModule = await import('../../data/idolMindsets');
+            setIdolMindsetsData(idolsModule.IDOL_MINDSETS);
+            setIdolProfilesData(idolsModule.IDOL_PROFILES);
+        }
+        loadData();
+    }, []);
+
+    if (!idolMindsetsData || !idolProfilesData) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
+                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING DNA...</span>
+            </div>
+        );
+    }
     const profile = useUserStore((state) => state.profile);
 
     // DNA Report mounts → bgm-neon-map.mp3
@@ -97,7 +117,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     // DNA Profile generation
     const personalityDNA = useMemo(() => {
         const diffs: { name: string; diff: number }[] = [];
-        for (const [name, p] of Object.entries(IDOL_PROFILES)) {
+        for (const [name, p] of Object.entries(idolProfilesData as Record<string, any>)) {
             if (name === "Default") continue;
             
             const totalDiff = 
@@ -114,7 +134,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         const top2 = diffs.slice(0, 2).map(d => d.name);
         
         const getTraitDesc = (name: string, excludedTrait?: string) => {
-            const p = IDOL_PROFILES[name];
+            const p: any = idolProfilesData[name];
             if (!p) return { key: '', desc: '' };
             let traits = [
                 { key: 'ambitious', value: p.ambitious, desc: `${name.split(' ')[0]}'s relentless drive` },
@@ -143,12 +163,12 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         return {
             idol1: {
                 name: top2[0],
-                avatarUrl: IDOL_MINDSETS[top2[0]]?.avatarUrl || '',
+                avatarUrl: idolMindsetsData[top2[0]]?.avatarUrl || '',
                 desc: t1.desc
             },
             idol2: {
                 name: top2[1],
-                avatarUrl: IDOL_MINDSETS[top2[1]]?.avatarUrl || '',
+                avatarUrl: idolMindsetsData[top2[1]]?.avatarUrl || '',
                 desc: t2.desc
             }
         };
