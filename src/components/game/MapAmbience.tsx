@@ -53,7 +53,8 @@ const NeonRainLayer = () => {
         const render = () => {
             if (!isVisible) return;
             
-            const isDesktop = window.innerWidth > 768;
+            try {
+                const isDesktop = window.innerWidth > 768;
             frameCount++;
             if (isDesktop && frameCount % 2 !== 0) {
                 animationFrameId = requestAnimationFrame(render);
@@ -61,7 +62,7 @@ const NeonRainLayer = () => {
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
+            try { ctx.save();
             
             drops.forEach(drop => {
                 // Parallax depth based on opacity
@@ -91,7 +92,7 @@ const NeonRainLayer = () => {
 
                 // Draw a radial gradient head to simulate glow without shadowBlur
                 ctx.beginPath();
-                const glowRadius = drop.width * 4;
+                const glowRadius = Math.max(0.1, drop.width * 4);
                 const glowGrad = ctx.createRadialGradient(drop.x, drop.y, 0, drop.x, drop.y, glowRadius);
                 glowGrad.addColorStop(0, `rgba(${drop.baseColorStr}, ${drop.opacity})`);
                 glowGrad.addColorStop(1, `rgba(${drop.baseColorStr}, 0)`);
@@ -99,7 +100,7 @@ const NeonRainLayer = () => {
                 ctx.arc(drop.x, drop.y, glowRadius, 0, Math.PI * 2);
                 ctx.fill();
             });
-            ctx.restore();
+            } finally { ctx.restore(); }
 
             if (import.meta.env.DEV) {
                 frames++;
@@ -109,6 +110,8 @@ const NeonRainLayer = () => {
                     frames = 0;
                     lastFpsTime = now;
                 }
+            } catch (err) {
+                console.error("[NeonRainLayer] Render error:", err);
             }
 
             animationFrameId = requestAnimationFrame(render);
@@ -187,6 +190,7 @@ const ShootingStarsLayer = () => {
 
         const render = () => {
             if (!isVisible) return;
+            try {
             const now = Date.now();
 
             if (now > nextStarTime && stars.length < maxStars) {
@@ -196,7 +200,7 @@ const ShootingStarsLayer = () => {
             }
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
+            try { ctx.save();
             
             const maxOpacity = 1.0;
             
@@ -251,7 +255,7 @@ const ShootingStarsLayer = () => {
                 ctx.fill();
 
                 // Glow head
-                const glowRadius = star.isMega ? 30 : 15;
+                const glowRadius = Math.max(0.1, star.isMega ? 30 : 15);
                 ctx.beginPath();
                 const glowGrad = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowRadius);
                 glowGrad.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
@@ -277,8 +281,11 @@ const ShootingStarsLayer = () => {
                     ctx.stroke();
                 }
             }
-
-            ctx.restore();
+            
+            } finally { ctx.restore(); }
+            } catch (err) {
+                console.error("[ShootingStarsLayer] Render error:", err);
+            }
             animationFrameId = requestAnimationFrame(render);
         };
         
@@ -391,11 +398,13 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
 
         const render = () => {
             if (!isVisible) return;
-            const now = Date.now();
-            const currentScrollY = scrollRef.current;
+            
+            try {
+                const now = Date.now();
+                const currentScrollY = scrollRef.current || 0;
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
+            try { ctx.save();
 
             lines.forEach(line => {
                 if (now > line.timer) {
@@ -461,7 +470,7 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                 const sy = star.y - (currentScrollY * star.depth * 0.1);
 
                 if (sy > -50 && sy < canvas.height + 50) {
-                    const glowRadius = star.isAnchor ? 24 : star.radius * 6;
+                    const glowRadius = Math.max(0.1, star.isAnchor ? 24 : star.radius * 6);
                     
                     ctx.beginPath();
                     const glowGrad = ctx.createRadialGradient(star.x, sy, 0, star.x, sy, glowRadius);
@@ -481,7 +490,10 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                 }
             });
 
-            ctx.restore();
+            } finally { ctx.restore(); }
+            } catch (err) {
+                console.error("[ConstellationLayer] Render error:", err);
+            }
             animationFrameId = requestAnimationFrame(render);
         };
         
@@ -525,3 +537,4 @@ export const MapAmbience = ({ scrollY }: { scrollY: number }) => {
         </div>
     );
 };
+
