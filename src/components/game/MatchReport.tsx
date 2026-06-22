@@ -222,18 +222,11 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         loadData();
     }, []);
 
-    if (!idolMindsetsData || !idolProfilesData) {
-        return (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
-                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
-                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING REPORT...</span>
-            </div>
-        );
-    }
+// Early return moved to bottom
     const [animatedPercent, setAnimatedPercent] = useState(0);
     const isCandyMode = useUserStore((state) => state.isCandyMode);
     const cleanIdolName = (idolName || "Default").trim();
-    const idolData = idolMindsetsData[cleanIdolName] || idolMindsetsData["Default"];
+    const idolData = (idolMindsetsData || {})[cleanIdolName] || (idolMindsetsData || {})["Default"];
 
     // Dynamic Trait Calculation based on Supabase mapped properties
     const TRAIT_MAP = [
@@ -258,7 +251,7 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
     // Dynamic Match Calculation using strict idolProfilesData
     const matchScore = useMemo(() => {
         const cleanIdolName = (idolName || "Default").trim();
-        const strictIdolTraits = idolProfilesData[cleanIdolName] || idolProfilesData["Default"];
+        const strictIdolTraits = (idolProfilesData || {})[cleanIdolName] || (idolProfilesData || {})["Default"];
         
         const totalDiff = 
             Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
@@ -274,7 +267,7 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
 
     const personalityDNA = useMemo(() => {
         const diffs: { name: string; diff: number }[] = [];
-        for (const [name, profile] of Object.entries(idolProfilesData as Record<string, any>)) {
+        for (const [name, profile] of Object.entries((idolProfilesData || {}) as Record<string, any>)) {
             if (name === idolName || name === "Default") continue;
             
             const totalDiff = 
@@ -291,7 +284,7 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         const top2 = diffs.slice(0, 2).map(d => d.name);
         
         const getTraitDesc = (name: string) => {
-            const p: any = idolProfilesData[name];
+            const p: any = (idolProfilesData || {})[name];
             const maxVal = Math.max(p.ambitious, p.creativity, p.analytical, p.social, p.risk);
             
             if (maxVal === p.ambitious) return `${name}'s relentless drive`;
@@ -306,12 +299,12 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         return {
             idol1: {
                 name: top2[0],
-                avatarUrl: idolMindsetsData[top2[0]]?.avatarUrl || '/assets/avatar_business.png',
+                avatarUrl: (idolMindsetsData || {})[top2[0]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[0])
             },
             idol2: {
                 name: top2[1],
-                avatarUrl: idolMindsetsData[top2[1]]?.avatarUrl || '/assets/avatar_business.png',
+                avatarUrl: (idolMindsetsData || {})[top2[1]]?.avatarUrl || '/assets/avatar_business.png',
                 desc: getTraitDesc(top2[1])
             }
         };
@@ -339,6 +332,15 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         };
         animate();
     }, []);
+
+    if (!idolMindsetsData || !idolProfilesData) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
+                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING REPORT...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-[100] flex flex-col font-sans overflow-hidden bg-black select-none">

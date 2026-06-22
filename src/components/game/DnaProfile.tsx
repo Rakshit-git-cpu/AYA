@@ -94,14 +94,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         loadData();
     }, []);
 
-    if (!idolMindsetsData || !idolProfilesData) {
-        return (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
-                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
-                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING DNA...</span>
-            </div>
-        );
-    }
+// Early return moved to bottom
     const profile = useUserStore((state) => state.profile);
 
     // DNA Report mounts → bgm-neon-map.mp3
@@ -117,7 +110,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
     // DNA Profile generation
     const personalityDNA = useMemo(() => {
         const diffs: { name: string; diff: number }[] = [];
-        for (const [name, p] of Object.entries(idolProfilesData as Record<string, any>)) {
+        for (const [name, p] of Object.entries((idolProfilesData || {}) as Record<string, any>)) {
             if (name === "Default") continue;
             
             const totalDiff = 
@@ -134,7 +127,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         const top2 = diffs.slice(0, 2).map(d => d.name);
         
         const getTraitDesc = (name: string, excludedTrait?: string) => {
-            const p: any = idolProfilesData[name];
+            const p: any = (idolProfilesData || {})[name];
             if (!p) return { key: '', desc: '' };
             let traits = [
                 { key: 'ambitious', value: p.ambitious, desc: `${name.split(' ')[0]}'s relentless drive` },
@@ -163,12 +156,12 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         return {
             idol1: {
                 name: top2[0],
-                avatarUrl: idolMindsetsData[top2[0]]?.avatarUrl || '',
+                avatarUrl: (idolMindsetsData || {})[top2[0]]?.avatarUrl || '',
                 desc: t1.desc
             },
             idol2: {
                 name: top2[1],
-                avatarUrl: idolMindsetsData[top2[1]]?.avatarUrl || '',
+                avatarUrl: (idolMindsetsData || {})[top2[1]]?.avatarUrl || '',
                 desc: t2.desc
             }
         };
@@ -278,6 +271,15 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         traits.sort((a, b) => b.value - a.value);
         return traits[0].name;
     }, [userTraits]);
+
+    if (!idolMindsetsData || !idolProfilesData) {
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black">
+                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
+                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING DNA...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-[120] w-full h-full bg-[#0d0d16] font-sans text-[#f2effb] overflow-y-auto overflow-x-hidden pt-safe-top pb-24 selection:bg-[#99f7ff] selection:text-[#004145]">
