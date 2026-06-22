@@ -5,9 +5,11 @@ import { detectEmotion, EMOTION_THEMES } from '../../utils/storyEmotion';
 import type { EmotionTheme } from '../../utils/storyEmotion';
 import { bgmManager } from '../../utils/bgmManager';
 import type { Level, Lesson } from '../../types/gameTypes';
+import { STORY_DATABASE } from '../../data/scenarios';
 import clsx from 'clsx';
 import { ChevronRight, Star, AlertCircle, CheckCircle, Palette, Loader2 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { IDOL_PROFILES } from '../../data/idolMindsets';
 import { calculateLevelInfo } from '../../utils/levelSystem';
 import { calculateLifeTraits, matchFutureArchetype } from '../../utils/futureSelfMatch';
 
@@ -57,23 +59,6 @@ interface SessionChoiceData {
 
 export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComplete }: ScenarioGameProps) {
     // DEBUG: Confirms this component is the active one (check console on game load)
-
-    const [storyData, setStoryData] = useState<any>(null);
-    const [idolProfilesData, setIdolProfilesData] = useState<any>(null);
-
-    useEffect(() => {
-        async function loadData() {
-            const [scenariosModule, idolsModule] = await Promise.all([
-                import('../../data/scenarios'),
-                import('../../data/idolMindsets')
-            ]);
-            setStoryData(scenariosModule.STORY_DATABASE);
-            setIdolProfilesData(idolsModule.IDOL_PROFILES);
-        }
-        loadData();
-    }, []);
-
-// Early return moved to bottom
     console.log('[AYA DEBUG] ScenarioGame mounted for level:', level?.id, level?.personality);
     // BUILD MARKER: If this timestamp matches deployment time, the new code is live
     console.log('[AYA BUILD_MARKER] deployed 2026-04-04T15:50 IST — if you see this, prod is serving the latest code');
@@ -153,7 +138,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     }, []);
 
     // Load Scenario dynamically
-    const scenario = (storyData || {})[level.scenarioId] || (storyData || {})['lvl_age_19'];
+    const scenario = STORY_DATABASE[level.scenarioId] || STORY_DATABASE['lvl_age_19'];
     const frame = scenario.frames.find((f: any) => f.id === currentFrameId) || scenario.frames[0];
     const isLearningScreen = currentFrameId.startsWith('LEARNING');
 
@@ -385,7 +370,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
             // Calculate Match Result against IDOL_PROFILES
             const idolName = level.personality || level.archetype || "Default";
-            const idolTraits = (idolProfilesData || {})[idolName] || (idolProfilesData || {})["Default"];
+            const idolTraits = IDOL_PROFILES[idolName] || IDOL_PROFILES["Default"];
             
             const totalDiff = 
                 Math.abs(recalibratedTraits.risk - idolTraits.risk) +
@@ -625,15 +610,6 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
     const lessonKeyword = lessonRawText.match(/LESSON:\s*([^.]+)/i)?.[1]?.trim().toUpperCase() || 'LESSON';
     // Body: everything after "LESSON: KEYWORD." — strip the prefix
     const lessonBody = lessonRawText.replace(/^LESSON:\s*[^.]+\.\s*/i, '').trim() || lessonRawText;
-
-    if (!storyData || !idolProfilesData) {
-        return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d0d16]">
-                <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
-                <span className="ml-4 text-[#00f1fe] animate-pulse uppercase tracking-widest font-bold">LOADING SCENE...</span>
-            </div>
-        );
-    }
 
     return (
         <div
