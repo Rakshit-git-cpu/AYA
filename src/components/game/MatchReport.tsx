@@ -219,9 +219,9 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
     const TRAIT_MAP = [
         { score: userTraits.risk || 50, strength: 'Bold Decision Maker', blindSpot: 'Plays It Too Safe' },
         { score: userTraits.creativity || 50, strength: 'Creative Visionary', blindSpot: 'Stuck In Routine' },
-        { score: userTraits.vision || 50, strength: 'Strategic Thinker', blindSpot: 'Impulsive Tendencies' },
-        { score: userTraits.empathy || 50, strength: 'Natural Connector', blindSpot: 'Lone Wolf Syndrome' },
-        { score: userTraits.leadership || 50, strength: 'Relentless Achiever', blindSpot: 'Consistency Gap' }
+        { score: userTraits.analytical || 50, strength: 'Strategic Thinker', blindSpot: 'Impulsive Tendencies' },
+        { score: userTraits.social || 50, strength: 'Natural Connector', blindSpot: 'Lone Wolf Syndrome' },
+        { score: userTraits.ambitious || 50, strength: 'Relentless Achiever', blindSpot: 'Consistency Gap' }
     ];
     
     const sortedTraits = [...TRAIT_MAP].sort((a, b) => b.score - a.score);
@@ -243,9 +243,9 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         const totalDiff = 
             Math.abs((userTraits.risk || 50) - strictIdolTraits.risk) +
             Math.abs((userTraits.creativity || 50) - strictIdolTraits.creativity) +
-            Math.abs((userTraits.vision || 50) - strictIdolTraits.analytical) +
-            Math.abs((userTraits.empathy || 50) - strictIdolTraits.social) +
-            Math.abs((userTraits.leadership || 50) - strictIdolTraits.ambitious);
+            Math.abs((userTraits.analytical || 50) - strictIdolTraits.analytical) +
+            Math.abs((userTraits.social || 50) - strictIdolTraits.social) +
+            Math.abs((userTraits.ambitious || 50) - strictIdolTraits.ambitious);
 
         const avgDiff = totalDiff / 5;
         let score = Math.round(100 - avgDiff);
@@ -260,9 +260,9 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
             const totalDiff = 
                 Math.abs((userTraits.risk || 50) - profile.risk) +
                 Math.abs((userTraits.creativity || 50) - profile.creativity) +
-                Math.abs((userTraits.vision || 50) - profile.analytical) +
-                Math.abs((userTraits.empathy || 50) - profile.social) +
-                Math.abs((userTraits.leadership || 50) - profile.ambitious);
+                Math.abs((userTraits.analytical || 50) - profile.analytical) +
+                Math.abs((userTraits.social || 50) - profile.social) +
+                Math.abs((userTraits.ambitious || 50) - profile.ambitious);
                 
             diffs.push({ name, diff: totalDiff });
         }
@@ -399,9 +399,9 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
                                     )}>
                                         <FlavorMeter label="Risk Taker" value={userTraits.risk || 50} color="bg-orange-500" darkColor="bg-[#ff4d4d]" icon={Flame} isCandyMode={isCandyMode} />
                                         <FlavorMeter label="Creative" value={userTraits.creativity || 50} color="bg-pink-500" darkColor="bg-[#ff4df2]" icon={Sparkles} isCandyMode={isCandyMode} />
-                                        <FlavorMeter label="Analytical" value={userTraits.vision || 50} color="bg-cyan-500" darkColor="bg-[#4DFFFF]" icon={Brain} isCandyMode={isCandyMode} />
-                                        <FlavorMeter label="Social" value={userTraits.empathy || 50} color="bg-green-500" darkColor="bg-[#4dff4d]" icon={Heart} isCandyMode={isCandyMode} />
-                                        <FlavorMeter label="Ambitious" value={userTraits.leadership || 50} color="bg-yellow-500" darkColor="bg-[#ffff4d]" icon={Star} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Analytical" value={userTraits.analytical || 50} color="bg-cyan-500" darkColor="bg-[#4DFFFF]" icon={Brain} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Social" value={userTraits.social || 50} color="bg-green-500" darkColor="bg-[#4dff4d]" icon={Heart} isCandyMode={isCandyMode} />
+                                        <FlavorMeter label="Ambitious" value={userTraits.ambitious || 50} color="bg-yellow-500" darkColor="bg-[#ffff4d]" icon={Star} isCandyMode={isCandyMode} />
                                     </div>
 
                                     {/* Bottom Badge */}

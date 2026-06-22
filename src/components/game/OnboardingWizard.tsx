@@ -294,10 +294,10 @@ export function OnboardingWizard() {
                 const traits = profileData ? {
                     discipline: 50, resilience: 50,
                     risk: profileData.trait_risk_taker || 50,
-                    leadership: profileData.trait_ambitious || 50,
+                    ambitious: profileData.trait_ambitious || 50,
                     creativity: profileData.trait_creative || 50,
-                    empathy: profileData.trait_social || 50, vision: 50,
-                } : { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 };
+                    social: profileData.trait_social || 50, analytical: 50,
+                } : { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 };
 
                 setProfile({
                     id: user.id, mobile: user.mobile, name: user.name, age: user.age,
@@ -332,7 +332,7 @@ export function OnboardingWizard() {
                     access_start_date: user.access_start_date,
                     preferred_map: user.preferred_map,
                     interests: [], roleModels: [],
-                    traits: { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                    traits: { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 },
                     assessmentCompleted: false,
                 } as any);
                 // GameRoot will see profile != null and assessmentCompleted = false — shows CinematicOnboarding then Quiz

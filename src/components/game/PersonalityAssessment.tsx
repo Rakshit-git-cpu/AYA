@@ -16,9 +16,9 @@ const QUESTIONS = [
         icon: Flame, // Drive
         dimension: 'motivation',
         options: [
-            { text: 'Creating something meaningful', value: 'Impact', modifiers: { vision: 20, creativity: 10 } },
+            { text: 'Creating something meaningful', value: 'Impact', modifiers: { analytical: 20, creativity: 10 } },
             { text: 'Living a comfortable, stable life', value: 'Stability', modifiers: { discipline: 15, risk: -10 } },
-            { text: 'Becoming admired or influential', value: 'Fame', modifiers: { leadership: 20, vision: 5 } },
+            { text: 'Becoming admired or influential', value: 'Fame', modifiers: { ambitious: 20, analytical: 5 } },
             { text: 'Exploring life without fixed plans', value: 'Freedom', modifiers: { risk: 20, adaptability: 15 } }
         ]
     },
@@ -28,8 +28,8 @@ const QUESTIONS = [
         icon: Eye, // Opportunity
         dimension: 'risk',
         options: [
-            { text: 'Take the risk immediately', value: 'Bold', modifiers: { risk: 25, vision: 5 } },
-            { text: 'Think deeply before deciding', value: 'Balanced', modifiers: { discipline: 10, vision: 10 } },
+            { text: 'Take the risk immediately', value: 'Bold', modifiers: { risk: 25, analytical: 5 } },
+            { text: 'Think deeply before deciding', value: 'Balanced', modifiers: { discipline: 10, analytical: 10 } },
             { text: 'Avoid it and choose safety', value: 'Cautious', modifiers: { discipline: 15, risk: -20 } },
             { text: 'Try a smaller version first', value: 'Balanced', modifiers: { creativity: 10, risk: 5 } }
         ]
@@ -40,9 +40,9 @@ const QUESTIONS = [
         icon: Shield, // Resilience
         dimension: 'emotional',
         options: [
-            { text: 'I feel hurt and need time to recover', value: 'Sensitive', modifiers: { empathy: 20, resilience: -5 } },
+            { text: 'I feel hurt and need time to recover', value: 'Sensitive', modifiers: { social: 20, resilience: -5 } },
             { text: 'I get motivated to try harder', value: 'Resilient', modifiers: { resilience: 25, discipline: 10 } },
-            { text: 'I analyze what went wrong', value: 'Analytical', modifiers: { vision: 15, discipline: 10 } },
+            { text: 'I analyze what went wrong', value: 'Analytical', modifiers: { analytical: 15, discipline: 10 } },
             { text: 'I distract myself and move on', value: 'Avoidant', modifiers: { adaptability: 15, resilience: 5 } }
         ]
     },
@@ -52,10 +52,10 @@ const QUESTIONS = [
         icon: Briefcase, // Role
         dimension: 'social',
         options: [
-            { text: 'Leads decisions', value: 'Leader', modifiers: { leadership: 25, vision: 5 } },
-            { text: 'Supports others quietly', value: 'Supporter', modifiers: { empathy: 20, discipline: 5 } },
-            { text: 'Observes and speaks selectively', value: 'Observer', modifiers: { vision: 15, discipline: 5 } },
-            { text: 'Brings creativity or humor', value: 'Creator', modifiers: { creativity: 20, empathy: 5 } }
+            { text: 'Leads decisions', value: 'Leader', modifiers: { ambitious: 25, analytical: 5 } },
+            { text: 'Supports others quietly', value: 'Supporter', modifiers: { social: 20, discipline: 5 } },
+            { text: 'Observes and speaks selectively', value: 'Observer', modifiers: { analytical: 15, discipline: 5 } },
+            { text: 'Brings creativity or humor', value: 'Creator', modifiers: { creativity: 20, social: 5 } }
         ]
     },
     {
@@ -64,10 +64,10 @@ const QUESTIONS = [
         icon: Zap, // Energy
         dimension: 'passion',
         options: [
-            { text: 'Creating or expressing ideas', value: 'Creative', modifiers: { creativity: 25, vision: 5 } },
-            { text: 'Learning or discovering new things', value: 'Intellectual', modifiers: { vision: 20, discipline: 5 } },
-            { text: 'Competing or improving yourself', value: 'Competitive', modifiers: { resilience: 15, leadership: 10 } },
-            { text: 'Helping or connecting with people', value: 'Empathic', modifiers: { empathy: 25, leadership: 5 } }
+            { text: 'Creating or expressing ideas', value: 'Creative', modifiers: { creativity: 25, analytical: 5 } },
+            { text: 'Learning or discovering new things', value: 'Intellectual', modifiers: { analytical: 20, discipline: 5 } },
+            { text: 'Competing or improving yourself', value: 'Competitive', modifiers: { resilience: 15, ambitious: 10 } },
+            { text: 'Helping or connecting with people', value: 'Empathic', modifiers: { social: 25, ambitious: 5 } }
         ]
     },
     {
@@ -76,10 +76,10 @@ const QUESTIONS = [
         icon: Award, // Legacy
         dimension: 'coreValue',
         options: [
-            { text: 'The impact I made', value: 'Impact', modifiers: { vision: 15, leadership: 10 } },
-            { text: 'The creativity I showed', value: 'Art', modifiers: { creativity: 20, vision: 5 } },
+            { text: 'The impact I made', value: 'Impact', modifiers: { analytical: 15, ambitious: 10 } },
+            { text: 'The creativity I showed', value: 'Art', modifiers: { creativity: 20, analytical: 5 } },
             { text: 'The success I achieved', value: 'Success', modifiers: { discipline: 15, resilience: 10 } },
-            { text: 'The kindness I gave', value: 'Kindness', modifiers: { empathy: 25, discipline: 5 } }
+            { text: 'The kindness I gave', value: 'Kindness', modifiers: { social: 25, discipline: 5 } }
         ]
     },
     {
@@ -140,7 +140,7 @@ export function PersonalityAssessment() {
     const [currentSelection, setCurrentSelection] = useState<any[]>([]);
 
     const [traits, setTraits] = useState<PersonalityTraits>({
-        discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50
+        discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50
     });
 
     const [profileBuilder, setProfileBuilder] = useState<Partial<PsychologicalProfile>>({});
@@ -227,9 +227,9 @@ export function PersonalityAssessment() {
                         user_id: userProfile.id,
                         trait_risk_taker: newTraits.risk,
                         trait_creative: newTraits.creativity,
-                        trait_analytical: newTraits.vision,
-                        trait_social: newTraits.empathy,
-                        trait_ambitious: newTraits.leadership,
+                        trait_analytical: newTraits.analytical,
+                        trait_social: newTraits.social,
+                        trait_ambitious: newTraits.ambitious,
                         interest_goal: newProfile.interest_goal || '',
                         interest_struggle: newProfile.interest_struggle || '',
                         interest_domain: newProfile.interest_domain || ''

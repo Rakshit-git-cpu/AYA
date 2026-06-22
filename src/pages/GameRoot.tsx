@@ -133,7 +133,7 @@ export function GameRoot() {
                             } as any);
                             if (isQuizDone()) {
                                 store.completeAssessment(
-                                    { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                                    { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 },
                                     { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
                                 );
                             }
@@ -208,9 +208,9 @@ export function GameRoot() {
                         {
                             discipline: 50, resilience: 50,
                             risk: profileData.trait_risk_taker || 50,
-                            leadership: profileData.trait_ambitious || 50,
+                            ambitious: profileData.trait_ambitious || 50,
                             creativity: profileData.trait_creative || 50,
-                            empathy: profileData.trait_social || 50, vision: 50
+                            social: profileData.trait_social || 50, analytical: 50
                         },
                         {
                             motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient',
@@ -220,7 +220,7 @@ export function GameRoot() {
                 } else if (quizCompleted && !profileData) {
                     // Quiz done but profile data unavailable — mark assessment done anyway
                     store.completeAssessment(
-                        { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 },
+                        { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 },
                         { motivation: 'Stability', risk: 'Balanced', emotional: 'Resilient', social: 'Supporter', passion: 'Creative', coreValue: 'Success' }
                     );
                 }
@@ -368,7 +368,7 @@ export function GameRoot() {
                 <MatchReport
                     userTraits={profile.traits}
                     userProfile={profile.psychologicalProfile}
-                    idolTraits={activeLevel.idolTraits || { discipline: 50, resilience: 50, risk: 50, leadership: 50, creativity: 50, empathy: 50, vision: 50 }}
+                    idolTraits={activeLevel.idolTraits || { discipline: 50, resilience: 50, risk: 50, ambitious: 50, creativity: 50, social: 50, analytical: 50 }}
                     idolName={activeLevel.personality || activeLevel.archetype || "Unknown"}
                     idolAvatarUrl={activeLevel.portrait ? `/portraits/${activeLevel.portrait}` : undefined}
                     idolAge={activeLevel.age}

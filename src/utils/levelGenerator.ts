@@ -17,7 +17,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['5 Grammys at age 18', 'Youngest artist to record a Bond theme', 'TIME100 Most Influential'],
             lesson: 'THE COST OF ATTACHMENT — sometimes the most loving thing you can do for yourself is remove access.',
             avatarUrl: '/assets/portrait-billie-20.png', scenarioId: 'lvl_age_20_billie_2',
-            idolTraits: { discipline: 80, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 80, resilience: 90, risk: 85, ambitious: 70, creativity: 100, social: 95, analytical: 85 }
         },
         // Age 19: Justin Bieber
         {
@@ -28,7 +28,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Multiple Grammy Awards', 'One of the best-selling music artists', 'Record-breaking stadium tours'],
             lesson: 'THE EMPTINESS UNDERNEATH — finding yourself starts when the noise stops.',
             avatarUrl: '/assets/portrait-justin-19.png', scenarioId: 'lvl_age_19_justin',
-            idolTraits: { discipline: 70, resilience: 90, risk: 85, leadership: 85, creativity: 95, empathy: 90, vision: 70 }
+            idolTraits: { discipline: 70, resilience: 90, risk: 85, ambitious: 85, creativity: 95, social: 90, analytical: 70 }
         },
         // Age 17: Shah Rukh Khan
         {
@@ -39,7 +39,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'DUAL COMMITMENT — sometimes the answer isn\'t either/or, it\'s both, and harder.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_17_srk',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, ambitious: 90, creativity: 98, social: 95, analytical: 85 }
         },
         // Age 17: P.V. Sindhu
         {
@@ -50,7 +50,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['First Indian woman to win two Olympic medals', 'World Champion 2019', 'Padma Bhushan Awardee'],
             lesson: 'RESPECT for your opponent does not mean fearing them.',
             avatarUrl: '/assets/avatar_sindhu.jpg', scenarioId: 'lvl_age_17_sindhu',
-            idolTraits: { discipline: 100, resilience: 95, risk: 75, leadership: 70, creativity: 80, empathy: 85, vision: 90 }
+            idolTraits: { discipline: 100, resilience: 95, risk: 75, ambitious: 70, creativity: 80, social: 85, analytical: 90 }
         },
         // Age 17: A.R. Rahman
         {
@@ -61,7 +61,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['2 Academy Awards', '2 Grammy Awards', 'Padma Shri & Padma Bhushan Awardee'],
             lesson: 'SACRIFICE can forge the greatest talent.',
             avatarUrl: '/assets/avatar_rahman.jpg', scenarioId: 'lvl_age_17_rahman',
-            idolTraits: { discipline: 95, resilience: 90, risk: 85, leadership: 80, creativity: 100, empathy: 95, vision: 98 }
+            idolTraits: { discipline: 95, resilience: 90, risk: 85, ambitious: 80, creativity: 100, social: 95, analytical: 98 }
         },
         // Age 17: Malala Yousafzai
         {
@@ -72,7 +72,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Nobel Peace Prize', 'UN Messenger of Peace', 'Bestselling Author'],
             lesson: 'PURPOSE transcends personal comfort.',
             avatarUrl: '/assets/avatar_malala.jpg', scenarioId: 'lvl_age_17_malala',
-            idolTraits: { discipline: 90, resilience: 100, risk: 95, leadership: 95, creativity: 80, empathy: 100, vision: 95 }
+            idolTraits: { discipline: 90, resilience: 100, risk: 95, ambitious: 95, creativity: 80, social: 100, analytical: 95 }
         },
         // Age 17: Steve Jobs
         {
@@ -83,7 +83,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Created iPhone, Mac, iPad', 'Transformed Pixar Animation', 'Changed multiple industries permanently'],
             lesson: 'INTUITION is the compass when the map fails.',
             avatarUrl: '/assets/avatar_jobs.jpg', scenarioId: 'lvl_age_17_jobs',
-            idolTraits: { discipline: 75, resilience: 90, risk: 100, leadership: 90, creativity: 100, empathy: 60, vision: 100 }
+            idolTraits: { discipline: 75, resilience: 90, risk: 100, ambitious: 90, creativity: 100, social: 60, analytical: 100 }
         },
         // Age 17: Indra Nooyi
         {
@@ -94,7 +94,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Ranked consistently among World\'s 100 Most Powerful Women', 'Increased PepsiCo\'s revenue by 80%', 'Padma Bhushan Awardee'],
             lesson: 'AUTHENTICITY requires braving societal friction.',
             avatarUrl: '/assets/avatar_nooyi.jpg', scenarioId: 'lvl_age_17_nooyi',
-            idolTraits: { discipline: 95, resilience: 90, risk: 90, leadership: 100, creativity: 85, empathy: 85, vision: 95 }
+            idolTraits: { discipline: 95, resilience: 90, risk: 90, ambitious: 100, creativity: 85, social: 85, analytical: 95 }
         },
         {
             id: 'lvl_18', title: 'The Beginning (Country)', description: 'At 18, Taylor faced a choice: Security or Authenticity.',
@@ -104,7 +104,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Grammy Awards', 'Only artist to win Album of the Year 4 times', 'Billionaire from music alone'],
             lesson: 'COURAGE to pivot when everyone tells you to stay safe.',
             avatarUrl: '/assets/avatar_taylor_swift.png', scenarioId: 'lvl_age_18',
-            idolTraits: { discipline: 80, resilience: 85, risk: 70, leadership: 60, creativity: 90, empathy: 95, vision: 80 }
+            idolTraits: { discipline: 80, resilience: 85, risk: 70, ambitious: 60, creativity: 90, social: 95, analytical: 80 }
         },
         // Age 18: Zendaya
         {
@@ -115,7 +115,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Youngest two-time Emmy winner', 'Time 100 Most Influential', 'Producer at 18'],
             lesson: 'POWER ISN\'T GIVEN, IT\'S TAKEN.',
             avatarUrl: '/assets/avatar_zendaya.jpg?v=2', scenarioId: 'lvl_age_18_zendaya',
-            idolTraits: { discipline: 90, resilience: 95, risk: 100, leadership: 90, creativity: 95, empathy: 85, vision: 95 }
+            idolTraits: { discipline: 90, resilience: 95, risk: 100, ambitious: 90, creativity: 95, social: 85, analytical: 95 }
         },
         // Age 18: Viswanathan Anand
         {
@@ -126,7 +126,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['India\'s first Chess Grandmaster', 'Padma Vibhushan Awardee', 'First recipient of Khel Ratna'],
             lesson: 'INTUITION IS THE FIRST STEP. CALCULATION IS THE SECOND.',
             avatarUrl: '/assets/avatar_business.png', scenarioId: 'lvl_age_18_anand',
-            idolTraits: { discipline: 100, resilience: 90, risk: 75, leadership: 70, creativity: 95, empathy: 60, vision: 100 }
+            idolTraits: { discipline: 100, resilience: 90, risk: 75, ambitious: 70, creativity: 95, social: 60, analytical: 100 }
         },
         // Age 18: Virat Kohli
         {
@@ -137,7 +137,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Most runs in a single IPL season', 'Fastest to 10k ODI runs', 'World Cup Winner'],
             lesson: 'DUTY to team and self in the face of unimaginable grief.',
             avatarUrl: '/assets/avatar_virat_kohli.jpg', scenarioId: 'lvl_age_18_kohli',
-            idolTraits: { discipline: 95, resilience: 100, risk: 85, leadership: 90, creativity: 75, empathy: 70, vision: 85 }
+            idolTraits: { discipline: 95, resilience: 100, risk: 85, ambitious: 90, creativity: 75, social: 70, analytical: 85 }
         },
         // Age 18: Dr. A.P.J. Abdul Kalam
         {
@@ -148,7 +148,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Developed India\'s missile program', 'Bharat Ratna Awardee', 'Beloved People\'s President'],
             lesson: 'SELF-BELIEF is stronger than circumstances.',
             avatarUrl: '/assets/avatar_apj_kalam.jpg', scenarioId: 'lvl_age_18_kalam',
-            idolTraits: { discipline: 98, resilience: 95, risk: 70, leadership: 90, creativity: 95, empathy: 100, vision: 100 }
+            idolTraits: { discipline: 98, resilience: 95, risk: 70, ambitious: 90, creativity: 95, social: 100, analytical: 100 }
         },
         // Age 18: Ratan Tata
         {
@@ -159,7 +159,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Grew Tata Group revenues 40X', 'Acquired Jaguar Land Rover & Tetley', 'Padma Vibhushan Awardee'],
             lesson: 'AUTHENTICITY over expectation.',
             avatarUrl: '/assets/avatar_ratan_tata.jpg', scenarioId: 'lvl_age_18_tata',
-            idolTraits: { discipline: 90, resilience: 90, risk: 85, leadership: 100, creativity: 85, empathy: 95, vision: 98 }
+            idolTraits: { discipline: 90, resilience: 90, risk: 85, ambitious: 100, creativity: 85, social: 95, analytical: 98 }
         },
         {
             id: 'lvl_19', title: 'The Visionary', description: 'At 19, Mark had to choose between Harvard and his side project.',
@@ -169,7 +169,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Founder of Facebook', 'Youngest self-made billionaire', 'Revolutionized social media'],
             lesson: 'RISK taking when the "safe path" (Harvard) looks perfect.',
             avatarUrl: '/assets/avatar_zuck.jpg', scenarioId: 'lvl_age_19', // Placeholder avatar
-            idolTraits: { discipline: 90, resilience: 80, risk: 95, leadership: 85, creativity: 75, empathy: 40, vision: 99 }
+            idolTraits: { discipline: 90, resilience: 80, risk: 95, ambitious: 85, creativity: 75, social: 40, analytical: 99 }
         },
         // Age 19: Neeraj Chopra
         {
@@ -180,7 +180,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Olympic Gold (Tokyo 2020)', 'World Athletics Champion', 'First Indian to win Diamond League'],
             lesson: 'FAME IS A DISTRACTION; MASTERY IS THE GOAL.',
             avatarUrl: '/assets/avatar_neeraj.jpg?v=2', scenarioId: 'lvl_age_19_neeraj',
-            idolTraits: { discipline: 100, resilience: 95, risk: 85, leadership: 80, creativity: 75, empathy: 70, vision: 95 }
+            idolTraits: { discipline: 100, resilience: 95, risk: 85, ambitious: 80, creativity: 75, social: 70, analytical: 95 }
         },
         // Age 19: Shubman Gill
         {
@@ -191,7 +191,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['U-19 World Cup Player of the Tournament', 'Fastest to 2000 ODI runs', 'Orange Cap Winner (IPL 2023)'],
             lesson: 'PRESSURE IS JUST A SHADOW. IT DISAPPEARS WHEN YOU FACE THE LIGHT.',
             avatarUrl: '/assets/avatar_shubman.jpg?v=2', scenarioId: 'lvl_age_19_shubman',
-            idolTraits: { discipline: 90, resilience: 85, risk: 90, leadership: 80, creativity: 85, empathy: 75, vision: 90 }
+            idolTraits: { discipline: 90, resilience: 85, risk: 90, ambitious: 80, creativity: 85, social: 75, analytical: 90 }
         },
         // Age 19: Sachin Tendulkar
         {
@@ -202,7 +202,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['100 International Centuries', 'Bharat Ratna Awardee', 'Highest run-scorer in cricket history'],
             lesson: 'COURAGE to stand your ground when veterans fall.',
             avatarUrl: '/assets/avatar_sachin.jpg', scenarioId: 'lvl_age_19_sachin',
-            idolTraits: { discipline: 100, resilience: 98, risk: 80, leadership: 85, creativity: 95, empathy: 85, vision: 90 }
+            idolTraits: { discipline: 100, resilience: 98, risk: 80, ambitious: 85, creativity: 95, social: 85, analytical: 90 }
         },
         // Age 19: Sundar Pichai
         {
@@ -213,7 +213,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Led development of Google Chrome', 'Became CEO of Alphabet', 'Padma Bhushan Awardee'],
             lesson: 'CURIOSITY to explore outside the assigned path.',
             avatarUrl: '/assets/avatar_sundar.jpg', scenarioId: 'lvl_age_19_sundar',
-            idolTraits: { discipline: 95, resilience: 90, risk: 70, leadership: 95, creativity: 85, empathy: 90, vision: 95 }
+            idolTraits: { discipline: 95, resilience: 90, risk: 70, ambitious: 95, creativity: 85, social: 90, analytical: 95 }
         },
         // Age 19: Shah Rukh Khan
         {
@@ -224,7 +224,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'PASSION as the ultimate antidote to despair.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_19_srk',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, ambitious: 90, creativity: 98, social: 95, analytical: 85 }
         },
         // Age 19: Shah Rukh Khan (Story 2)
         {
@@ -235,7 +235,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'TIMING IS STRATEGY — ambition without roots collapses.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_19_srk_2',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, ambitious: 90, creativity: 98, social: 95, analytical: 85 }
         },
         // Age 20: Prajakta Koli
         {
@@ -246,7 +246,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['7M+ YouTube Subscribers', 'Forbes 30 Under 30', 'Climate Change Ambassador'],
             lesson: 'DON\'T CLING TO A MISTAKE JUST BECAUSE YOU SPENT A LONG TIME MAKING IT.',
             avatarUrl: '/assets/avatar_prajakta.jpg?v=2', scenarioId: 'lvl_age_20_prajakta',
-            idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 85, creativity: 95, empathy: 100, vision: 90 }
+            idolTraits: { discipline: 85, resilience: 90, risk: 95, ambitious: 85, creativity: 95, social: 100, analytical: 90 }
         },
         // Age 20: Selena Gomez
         {
@@ -257,7 +257,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Most followed woman on Instagram', 'Founder of Rare Beauty', 'Mental health philanthropist'],
             lesson: 'VULNERABILITY IS THE ULTIMATE STRENGTH.',
             avatarUrl: '/assets/avatar_selena.jpg?v=2', scenarioId: 'lvl_age_20_selena',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 95, creativity: 90, empathy: 100, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, ambitious: 95, creativity: 90, social: 100, analytical: 85 }
         },
         // Age 20: Kobe
         {
@@ -270,7 +270,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['5-time NBA Champion', '18-time All-Star', 'Oscar Winner (Dear Basketball)'],
             lesson: 'DISCIPLINE to do the boring work when no one is watching.',
             avatarUrl: '/assets/avatar_kobe.png', scenarioId: 'lvl_age_20_sports',
-            idolTraits: { discipline: 100, resilience: 100, risk: 75, leadership: 88, creativity: 70, empathy: 60, vision: 85 }
+            idolTraits: { discipline: 100, resilience: 100, risk: 75, ambitious: 88, creativity: 70, social: 60, analytical: 85 }
         },
         // Age 20: NV Sir
         {
@@ -283,7 +283,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Founder of Motion Education', 'Mentored thousands of IITians', 'Revolutionized online teaching'],
             lesson: 'LONG-TERM VISION beats short-term comfort.',
             avatarUrl: '/assets/avatar_nv_sir.jpg', scenarioId: 'lvl_age_20_nv_sir',
-            idolTraits: { discipline: 90, resilience: 95, risk: 85, leadership: 90, creativity: 80, empathy: 95, vision: 100 }
+            idolTraits: { discipline: 90, resilience: 95, risk: 85, ambitious: 90, creativity: 80, social: 95, analytical: 100 }
         },
         // Age 20: Taylor (Soloist)
         {
@@ -296,7 +296,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Wrote "Speak Now" album entirely alone', 'Highest-grossing tour in history', 'Time Person of the Year'],
             lesson: 'OWNERSHIP of your work and your narrative.',
             avatarUrl: '/assets/avatar_taylor_swift.png', scenarioId: 'lvl_age_20_music',
-            idolTraits: { discipline: 88, resilience: 90, risk: 75, leadership: 80, creativity: 98, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 88, resilience: 90, risk: 75, ambitious: 80, creativity: 98, social: 95, analytical: 85 }
         },
         // Age 20: Frida
         {
@@ -309,7 +309,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['First Mexican artist in the Louvre', 'Icon of feminism and LGBTQ+', 'Master of self-portraits'],
             lesson: 'RESILIENCE to turn pain into power and art.',
             avatarUrl: '/assets/avatar_frida.png', scenarioId: 'lvl_age_20_art',
-            idolTraits: { discipline: 70, resilience: 100, risk: 80, leadership: 70, creativity: 99, empathy: 95, vision: 80 }
+            idolTraits: { discipline: 70, resilience: 100, risk: 80, ambitious: 70, creativity: 99, social: 95, analytical: 80 }
         },
         // Age 20: Arnold
         {
@@ -322,7 +322,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['7-time Mr. Olympia', 'Highest paid actor of the 90s', 'Governor of California'],
             lesson: 'VISION that is so clear, defying authority becomes a necessity.',
             avatarUrl: '/assets/avatar_arnold.jpg', scenarioId: 'scenario_arnold_awol',
-            idolTraits: { discipline: 95, resilience: 90, risk: 90, leadership: 90, creativity: 60, empathy: 60, vision: 100 }
+            idolTraits: { discipline: 95, resilience: 90, risk: 90, ambitious: 90, creativity: 60, social: 60, analytical: 100 }
         },
         // Age 20: Hawking
         {
@@ -335,7 +335,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Discovered Hawking Radiation', 'Author of A Brief History of Time', 'Lived 55 years longer than predicted'],
             lesson: 'PURPOSE to find infinite space within a finite time.',
             avatarUrl: '/assets/avatar_hawking.png', scenarioId: 'scenario_hawking_diagnosis',
-            idolTraits: { discipline: 95, resilience: 100, risk: 60, leadership: 85, creativity: 95, empathy: 75, vision: 100 }
+            idolTraits: { discipline: 95, resilience: 100, risk: 60, ambitious: 85, creativity: 95, social: 75, analytical: 100 }
         },
         // Age 20: Mary Shelley
         {
@@ -348,7 +348,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Invented Science Fiction', 'Wrote Frankenstein at 19', 'Literary Icon'],
             lesson: 'IMAGINATION to look into the darkness.',
             avatarUrl: '/assets/avatar_mary_shelley.jpg', scenarioId: 'lvl_age_20_literature',
-            idolTraits: { discipline: 85, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 90 }
+            idolTraits: { discipline: 85, resilience: 90, risk: 85, ambitious: 70, creativity: 100, social: 95, analytical: 90 }
         },
         // Age 20: Steven Spielberg
         {
@@ -361,7 +361,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['3 Academy Awards', 'Creator of the Blockbuster', 'Co-founded DreamWorks'],
             lesson: 'AUDACITY to authorize yourself.',
             avatarUrl: '/assets/avatar_spielberg_young.jpg', scenarioId: 'lvl_age_20_cinema',
-            idolTraits: { discipline: 90, resilience: 95, risk: 90, leadership: 95, creativity: 100, empathy: 85, vision: 100 }
+            idolTraits: { discipline: 90, resilience: 95, risk: 90, ambitious: 95, creativity: 100, social: 85, analytical: 100 }
         },
         // Age 20: Bill Gates (Default)
         {
@@ -374,7 +374,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['The richest man in the world for 18 years', 'Revolutionized Personal Computing', 'Major Philanthropist'],
             lesson: 'CONFIDENCE to bet on yourself before you are ready.',
             avatarUrl: '/assets/avatar_bill_gates.png', scenarioId: 'lvl_age_20',
-            idolTraits: { discipline: 92, resilience: 85, risk: 90, leadership: 95, creativity: 85, empathy: 70, vision: 98 }
+            idolTraits: { discipline: 92, resilience: 85, risk: 90, ambitious: 95, creativity: 85, social: 70, analytical: 98 }
         },
         // Age 21: Shah Rukh Khan
         {
@@ -385,7 +385,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'COMPLEXITY OVER COMFORT — playing safe builds a career, playing true builds a legend.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_21_srk',
-            idolTraits: { discipline: 85, resilience: 100, risk: 95, leadership: 90, creativity: 98, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 95, ambitious: 90, creativity: 98, social: 95, analytical: 85 }
         },
         // Age 21
         {
@@ -396,7 +396,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Created iPhone, Mac, and Pixar', 'Changed 5 industries forever', 'Design genius'],
             lesson: 'SIMPLICITY in a world of clutter and noise.',
             avatarUrl: '/assets/avatar_steve_jobs.png', scenarioId: 'lvl_age_21',
-            idolTraits: { discipline: 85, resilience: 90, risk: 95, leadership: 90, creativity: 100, empathy: 50, vision: 100 }
+            idolTraits: { discipline: 85, resilience: 90, risk: 95, ambitious: 90, creativity: 100, social: 50, analytical: 100 }
         },
         {
             id: 'lvl_22', title: 'The Dreamer', description: 'At 22, Walt lost everything and drew a mouse on a train.',
@@ -406,7 +406,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Winner of 22 Academy Awards', 'Creator of Mickey Mouse', 'Built Disneyland'],
             lesson: 'IMAGINATION to see a kingdom where others see a blank page.',
             avatarUrl: '/assets/avatar_walt_disney.png', scenarioId: 'lvl_age_22',
-            idolTraits: { discipline: 85, resilience: 95, risk: 90, leadership: 85, creativity: 100, empathy: 85, vision: 100 }
+            idolTraits: { discipline: 85, resilience: 95, risk: 90, ambitious: 85, creativity: 100, social: 85, analytical: 100 }
         },
         // Age 23: Shah Rukh Khan
         {
@@ -417,7 +417,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'LOVE IS NOT A DISTRACTION — the right relationship makes you MORE yourself, not less.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_23_srk',
-            idolTraits: { discipline: 85, resilience: 100, risk: 90, leadership: 90, creativity: 98, empathy: 100, vision: 85 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 90, ambitious: 90, creativity: 98, social: 100, analytical: 85 }
         },
         {
             id: 'lvl_23', title: 'The Voice', description: 'At 23, Oprah was fired for being too emotional. It was a gift.',
@@ -427,7 +427,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['First black female billionaire', 'Highest-rated talk show in history', 'Presidential Medal of Freedom'],
             lesson: 'AUTHENTICITY is your superpower, not your weakness.',
             avatarUrl: '/assets/avatar_oprah.png', scenarioId: 'lvl_age_23',
-            idolTraits: { discipline: 88, resilience: 92, risk: 80, leadership: 90, creativity: 85, empathy: 100, vision: 90 }
+            idolTraits: { discipline: 88, resilience: 92, risk: 80, ambitious: 90, creativity: 85, social: 100, analytical: 90 }
         },
         // Age 24: Tina Dabi (Story 1)
         {
@@ -438,7 +438,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Cleared UPSC at age 22', 'First attempt topper', 'Inspiration to millions of aspirants'],
             lesson: 'SACRIFICE of the good (fun) for the great (legacy).',
             avatarUrl: '/assets/avatar_tina_dabi.png', scenarioId: 'scenario_upsc_tina_college',
-            idolTraits: { discipline: 98, resilience: 95, risk: 60, leadership: 85, creativity: 65, empathy: 80, vision: 90 }
+            idolTraits: { discipline: 98, resilience: 95, risk: 60, ambitious: 85, creativity: 65, social: 80, analytical: 90 }
         },
         // Age 25: Shah Rukh Khan
         {
@@ -449,7 +449,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['14 Filmfare Awards', 'Padma Shri Awardee', 'One of the most recognized actors internationally'],
             lesson: 'BET ON YOURSELF — when you know what you came for, don\'t settle for anything less.',
             avatarUrl: '/assets/avatar_srk.jpg', scenarioId: 'lvl_age_25_srk',
-            idolTraits: { discipline: 85, resilience: 100, risk: 98, leadership: 90, creativity: 98, empathy: 95, vision: 90 }
+            idolTraits: { discipline: 85, resilience: 100, risk: 98, ambitious: 90, creativity: 98, social: 95, analytical: 90 }
         },
         // Age 19: Billie Eilish
         {
@@ -460,7 +460,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['5 Grammys at age 18', 'Youngest artist to record a Bond theme', 'TIME100 Most Influential'],
             lesson: 'VULNERABILITY IS STRENGTH — stopping to heal is the most courageous act.',
             avatarUrl: '/assets/avatar_billie.jpg', scenarioId: 'lvl_age_19_billie',
-            idolTraits: { discipline: 80, resilience: 90, risk: 85, leadership: 70, creativity: 100, empathy: 95, vision: 85 }
+            idolTraits: { discipline: 80, resilience: 90, risk: 85, ambitious: 70, creativity: 100, social: 95, analytical: 85 }
         },
         // Age 19: MrBeast
         {
@@ -471,7 +471,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Largest YouTube channel by subscribers', 'Created MrBeast Burger', 'Planted 20 million trees'],
             lesson: 'ABSURD IDEAS CHANGE THE WORLD — delusional confidence is a superpower.',
             avatarUrl: '/assets/avatar_mrbeast.jpg', scenarioId: 'lvl_age_19_mrbeast',
-            idolTraits: { discipline: 90, resilience: 85, risk: 100, leadership: 85, creativity: 95, empathy: 80, vision: 95 }
+            idolTraits: { discipline: 90, resilience: 85, risk: 100, ambitious: 85, creativity: 95, social: 80, analytical: 95 }
         },
         // Age 19: Ritesh Agarwal
         {
@@ -482,7 +482,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Thiel Fellowship winner', 'OYO became one of world\'s largest hotel chains', 'Forbes 30 Under 30'],
             lesson: 'PERMISSION IS A TRAP — winners take it, they don\'t wait for it.',
             avatarUrl: '/assets/avatar_ritesh.jpg', scenarioId: 'lvl_age_19_ritesh',
-            idolTraits: { discipline: 85, resilience: 90, risk: 100, leadership: 85, creativity: 80, empathy: 75, vision: 95 }
+            idolTraits: { discipline: 85, resilience: 90, risk: 100, ambitious: 85, creativity: 80, social: 75, analytical: 95 }
         },
         // Age 19: Muhammad Ali
         {
@@ -493,7 +493,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['3-time World Heavyweight Champion', 'Olympic Gold Medalist', 'Presidential Medal of Freedom'],
             lesson: 'YOUR INTEGRITY IS WORTH MORE THAN ANY TROPHY.',
             avatarUrl: '/assets/avatar_ali.jpg', scenarioId: 'lvl_age_19_ali',
-            idolTraits: { discipline: 90, resilience: 100, risk: 95, leadership: 95, creativity: 80, empathy: 85, vision: 90 }
+            idolTraits: { discipline: 90, resilience: 100, risk: 95, ambitious: 95, creativity: 80, social: 85, analytical: 90 }
         },
         // Age 20: Dhruv Rathee
         {
@@ -504,7 +504,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['20M+ YouTube subscribers', 'Covered 2024 Indian elections extensively', 'CNN-News18 Digital Influencer Award'],
             lesson: 'BUILD THE BRIDGE WHILE CROSSING IT — patience in the building phase is architecture.',
             avatarUrl: '/assets/avatar_dhruv.jpg', scenarioId: 'lvl_age_20_dhruv',
-            idolTraits: { discipline: 90, resilience: 85, risk: 80, leadership: 75, creativity: 90, empathy: 95, vision: 95 }
+            idolTraits: { discipline: 90, resilience: 85, risk: 80, ambitious: 75, creativity: 90, social: 95, analytical: 95 }
         },
         // Age 19: Falguni Nayar (shown at 19 as college beginning)
         {
@@ -515,7 +515,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Founded Nykaa at age 49', 'India\'s first self-made female billionaire (2021)', 'Nykaa IPO at $13B valuation'],
             lesson: 'THERE IS NO WRONG TIME TO BEGIN — the entrepreneurship window never closes.',
             avatarUrl: '/assets/avatar_falguni.png', scenarioId: 'lvl_age_19_falguni',
-            idolTraits: { discipline: 95, resilience: 90, risk: 80, leadership: 95, creativity: 75, empathy: 85, vision: 100 }
+            idolTraits: { discipline: 95, resilience: 90, risk: 80, ambitious: 95, creativity: 75, social: 85, analytical: 100 }
         },
         // Age 19: Nikola Tesla
         {
@@ -526,7 +526,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Invented AC power system', 'Pioneered radio technology', 'Holds 300+ patents'],
             lesson: 'THE MIND THAT SEES DIFFERENTLY IS NOT BROKEN — trust the vision that others call delusion.',
             avatarUrl: '/assets/avatar_tesla.jpg', scenarioId: 'lvl_age_19_tesla',
-            idolTraits: { discipline: 95, resilience: 85, risk: 90, leadership: 60, creativity: 100, empathy: 60, vision: 100 }
+            idolTraits: { discipline: 95, resilience: 85, risk: 90, ambitious: 60, creativity: 100, social: 60, analytical: 100 }
         },
         {
             id: 'lvl_25', title: 'The Storyteller', description: 'At 25, J.K. Rowling got the idea for Harry Potter on a delayed train.',
@@ -536,7 +536,7 @@ export function generateLevels(_age: number): Level[] {
             achievements: ['Best-selling book series in history', 'First billionaire author', 'Defined a generation of readers'],
             lesson: 'CREATIVITY strikes in the quiet moments of life.',
             avatarUrl: '/assets/avatar_jk_rowling.png', scenarioId: 'lvl_age_25',
-            idolTraits: { discipline: 85, resilience: 98, risk: 85, leadership: 75, creativity: 100, empathy: 90, vision: 95 }
+            idolTraits: { discipline: 85, resilience: 98, risk: 85, ambitious: 75, creativity: 100, social: 90, analytical: 95 }
         }
     ];
 

@@ -91,7 +91,7 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
 
     // Fallback traits if profile missing completely
     const userTraits = profile?.traits || {
-        risk: 50, creativity: 50, vision: 50, empathy: 50, leadership: 50, resilience: 50
+        risk: 50, creativity: 50, analytical: 50, social: 50, ambitious: 50, resilience: 50
     };
 
     // DNA Profile generation
@@ -103,9 +103,9 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
             const totalDiff = 
                 Math.abs((userTraits.risk || 50) - p.risk) +
                 Math.abs((userTraits.creativity || 50) - p.creativity) +
-                Math.abs((userTraits.vision || 50) - p.analytical) +
-                Math.abs((userTraits.empathy || 50) - p.social) +
-                Math.abs((userTraits.leadership || 50) - p.ambitious);
+                Math.abs((userTraits.analytical || 50) - p.analytical) +
+                Math.abs((userTraits.social || 50) - p.social) +
+                Math.abs((userTraits.ambitious || 50) - p.ambitious);
                 
             diffs.push({ name, diff: totalDiff });
         }
@@ -249,10 +249,10 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
 
     const dynamicProfileTag = useMemo(() => {
         const traits = [
-            { name: "BORN LEADER", value: userTraits.leadership || 0 },
+            { name: "BORN LEADER", value: userTraits.ambitious || 0 },
             { name: "CREATIVE SOUL", value: userTraits.creativity || 0 },
-            { name: "STRATEGIC MIND", value: userTraits.vision || 0 },
-            { name: "PEOPLE'S CHAMPION", value: userTraits.empathy || 0 },
+            { name: "STRATEGIC MIND", value: userTraits.analytical || 0 },
+            { name: "PEOPLE'S CHAMPION", value: userTraits.social || 0 },
             { name: "BOLD MAVERICK", value: userTraits.risk || 0 }
         ];
         traits.sort((a, b) => b.value - a.value);
@@ -316,9 +316,9 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
                     
                     <NeonTraitBar label="Risk Taker" value={userTraits.risk} neonColor="#ff51fa" />
                     <NeonTraitBar label="Creative" value={userTraits.creativity} neonColor="#bc13fe" />
-                    <NeonTraitBar label="Analytical" value={userTraits.vision} neonColor="#00f2ff" />
-                    <NeonTraitBar label="Social" value={userTraits.empathy} neonColor="#00ff9d" />
-                    <NeonTraitBar label="Ambitious" value={userTraits.leadership} neonColor="#ffb800" />
+                    <NeonTraitBar label="Analytical" value={userTraits.analytical} neonColor="#00f2ff" />
+                    <NeonTraitBar label="Social" value={userTraits.social} neonColor="#00ff9d" />
+                    <NeonTraitBar label="Ambitious" value={userTraits.ambitious} neonColor="#ffb800" />
                 </div>
 
                 {/* Progression Hub Card */}

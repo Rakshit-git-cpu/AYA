@@ -6,10 +6,10 @@ export interface PersonalityTraits {
     discipline: number; // 0-100
     resilience: number; // Grit
     risk: number;
-    leadership: number;
+    ambitious: number;
     creativity: number;
-    empathy: number;
-    vision: number;
+    social: number;
+    analytical: number;
 }
 
 // --- NEW PSYCHOLOGICAL PROFILE ---

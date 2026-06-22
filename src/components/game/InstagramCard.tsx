@@ -33,7 +33,7 @@ export const InstagramCard = forwardRef<HTMLDivElement, InstagramCardProps>(
     ({ profile, personalityDNA, dynamicProfileTag, levelName }, ref) => {
         // Fallback traits
         const userTraits = profile?.traits || {
-            risk: 50, creativity: 50, vision: 50, empathy: 50, leadership: 50
+            risk: 50, creativity: 50, analytical: 50, social: 50, ambitious: 50
         };
 
         const renderGameBar = (label: string, value: number, colorStart: string, colorEnd: string, glow: string) => (
@@ -197,10 +197,10 @@ export const InstagramCard = forwardRef<HTMLDivElement, InstagramCardProps>(
                         <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                             {renderGameBar("Risk Taker", userTraits.risk || 50, "#ff51fa", "#ff0055", "#ff51fa")}
                             {renderGameBar("Creative", userTraits.creativity || 50, "#bc13fe", "#8000ff", "#bc13fe")}
-                            {renderGameBar("Analytical", userTraits.vision || 50, "#00f2ff", "#0088ff", "#00f2ff")}
-                            {renderGameBar("Social", userTraits.empathy || 50, "#00ff9d", "#00aa55", "#00ff9d")}
+                            {renderGameBar("Analytical", userTraits.analytical || 50, "#00f2ff", "#0088ff", "#00f2ff")}
+                            {renderGameBar("Social", userTraits.social || 50, "#00ff9d", "#00aa55", "#00ff9d")}
                             <div className="col-span-2">
-                                {renderGameBar("Ambitious", userTraits.leadership || 50, "#ffb800", "#ff6600", "#ffb800")}
+                                {renderGameBar("Ambitious", userTraits.ambitious || 50, "#ffb800", "#ff6600", "#ffb800")}
                             </div>
                         </div>
                     </div>

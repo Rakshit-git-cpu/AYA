@@ -346,7 +346,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
 
             // Fetch Base Profile (Source 1 - 40%)
             const userProfile = useUserStore.getState().profile;
-            const quizTraits = userProfile?.traits || { risk: 50, creativity: 50, vision: 50, empathy: 50, leadership: 50 };
+            const quizTraits = userProfile?.traits || { risk: 50, creativity: 50, analytical: 50, social: 50, ambitious: 50 };
             
             // Aggregate Game Choices (Source 2 & 3)
             let scenarioAccumulator = { risk: 0, creativity: 0, analytical: 0, social: 0, ambitious: 0 };
@@ -363,9 +363,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             const recalibratedTraits = {
                 risk: safeClamp((quizTraits.risk * 0.4) + ((50 + scenarioAccumulator.risk) * 0.6)),
                 creativity: safeClamp((quizTraits.creativity * 0.4) + ((50 + scenarioAccumulator.creativity) * 0.6)),
-                vision: safeClamp((quizTraits.vision * 0.4) + ((50 + scenarioAccumulator.analytical) * 0.6)), // analytical = vision
-                empathy: safeClamp((quizTraits.empathy * 0.4) + ((50 + scenarioAccumulator.social) * 0.6)), // social = empathy
-                leadership: safeClamp((quizTraits.leadership * 0.4) + ((50 + scenarioAccumulator.ambitious) * 0.6)) // ambitious = leadership
+                analytical: safeClamp((quizTraits.analytical * 0.4) + ((50 + scenarioAccumulator.analytical) * 0.6)), // analytical = vision
+                social: safeClamp((quizTraits.social * 0.4) + ((50 + scenarioAccumulator.social) * 0.6)), // social = empathy
+                ambitious: safeClamp((quizTraits.ambitious * 0.4) + ((50 + scenarioAccumulator.ambitious) * 0.6)) // ambitious = leadership
             };
 
             // Calculate Match Result against IDOL_PROFILES
@@ -375,14 +375,14 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             const totalDiff = 
                 Math.abs(recalibratedTraits.risk - idolTraits.risk) +
                 Math.abs(recalibratedTraits.creativity - idolTraits.creativity) +
-                Math.abs(recalibratedTraits.vision - idolTraits.analytical) +
-                Math.abs(recalibratedTraits.empathy - idolTraits.social) +
-                Math.abs(recalibratedTraits.leadership - idolTraits.ambitious);
+                Math.abs(recalibratedTraits.analytical - idolTraits.analytical) +
+                Math.abs(recalibratedTraits.social - idolTraits.social) +
+                Math.abs(recalibratedTraits.ambitious - idolTraits.ambitious);
                 
             const matchPercent = Math.max(0, Math.round(100 - (totalDiff / 5)));
 
             // Identify dominant gap
-            const userTraitMap: any = { risk: recalibratedTraits.risk, creative: recalibratedTraits.creativity, analytical: recalibratedTraits.vision, social: recalibratedTraits.empathy, ambitious: recalibratedTraits.leadership };
+            const userTraitMap: any = { risk: recalibratedTraits.risk, creative: recalibratedTraits.creativity, analytical: recalibratedTraits.analytical, social: recalibratedTraits.social, ambitious: recalibratedTraits.ambitious };
             const gapTrait = Object.keys(idolTraits).reduce((a, b) => {
                 const gapA = idolTraits[a] - userTraitMap[a];
                 const gapB = idolTraits[b] - userTraitMap[b];
@@ -434,10 +434,10 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                 {
                     risk: recalibratedTraits.risk,
                     creativity: recalibratedTraits.creativity,
-                    vision: recalibratedTraits.vision,
-                    empathy: recalibratedTraits.empathy,
-                    leadership: recalibratedTraits.leadership,
-                    discipline: recalibratedTraits.vision, // proxy
+                    analytical: recalibratedTraits.analytical,
+                    social: recalibratedTraits.social,
+                    ambitious: recalibratedTraits.ambitious,
+                    discipline: recalibratedTraits.analytical, // proxy
                     resilience: recalibratedTraits.risk,   // proxy
                 },
                 currentStreak
@@ -465,9 +465,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                         .update({
                             trait_risk_taker: recalibratedTraits.risk,
                             trait_creative: recalibratedTraits.creativity,
-                            trait_analytical: recalibratedTraits.vision,
-                            trait_social: recalibratedTraits.empathy,
-                            trait_ambitious: recalibratedTraits.leadership,
+                            trait_analytical: recalibratedTraits.analytical,
+                            trait_social: recalibratedTraits.social,
+                            trait_ambitious: recalibratedTraits.ambitious,
                             total_xp: newTotalXp,
                             level: newLevelInfo.level,
                             stories_completed: currentStories + 1,
@@ -480,7 +480,7 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
                             life_courage: futureLT.courage,
                             life_creativity: futureLT.creativity,
                             life_emotional_control: futureLT.emotional_control,
-                            life_leadership: futureLT.leadership,
+                            life_ambitious: futureLT.leadership,
                             life_risk_intelligence: futureLT.risk_intelligence,
                             life_consistency: futureLT.consistency,
                         })
@@ -546,9 +546,9 @@ export function ScenarioGame({ level, onComplete, onBack, onDailyChallengeComple
             updateTraits({
                 risk: recalibratedTraits.risk - quizTraits.risk,
                 creativity: recalibratedTraits.creativity - quizTraits.creativity,
-                vision: recalibratedTraits.vision - quizTraits.vision,
-                empathy: recalibratedTraits.empathy - quizTraits.empathy,
-                leadership: recalibratedTraits.leadership - quizTraits.leadership
+                analytical: recalibratedTraits.analytical - quizTraits.analytical,
+                social: recalibratedTraits.social - quizTraits.social,
+                ambitious: recalibratedTraits.ambitious - quizTraits.ambitious
             });
 
             // Float the XP events visually before demounting the view!
