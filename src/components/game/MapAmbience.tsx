@@ -85,12 +85,19 @@ const NeonRainLayer = () => {
                 
                 ctx.strokeStyle = grad;
                 ctx.lineWidth = drop.width;
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = `rgba(${drop.baseColorStr}, ${drop.opacity})`;
                 ctx.moveTo(drop.x, drop.y - drop.length);
                 ctx.lineTo(drop.x, drop.y);
                 ctx.stroke();
-                ctx.shadowBlur = 0;
+
+                // Draw a radial gradient head to simulate glow without shadowBlur
+                ctx.beginPath();
+                const glowRadius = drop.width * 4;
+                const glowGrad = ctx.createRadialGradient(drop.x, drop.y, 0, drop.x, drop.y, glowRadius);
+                glowGrad.addColorStop(0, `rgba(${drop.baseColorStr}, ${drop.opacity})`);
+                glowGrad.addColorStop(1, `rgba(${drop.baseColorStr}, 0)`);
+                ctx.fillStyle = glowGrad;
+                ctx.arc(drop.x, drop.y, glowRadius, 0, Math.PI * 2);
+                ctx.fill();
             });
             ctx.restore();
 
@@ -244,11 +251,14 @@ const ShootingStarsLayer = () => {
                 ctx.fill();
 
                 // Glow head
+                const glowRadius = star.isMega ? 30 : 15;
                 ctx.beginPath();
-                ctx.arc(star.x, star.y, 6, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-                ctx.shadowBlur = star.isMega ? 30 : 15;
-                ctx.shadowColor = `rgba(${star.baseColor}, ${star.opacity})`;
+                const glowGrad = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowRadius);
+                glowGrad.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
+                glowGrad.addColorStop(0.2, `rgba(${star.baseColor}, ${star.opacity * 0.8})`);
+                glowGrad.addColorStop(1, `rgba(${star.baseColor}, 0)`);
+                ctx.fillStyle = glowGrad;
+                ctx.arc(star.x, star.y, glowRadius, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Outer ring
@@ -266,8 +276,6 @@ const ShootingStarsLayer = () => {
                     ctx.lineWidth = 1;
                     ctx.stroke();
                 }
-                
-                ctx.shadowBlur = 0;
             }
 
             ctx.restore();
@@ -424,14 +432,18 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                     if (ya < -50 || ya > canvas.height + 50 || yb < -50 || yb > canvas.height + 50) return;
 
                     ctx.beginPath();
-                    ctx.shadowBlur = 4;
-                    ctx.shadowColor = `rgba(0, 242, 255, 0.5)`;
                     ctx.moveTo(sa.x, ya);
                     ctx.lineTo(sb.x, yb);
+                    
+                    // Simulated glow by drawing a thicker, fainter line
+                    ctx.strokeStyle = `rgba(0, 242, 255, ${line.opacity * 0.3})`;
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                    
+                    // Core line
                     ctx.strokeStyle = `rgba(0, 242, 255, ${line.opacity})`;
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
-                    ctx.shadowBlur = 0;
                 }
             });
 
@@ -449,13 +461,23 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                 const sy = star.y - (currentScrollY * star.depth * 0.1);
 
                 if (sy > -50 && sy < canvas.height + 50) {
+                    const glowRadius = star.isAnchor ? 24 : star.radius * 6;
+                    
                     ctx.beginPath();
-                    ctx.shadowBlur = star.isAnchor ? 24 : star.radius * 16;
-                    ctx.shadowColor = `rgba(${star.color}, ${star.opacity})`;
-                    ctx.fillStyle = `rgba(${star.color}, ${star.opacity})`;
-                    ctx.arc(star.x, sy, star.radius, 0, Math.PI * 2);
+                    const glowGrad = ctx.createRadialGradient(star.x, sy, 0, star.x, sy, glowRadius);
+                    glowGrad.addColorStop(0, `rgba(${star.color}, ${star.opacity})`);
+                    glowGrad.addColorStop(0.3, `rgba(${star.color}, ${star.opacity * 0.5})`);
+                    glowGrad.addColorStop(1, `rgba(${star.color}, 0)`);
+                    
+                    ctx.fillStyle = glowGrad;
+                    ctx.arc(star.x, sy, glowRadius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.shadowBlur = 0;
+
+                    // Core star
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                    ctx.arc(star.x, sy, star.radius * 0.8, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             });
 

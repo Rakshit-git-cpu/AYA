@@ -469,14 +469,9 @@ body {
   50% { transform: translateX(10px); }
 }
 
-@keyframes pulse-glow-cyan {
-  0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5)); }
-  50% { filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.8)); }
-}
-
-@keyframes pulse-glow-amber {
-  0%, 100% { filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5)); }
-  50% { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); }
+@keyframes pulse-glow-hardware {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 @keyframes breath {
@@ -491,23 +486,49 @@ body {
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-delayed {
   animation: float 5s ease-in-out infinite;
   animation-delay: 1s;
+  will-change: transform;
 }
 
 .animate-breath {
   animation: breath 6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .animate-pulse-glow-cyan {
-  animation: pulse-glow-cyan 3s ease-in-out infinite;
+  position: relative;
+  /* Remove old animation, we will use pseudo element for hardware accelerated glow */
+}
+.animate-pulse-glow-cyan::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.8);
+  animation: pulse-glow-hardware 3s ease-in-out infinite;
+  will-change: transform, opacity;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .animate-pulse-glow-amber {
-  animation: pulse-glow-amber 3s ease-in-out infinite;
+  position: relative;
+}
+.animate-pulse-glow-amber::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
+  animation: pulse-glow-hardware 3s ease-in-out infinite;
+  will-change: transform, opacity;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .animate-subtle-rotate {
