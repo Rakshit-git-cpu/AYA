@@ -259,9 +259,42 @@ export function DnaProfile({ onBack }: DnaProfileProps) {
         return traits[0].name;
     }, [userTraits]);
 
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        let frameId1: number;
+        let frameId2: number;
+        
+        // Double requestAnimationFrame guarantees the browser has painted the
+        // lightweight loading state before we begin the heavy synchronous mount.
+        frameId1 = requestAnimationFrame(() => {
+            frameId2 = requestAnimationFrame(() => {
+                setIsReady(true);
+            });
+        });
+        
+        return () => {
+            cancelAnimationFrame(frameId1);
+            cancelAnimationFrame(frameId2);
+        };
+    }, []);
+
+    if (!isReady) {
+        return (
+            <div className="fixed inset-0 z-[120] w-full h-full bg-[#0d0d16] flex flex-col items-center justify-center font-sans text-[#f2effb]">
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,#1a1a24_0%,#0d0d16_60%)]" />
+                <div className="flex flex-col items-center z-10 animate-pulse">
+                    <div className="text-5xl mb-4 drop-shadow-[0_0_15px_rgba(0,242,255,0.6)]">🧬</div>
+                    <div className="text-[#00f2ff] text-sm uppercase tracking-[0.3em] font-black drop-shadow-[0_0_10px_rgba(0,242,255,0.4)]">
+                        Sequencing DNA...
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="fixed inset-0 z-[120] w-full h-full bg-[#0d0d16] font-sans text-[#f2effb] overflow-y-auto overflow-x-hidden pt-safe-top pb-24 selection:bg-[#99f7ff] selection:text-[#004145]">
-            
             {/* Deep Space Background gradient */}
             <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,#2b2b38_0%,#000000_60%)]" />
             
