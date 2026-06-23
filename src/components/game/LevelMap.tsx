@@ -407,7 +407,7 @@ export function LevelMap({ onPlayLevel, onOpenDnaProfile, isMapActive = true }: 
                     onReady={handleCanvasReady}
                 />
 
-                <MapAmbience scrollY={scrollY} />
+                <MapAmbience scrollY={scrollY} isActive={isMapActive} />
 
                 {!isMobile && canvasReady && (
                     <div className="fixed inset-0 bg-gradient-to-t from-pink-200/20 via-transparent to-slate-900/50 mix-blend-overlay pointer-events-none z-10" />

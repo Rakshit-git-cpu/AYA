@@ -1,8 +1,12 @@
 import { useEffect, useRef } from 'react';
 
 // --- Neon Rain Layer ---
-const NeonRainLayer = () => {
+const NeonRainLayer = ({ isActive }: { isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const renderRef = useRef<(() => void) | null>(null);
+
+    const isActiveRef = useRef(isActive);
+    useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -51,7 +55,10 @@ const NeonRainLayer = () => {
         resize();
 
         const render = () => {
-            if (!isVisible) return;
+            if (!isVisible || !isActiveRef.current) {
+                // Don't schedule next frame — we'll restart from the resume effect
+                return;
+            }
             
             try {
                 const isDesktop = window.innerWidth > 768;
@@ -118,6 +125,7 @@ const NeonRainLayer = () => {
             animationFrameId = requestAnimationFrame(render);
         };
         
+        renderRef.current = render;
         render();
 
         const handleVisibility = () => {
@@ -126,6 +134,7 @@ const NeonRainLayer = () => {
                 cancelAnimationFrame(animationFrameId);
             } else {
                 isVisible = true;
+                cancelAnimationFrame(animationFrameId);
                 render();
             }
         };
@@ -139,12 +148,21 @@ const NeonRainLayer = () => {
         };
     }, []);
 
+    // Restart the render loop when isActive transitions to true
+    useEffect(() => {
+        if (isActive && renderRef.current) renderRef.current();
+    }, [isActive]);
+
     return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
 };
 
 // --- Shooting Stars Layer ---
-const ShootingStarsLayer = () => {
+const ShootingStarsLayer = ({ isActive }: { isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const renderRef = useRef<(() => void) | null>(null);
+
+    const isActiveRef = useRef(isActive);
+    useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -190,7 +208,7 @@ const ShootingStarsLayer = () => {
         };
 
         const render = () => {
-            if (!isVisible) return;
+            if (!isVisible || !isActiveRef.current) return;
             try {
             const now = Date.now();
 
@@ -290,6 +308,7 @@ const ShootingStarsLayer = () => {
             animationFrameId = requestAnimationFrame(render);
         };
         
+        renderRef.current = render;
         render();
 
         const handleVisibility = () => {
@@ -299,6 +318,7 @@ const ShootingStarsLayer = () => {
             } else {
                 isVisible = true;
                 nextStarTime = Date.now() + 1000;
+                cancelAnimationFrame(animationFrameId);
                 render();
             }
         };
@@ -312,17 +332,25 @@ const ShootingStarsLayer = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (isActive && renderRef.current) renderRef.current();
+    }, [isActive]);
+
     return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
 };
 
 // --- Constellation Lines Layer ---
-const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
+const ConstellationLayer = ({ scrollY, isActive }: { scrollY: number; isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const renderRef = useRef<(() => void) | null>(null);
     const scrollRef = useRef(scrollY);
 
     useEffect(() => {
         scrollRef.current = scrollY;
     }, [scrollY]);
+
+    const isActiveRef = useRef(isActive);
+    useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -398,7 +426,7 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
         resize();
 
         const render = () => {
-            if (!isVisible) return;
+            if (!isVisible || !isActiveRef.current) return;
             
             try {
                 const now = Date.now();
@@ -498,6 +526,7 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
             animationFrameId = requestAnimationFrame(render);
         };
         
+        renderRef.current = render;
         render();
 
         const handleVisibility = () => {
@@ -506,6 +535,7 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
                 cancelAnimationFrame(animationFrameId);
             } else {
                 isVisible = true;
+                cancelAnimationFrame(animationFrameId);
                 render();
             }
         };
@@ -520,10 +550,14 @@ const ConstellationLayer = ({ scrollY }: { scrollY: number }) => {
         };
     }, []);
 
+    useEffect(() => {
+        if (isActive && renderRef.current) renderRef.current();
+    }, [isActive]);
+
     return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
 };
 
-export const MapAmbience = ({ scrollY }: { scrollY: number }) => {
+export const MapAmbience = ({ scrollY, isActive = true }: { scrollY: number; isActive?: boolean }) => {
     return (
         <div className="fixed inset-0 w-full h-full pointer-events-none z-[15]">
             <div style={{
@@ -532,9 +566,9 @@ export const MapAmbience = ({ scrollY }: { scrollY: number }) => {
                 background: 'rgba(0, 0, 20, 0.25)',
                 pointerEvents: 'none'
             }} />
-            <ConstellationLayer scrollY={scrollY} />
-            <NeonRainLayer />
-            <ShootingStarsLayer />
+            <ConstellationLayer scrollY={scrollY} isActive={isActive} />
+            <NeonRainLayer isActive={isActive} />
+            <ShootingStarsLayer isActive={isActive} />
         </div>
     );
 };

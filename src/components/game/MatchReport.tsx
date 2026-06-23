@@ -312,12 +312,21 @@ export function MatchReport({ userTraits, userProfile, idolName, idolAvatarUrl, 
         // LevelMap will resume bgm-neon-map.mp3 when the user returns.
         if (audioSynth.playWin) audioSynth.playWin();
         let start = 0;
+        let mounted = true;
+        let rafId: number;
         const animate = () => {
+            if (!mounted) return;
             start += 1;
             setAnimatedPercent(start);
-            if (start < matchScore) requestAnimationFrame(animate);
+            if (start < matchScore) {
+                rafId = requestAnimationFrame(animate);
+            }
         };
         animate();
+        return () => {
+            mounted = false;
+            cancelAnimationFrame(rafId);
+        };
     }, []);
 
     return (
