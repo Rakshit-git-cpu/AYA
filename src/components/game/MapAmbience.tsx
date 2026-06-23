@@ -110,6 +110,7 @@ const NeonRainLayer = () => {
                     frames = 0;
                     lastFpsTime = now;
                 }
+            }
             } catch (err) {
                 console.error("[NeonRainLayer] Render error:", err);
             }
